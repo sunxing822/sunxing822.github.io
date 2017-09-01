@@ -1,0 +1,689 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="java," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="1 同步的问题线程同步的问题是为了防止多个线程同时访问一个对象或者变量是,导致并发问题。 具体的例子如下： 123456789101112131415161718192021222324public class Test implements Runnable&amp;#123;    private int count = 0;    public static void main(String[] a">
+<meta name="keywords" content="java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 多线程学习笔记(二) 线程的同步与锁">
+<meta property="og:url" content="http://www.sunxing.cc/2016/07/19/java-thread-study002/index.html">
+<meta property="og:site_name" content="孙星的个人博客~">
+<meta property="og:description" content="1 同步的问题线程同步的问题是为了防止多个线程同时访问一个对象或者变量是,导致并发问题。 具体的例子如下： 123456789101112131415161718192021222324public class Test implements Runnable&amp;#123;    private int count = 0;    public static void main(String[] a">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://www.sunxing.cc/images/thread/thread-tongbu.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/thread/thread-volatile.png">
+<meta property="og:updated_time" content="2017-04-30T03:58:25.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java 多线程学习笔记(二) 线程的同步与锁">
+<meta name="twitter:description" content="1 同步的问题线程同步的问题是为了防止多个线程同时访问一个对象或者变量是,导致并发问题。 具体的例子如下： 123456789101112131415161718192021222324public class Test implements Runnable&amp;#123;    private int count = 0;    public static void main(String[] a">
+<meta name="twitter:image" content="http://www.sunxing.cc/images/thread/thread-tongbu.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+ <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258995301'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/z_stat.php%3Fid%3D1258995301' type='text/javascript'%3E%3C/script%3E"));</script>
+
+  <title> Java 多线程学习笔记(二) 线程的同步与锁 | 孙星的个人博客~ </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">孙星的个人博客~</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">搬砖的,码农~</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Java 多线程学习笔记(二) 线程的同步与锁
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-19T09:57:55+08:00" content="2016-07-19">
+              2016-07-19
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/19/java-thread-study002/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/19/java-thread-study002/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="1-同步的问题"><a href="#1-同步的问题" class="headerlink" title="1 同步的问题"></a>1 同步的问题</h2><p>线程同步的问题是为了防止多个线程同时访问一个对象或者变量是,导致并发问题。</p>
+<p>具体的例子如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">public class Test implements Runnable&#123;</div><div class="line">    private int count = 0;</div><div class="line"></div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">        Test test = new Test();</div><div class="line"></div><div class="line">        Thread t1 = new Thread(test,&quot;t1&quot;);</div><div class="line">        Thread t2 = new Thread(test,&quot;t2&quot;);</div><div class="line">        t1.start();</div><div class="line">        t2.start();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void run() &#123;</div><div class="line">        for(int i=0;i&lt;10;i++)&#123;</div><div class="line">            this.add(1);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void add(int i)&#123;</div><div class="line">        count += i;</div><div class="line">        System.out.println(Thread.currentThread().getName() + &quot; -&gt; count = &quot; + count);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><img src="/images/thread/thread-tongbu.png" alt=""></p>
+<p>如果是正常的顺序,一个线程访问完,下一个线程继续访问,那么结果的数据应该为:<br>0-20的顺序。</p>
+<p>由上面的结果数据可以看出:<br>t1 -&gt; count + 1 之后t1休眠,t2线程开始做加法操作<br><br>t2 -&gt; count + 1 之后t1休眠结束,打印数据,结果为2</p>
+<h2 id="2-同步的实现方式"><a href="#2-同步的实现方式" class="headerlink" title="2 同步的实现方式"></a>2 同步的实现方式</h2><p>通过上面的过程可以看得出来,如果线程是顺序的,那么结果可定不可能是这样的,那么如何解决这种问题,防止多线程并发情况下的数据错乱。主要的采用的是线程同步,用于避免在该线程没有完成操作之前,被其他线程调用。</p>
+<p>实现线程同步的方式一共有四种：</p>
+<pre><code>1 synchronized关键字 
+2 volatile
+3 重入锁实现线程同步
+4 部变量实现线程同步
+</code></pre><h3 id="2-1-synchronized关键字"><a href="#2-1-synchronized关键字" class="headerlink" title="2.1 synchronized关键字"></a>2.1 synchronized关键字</h3><p>synchronized关键字主要是同来进行代码同步,java中每一个对象都有一个内置锁,当用这个关键字修饰方法的时候,内置锁会保护整个方法,在调用该方法前，需要获得内置锁，否则就处于阻塞状态。</p>
+<p>同步是一种高开销的操作，因此应该尽量减少同步的内容。通常没有必要同步整个方法，使用synchronized代码块同步关键代码即可</p>
+<p>synchronized可以修饰方法,同步方法,也可以修饰代码块</p>
+<p>同步方法主要的方式如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">public synchronized void save()&#123;&#125;</div></pre></td></tr></table></figure>
+<p>同步代码块的方式如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">public void save(Object bean)&#123;</div><div class="line">	synchronized(bean)&#123;</div><div class="line">		...</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>synchronized使用的优点：<br>在竞争不是很激烈的并发情况下, synchronized同步的性能更优与其他的同步方案。</p>
+<p>synchronized的缺点：</p>
+<pre><code>1 无法终端一个正在等候获取锁的线程
+2 无法通过投票获取锁
+3 在激烈竞争的时候性能急剧下降
+</code></pre><h3 id="2-2-锁"><a href="#2-2-锁" class="headerlink" title="2.2 锁"></a>2.2 锁</h3><p>采用上面的代码的改版来实现基本的锁，代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">public class Test implements Runnable&#123;</div><div class="line">    private int count = 0;</div><div class="line"></div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">        Test test = new Test();</div><div class="line"></div><div class="line">        Thread t1 = new Thread(test,&quot;t1&quot;);</div><div class="line">        Thread t2 = new Thread(test,&quot;t2&quot;);</div><div class="line">        t1.start();</div><div class="line">        t2.start();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void run() &#123;</div><div class="line">        for(int i=0;i&lt;10;i++)&#123;</div><div class="line">            this.add(1);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void add(Integer i)&#123;</div><div class="line">        synchronized(i)&#123;</div><div class="line">            count += i;</div><div class="line">            System.out.println(Thread.currentThread().getName() + &quot; -&gt; count = &quot; + count);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>由于对象内部都会有一个内置锁,使用关键字synchronized来实现相应的锁,现在采用java中Lock锁。简单的例子如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">public class Test implements Runnable&#123;</div><div class="line">    private int count = 0;</div><div class="line">    private Lock lock = new ReentrantLock();</div><div class="line"></div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">        Test test = new Test();</div><div class="line"></div><div class="line">        Thread t1 = new Thread(test,&quot;t1&quot;);</div><div class="line">        Thread t2 = new Thread(test,&quot;t2&quot;);</div><div class="line">        t1.start();</div><div class="line">        t2.start();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void run() &#123;</div><div class="line">        for(int i=0;i&lt;10;i++)&#123;</div><div class="line">            this.add(1);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void add(int i)&#123;</div><div class="line">        try&#123;</div><div class="line">            lock.lock();</div><div class="line">            count += i;</div><div class="line">            System.out.println(Thread.currentThread().getName() + &quot; -&gt; count = &quot; + count);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;finally&#123;</div><div class="line">            lock.unlock();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>lock.lock() 主要是对lock对象进行加锁,因此所有对该对象调用lock()方法的线程都会被阻塞,直到该Lock对象的unlock()方法被调用。</p>
+<p>Lock代码的简答实现如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">class MyLock&#123;</div><div class="line">        private boolean isLocked = false;</div><div class="line"></div><div class="line">        public synchronized void lock()&#123;</div><div class="line">            while(isLocked)&#123;</div><div class="line">                //阻塞,等待锁</div><div class="line">                wait();</div><div class="line">            &#125;</div><div class="line">            isLocked = true;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        public synchronized void unlock()&#123;</div><div class="line">            isLocked = false;</div><div class="line">            notify();</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>基本上可以看出,当有线程申请锁对象时,isLocked如果为true,则while(isLocked)一直循环,那么它叫做自旋锁,调用lock()方法,线程在wait()方法上阻塞等待,为了防止该线程没有收到notify()调用也从wait()中返回,这个线程会重新去检测isLocked条件已决当前是返回还是继续等待.而不是认为线程被唤醒了,就可以重新运行了。如果isLocked为false,当前线程会退出循环,并取消锁设置,也就是释放锁。</p>
+<p>锁的可重用性：主要是在指当一个线程进入synchronized同步块以后,并因此获得了该同步块使用的同步对象对应的管理上的锁,也就是如果一个同步代码块中,调用了另一个同步代码块,那么将同时获取这两个的锁。</p>
+<p>具体的代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">public class Reentrant&#123;</div><div class="line">	public synchronized outer()&#123;</div><div class="line">		inner();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public synchronized inner()&#123;</div><div class="line">		//do something</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如果采用Lock锁,那么是否有什么问题呢？<br>具体的代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">public class Reentrant2&#123;</div><div class="line">	Lock lock = new Lock();</div><div class="line"></div><div class="line">	public outer()&#123;</div><div class="line">		lock.lock();</div><div class="line">		inner();</div><div class="line">		lock.unlock();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public synchronized inner()&#123;</div><div class="line">		lock.lock();</div><div class="line">		//do something</div><div class="line">		lock.unlock();</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>由于Lock在outer()已经获取到锁了,也就是说lock的isLocked为true,在outer()中调用inner()的时候,又尝试去获取锁,那么这个就出现问题了,因为这个锁已经被占用了(outer()中占用的,没有释放掉),所以线程等待.卡死在这里。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">public class Lock&#123;</div><div class="line">	boolean isLocked = false;</div><div class="line">	Thread  lockedBy = null;</div><div class="line">	int lockedCount = 0;</div><div class="line"></div><div class="line">	public synchronized void lock()</div><div class="line">		throws InterruptedException&#123;</div><div class="line">		Thread callingThread =</div><div class="line">			Thread.currentThread();</div><div class="line">		while(isLocked &amp;&amp; lockedBy != callingThread)&#123;</div><div class="line">			wait();</div><div class="line">		&#125;</div><div class="line">		isLocked = true;</div><div class="line">		lockedCount++;</div><div class="line">		lockedBy = callingThread;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">	public synchronized void unlock()&#123;</div><div class="line">		if(Thread.curentThread() ==</div><div class="line">			this.lockedBy)&#123;</div><div class="line">			lockedCount--;</div><div class="line"></div><div class="line">			if(lockedCount == 0)&#123;</div><div class="line">				isLocked = false;</div><div class="line">				notify();</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="2-3-volatile"><a href="#2-3-volatile" class="headerlink" title="2.3 volatile"></a>2.3 volatile</h3><p>volatile关键字用于修饰变量,主要的作用为:</p>
+<pre><code>1 使用volatile修饰以后,会强制将修改后的值立即写入主存
+2 如果多个线程有缓存volatile修饰的关键字的值,当一个线程修改了改值后,对应线程的缓存数据失效,需要重新从主存中加载
+3 实现变量的修改可见性,但不具备原子特性
+</code></pre><p>下面是一个简单的使用:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">public class Test1 &#123;</div><div class="line"></div><div class="line">    public volatile int inc = 0;</div><div class="line"></div><div class="line">    public void increase() &#123;</div><div class="line">        inc++;</div><div class="line">        System.out.println(inc);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static void main(String[] args) &#123;</div><div class="line">        final Test1 test = new Test1();</div><div class="line">        for(int i=0;i&lt;10;i++)&#123;</div><div class="line">            new Thread()&#123;</div><div class="line">                public void run() &#123;</div><div class="line">                    for(int j=0;j&lt;1000;j++)</div><div class="line">                        test.increase();</div><div class="line">                &#125;</div><div class="line">            &#125;.start();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><img src="/images/thread/thread-volatile.png" alt=""></p>
+<h3 id="2-4-部变量实现线程同步"><a href="#2-4-部变量实现线程同步" class="headerlink" title="2.4 部变量实现线程同步"></a>2.4 部变量实现线程同步</h3><p>如果使用ThreadLocal管理变量，则每一个使用该变量的线程都获得该变量的副本,副本之间相互独立，这样每一个线程都可以随意修改自己的变量副本，而不会对其他线程产生影响。</p>
+<p>ThreadLocal类的常用方法</p>
+<pre><code>ThreadLocal() : 创建一个线程本地变量 
+get() : 返回此线程局部变量的当前线程副本中的值 
+initialValue() : 返回此线程局部变量的当前线程的&quot;初始值&quot; 
+set(T value) : 将此线程局部变量的当前线程副本中的值设置为value
+</code></pre><p>在ThreadLocal的内部是实现的一个简单的ThreadLocalMap用来存储每个线程局部变量的副本,每个线程在使用这个局部变量的时候是想不不影响的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">private ThreadLocal&lt;Integer&gt; param = new ThreadLocal&lt;Integer&gt;()&#123;</div><div class="line">        @Override</div><div class="line">        protected Integer initialValue() &#123;</div><div class="line">            return 10;</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line"></div><div class="line">    public void add(int increase)&#123;</div><div class="line">        param.set(param.get() + increase);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public int get()&#123;</div><div class="line">        return param.get();</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag">#java</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/19/java-nio-study003/" rel="next" title="JavaNIO学习笔记(三) JavaNIO DatagramChannel">
+                <i class="fa fa-chevron-left"></i> JavaNIO学习笔记(三) JavaNIO DatagramChannel
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/07/20/java-nio-study004/" rel="prev" title="JavaNIO学习笔记(四) JavaNIO SocketChannel和ServerSocketChannel">
+                JavaNIO学习笔记(四) JavaNIO SocketChannel和ServerSocketChannel <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+           <!-- 多说热评文章 start -->
+	<div class="ds-top-threads" data-range="daily" data-num-items="5"></div>
+<!-- 多说热评文章 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+
+           <section id="comments">
+   <!-- 多说评论框 start -->
+<div id="ds-thread" class="ds-thread" data-thread-key="<%= post.path %>" data-title="<%= post.title %>" data-url="<%= post.permalink %>"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+  </section>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="孙星" />
+          <p class="site-author-name" itemprop="name">孙星</p>
+          <p class="site-description motion-element" itemprop="description">sunxing's blog | mysql | java | scala | hadoop | spark | kafka | flume</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">65</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-同步的问题"><span class="nav-number">1.</span> <span class="nav-text">1 同步的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-同步的实现方式"><span class="nav-number">2.</span> <span class="nav-text">2 同步的实现方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-synchronized关键字"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 synchronized关键字</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-锁"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-volatile"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 volatile</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-部变量实现线程同步"><span class="nav-number">2.4.</span> <span class="nav-text">2.4 部变量实现线程同步</span></a></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孙星</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"sunxing"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>

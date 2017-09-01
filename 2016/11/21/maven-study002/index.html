@@ -1,0 +1,674 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="maven," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="1 自定义创建maven项目在编辑器中idea中构建maven项目，有截图如下:  那么在构建的时候选择什么archetype?下面开始介绍一下,archetype：  简单的说，Archetype是Maven工程的模板工具包。一个Archetype定义了要做的相同类型事情的初始样式或模型。这个名称给我们提供来了一个一致的生成Maven工程的方式。Archetype会帮助作者给用户创建Maven工">
+<meta name="keywords" content="maven">
+<meta property="og:type" content="article">
+<meta property="og:title" content="maven学习笔记(二) 自定义构建maven项目模板">
+<meta property="og:url" content="http://www.sunxing.cc/2016/11/21/maven-study002/index.html">
+<meta property="og:site_name" content="孙星的个人博客~">
+<meta property="og:description" content="1 自定义创建maven项目在编辑器中idea中构建maven项目，有截图如下:  那么在构建的时候选择什么archetype?下面开始介绍一下,archetype：  简单的说，Archetype是Maven工程的模板工具包。一个Archetype定义了要做的相同类型事情的初始样式或模型。这个名称给我们提供来了一个一致的生成Maven工程的方式。Archetype会帮助作者给用户创建Maven工">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://www.sunxing.cc/images/maven/archetype.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/maven/maven-archetype-simple.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/maven/maven-archetype-my.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/maven/maven-archetype-descriptor.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/maven/maven-archetype-build.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/maven/maven-archetype-build-module.png">
+<meta property="og:updated_time" content="2017-04-30T03:58:25.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="maven学习笔记(二) 自定义构建maven项目模板">
+<meta name="twitter:description" content="1 自定义创建maven项目在编辑器中idea中构建maven项目，有截图如下:  那么在构建的时候选择什么archetype?下面开始介绍一下,archetype：  简单的说，Archetype是Maven工程的模板工具包。一个Archetype定义了要做的相同类型事情的初始样式或模型。这个名称给我们提供来了一个一致的生成Maven工程的方式。Archetype会帮助作者给用户创建Maven工">
+<meta name="twitter:image" content="http://www.sunxing.cc/images/maven/archetype.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+ <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258995301'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/z_stat.php%3Fid%3D1258995301' type='text/javascript'%3E%3C/script%3E"));</script>
+
+  <title> maven学习笔记(二) 自定义构建maven项目模板 | 孙星的个人博客~ </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">孙星的个人博客~</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">搬砖的,码农~</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                maven学习笔记(二) 自定义构建maven项目模板
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-11-21T15:22:46+08:00" content="2016-11-21">
+              2016-11-21
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/maven/" itemprop="url" rel="index">
+                    <span itemprop="name">maven</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/11/21/maven-study002/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/11/21/maven-study002/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="1-自定义创建maven项目"><a href="#1-自定义创建maven项目" class="headerlink" title="1 自定义创建maven项目"></a>1 自定义创建maven项目</h1><p>在编辑器中idea中构建maven项目，有截图如下:</p>
+<p><img src="/images/maven/archetype.png" alt=""></p>
+<p>那么在构建的时候选择什么archetype?下面开始介绍一下,archetype：</p>
+<p><img src="/images/maven/maven-archetype-simple.png" alt=""></p>
+<p>简单的说，Archetype是Maven工程的模板工具包。一个Archetype定义了要做的相同类型事情的初始样式或模型。这个名称给我们提供来了一个一致的生成Maven工程的方式。Archetype会帮助作者给用户创建Maven工程模板，并给用户提供生成相关工程模板版本的参数化方法</p>
+<p>使用Archetype提供的好的方法，是开发者能够使用最佳实践来快速的构建和组织一致化的工程。在Maven工程中，我们努力使用Archetype来尽可能快的给用户提供示例工程，同时也会把Maven的最佳实践介绍给新的用户。一个新的用户可以使用工作中的Maven工作作为跳板来研究更过的Maven中功能。我们也可以使用Archetype的添加机制，这样就意味着允许我们抓取Archetype中项目片段，并把它们添加到既存的工程中。Maven网站的Archetype就是很好的例子。例如，你可以使用“quick start archetype”来生成一个工程，然后就可以通过其中既存的“site archetype”来快速的创建一个网址工程。你能够使用Archetype来做很多这样的事情。</p>
+<p>那么如何构建一个自定义的项目模板？</p>
+<p>构建项目模板其实很简单,<a href="https://maven.apache.org/guides/mini/guide-creating-archetypes.html" target="_blank" rel="external">参考官网</a>,具体的见到介绍如下：</p>
+<h2 id="1-创建文件夹-文件夹中的目录结构如下："><a href="#1-创建文件夹-文件夹中的目录结构如下：" class="headerlink" title="1 创建文件夹,文件夹中的目录结构如下："></a>1 创建文件夹,文件夹中的目录结构如下：</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">myarchetype   --&gt; (文件夹名称)</div><div class="line">|-- pom.xml</div><div class="line">`-- src</div><div class="line">    `-- main</div><div class="line">        `-- resources</div><div class="line">            |-- META-INF</div><div class="line">            |   `-- maven</div><div class="line">            |       `--archetype.xml</div><div class="line">            `-- archetype-resources</div><div class="line">                |-- pom.xml</div><div class="line">                `-- src</div><div class="line">                    |-- main</div><div class="line">                    |   `-- java</div><div class="line">                    |       `-- App.java</div><div class="line">                    `-- test</div><div class="line">                        `-- java</div><div class="line">                            `-- AppTest.java</div></pre></td></tr></table></figure>
+<p>其中在新建文件夹下的pom.xml是用来表示archetype项目的，而archetype-resources文件夹下的pom.xml是用来构建项目模板是初始化新构建项目用到的。因此,如果需要在后期构建项目中添加依赖包等都可以在这个pom.xml中添加。</p>
+<p>具体的每个文件的内容如下：</p>
+<p>myarchetype文件夹下的pom.xml如下：</p>
+<p><img src="/images/maven/maven-archetype-my.png" alt=""></p>
+<p>其中groupId为当前自定义archetype的项目组织唯一的标识符,以及arcifactId(项目的唯一的标识符).版本号等。这个是用来表示我们自定义的archetype(项目模板).</p>
+<p>项目配置好了,那么文件夹src/main/resources/META-INF/maven/archetype.xml是如何配置的呢？</p>
+<p><img src="/images/maven/maven-archetype-descriptor.png" alt=""></p>
+<p>上面截图是官方网站给定的配置,对应的文本内容的配置如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">&lt;archetype xmlns=&quot;http://maven.apache.org/plugins/maven-archetype-plugin/archetype/1.0.0&quot; </div><div class="line">xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</div><div class="line">  xsi:schemaLocation=&quot;http://maven.apache.org/plugins/maven-archetype-plugin/archetype/1.0.0 </div><div class="line">http://maven.apache.org/xsd/archetype-1.0.0.xsd&quot;&gt;</div><div class="line">  &lt;id&gt;quickstart&lt;/id&gt;</div><div class="line">  &lt;sources&gt;</div><div class="line">    &lt;source&gt;src/main/java/App.java&lt;/source&gt;</div><div class="line">  &lt;/sources&gt;</div><div class="line">  &lt;testSources&gt;</div><div class="line">    &lt;source&gt;src/test/java/AppTest.java&lt;/source&gt;</div><div class="line">  &lt;/testSources&gt;</div><div class="line">&lt;/archetype&gt;</div></pre></td></tr></table></figure>
+<p>其实就是指定相应的代码模板类。其中的id要和src目录下pom.xml中的artifactId相对应。</p>
+<p>下面开始配置我通过模板构建出来的项目中pom.xml(src/main/resources/archetype-resources)文件中需要添加哪些依赖和配置。简单的例子如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot; </div><div class="line">	xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</div><div class="line">  xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 </div><div class="line">	http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;</div><div class="line">  &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;</div><div class="line"> </div><div class="line">  &lt;groupId&gt;$&#123;groupId&#125;&lt;/groupId&gt;</div><div class="line">  &lt;artifactId&gt;$&#123;artifactId&#125;&lt;/artifactId&gt;</div><div class="line">  &lt;version&gt;$&#123;version&#125;&lt;/version&gt;</div><div class="line">  &lt;packaging&gt;jar&lt;/packaging&gt;</div><div class="line"> </div><div class="line">  &lt;name&gt;A custom project&lt;/name&gt;</div><div class="line">  &lt;url&gt;http://www.myorganization.org&lt;/url&gt;</div><div class="line"> </div><div class="line">  &lt;dependencies&gt;</div><div class="line">    &lt;dependency&gt;</div><div class="line">      &lt;groupId&gt;junit&lt;/groupId&gt;</div><div class="line">      &lt;artifactId&gt;junit&lt;/artifactId&gt;</div><div class="line">      &lt;version&gt;3.8.1&lt;/version&gt;</div><div class="line">      &lt;scope&gt;test&lt;/scope&gt;</div><div class="line">    &lt;/dependency&gt;</div><div class="line">  &lt;/dependencies&gt;</div><div class="line">&lt;/project&gt;</div></pre></td></tr></table></figure></p>
+<p>上面的就不做说明了，就是加一个junit的单元测试依赖。</p>
+<p>同样的方式去构建src/main/resources/archetype-resources/src/main/java/App.java和src/main/resources/archetype-resources/src/test/java/AppTest.java</p>
+<p>具体的代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">package $&#123;package&#125;;</div><div class="line"></div><div class="line">public class App&#123;</div><div class="line">	</div><div class="line">	public static void main(String[] args)&#123;</div><div class="line">		System.out.println(&quot;test  sunxing&quot;);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>其实基本上是初始化一个简单的测试例子，如果想给别人看下如何用一个接口或则是如何处理其他的事情等，可以通过这种模板的形式来构建。</p>
+<p>上面基本的代码已经搞定了，开始讲代码模板打到本地，使用命令：mvn install</p>
+<p>打到本地以后就可以通过命令来构建新的项目,构建新的项目命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mvn archetype:generate -DarchetypeGroupId=自定义项目模板中对应的groupId -DarchetypeArtifactId=自定义项目模板中artifactId -DarchetypeVersion=自定义项目模板的版本号 -DgroupId=需要构建的项目groupId -DartifactId=需要构建的项目artifactId</div></pre></td></tr></table></figure>
+<p>下面为使用命令构建的项目：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mvn archetype:generate -DarchetypeGroupId=my.groupId -DarchetypeArtifactId=quickstart -DarchetypeVersion=1.0-SNAPSHOT -DgroupId=com.sunx.test.archetype -DartifactId=MyArchetype</div></pre></td></tr></table></figure>
+<p><img src="/images/maven/maven-archetype-build.png" alt=""></p>
+<p>使用idea打开构建好的项目,截图如下：</p>
+<p><img src="/images/maven/maven-archetype-build-module.png" alt=""></p>
+<p>这样就按照一定的项目模板构建好相应的项目了。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/maven/" rel="tag">#maven</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/11/21/maven-study001/" rel="next" title="maven学习笔记(一) windows下安装maven">
+                <i class="fa fa-chevron-left"></i> maven学习笔记(一) windows下安装maven
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/11/21/maven-study003/" rel="prev" title="maven学习笔记(二) maven常用命令">
+                maven学习笔记(二) maven常用命令 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+           <!-- 多说热评文章 start -->
+	<div class="ds-top-threads" data-range="daily" data-num-items="5"></div>
+<!-- 多说热评文章 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+
+           <section id="comments">
+   <!-- 多说评论框 start -->
+<div id="ds-thread" class="ds-thread" data-thread-key="<%= post.path %>" data-title="<%= post.title %>" data-url="<%= post.permalink %>"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+  </section>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="孙星" />
+          <p class="site-author-name" itemprop="name">孙星</p>
+          <p class="site-description motion-element" itemprop="description">sunxing's blog | mysql | java | scala | hadoop | spark | kafka | flume</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">65</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-自定义创建maven项目"><span class="nav-number">1.</span> <span class="nav-text">1 自定义创建maven项目</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-创建文件夹-文件夹中的目录结构如下："><span class="nav-number">1.1.</span> <span class="nav-text">1 创建文件夹,文件夹中的目录结构如下：</span></a></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孙星</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"sunxing"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>

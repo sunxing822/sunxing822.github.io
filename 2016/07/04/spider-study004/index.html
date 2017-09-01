@@ -1,0 +1,652 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="网络爬虫," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="1 常见去重方式我抓取百度新闻首页的内容后,抽取到了很多超链接,那么我的需求肯定不是一个网站,我肯定监控着几十个上百个网站抓取新闻,那么肯定会出现如下情况： a站点收录了一个新闻网页,b站点也收录了这个页面,且url相同。 针对这个情况需要读抓到的链接进行去重,常见的去重方式如下： 1 数据库去重：每次拿url去数据库中验证一次 2 缓存去重：同样的那url去缓存中验证，常见的分布式缓存如redi">
+<meta name="keywords" content="网络爬虫">
+<meta property="og:type" content="article">
+<meta property="og:title" content="网络爬虫学习笔记(四) 数据去重">
+<meta property="og:url" content="http://www.sunxing.cc/2016/07/04/spider-study004/index.html">
+<meta property="og:site_name" content="孙星的个人博客~">
+<meta property="og:description" content="1 常见去重方式我抓取百度新闻首页的内容后,抽取到了很多超链接,那么我的需求肯定不是一个网站,我肯定监控着几十个上百个网站抓取新闻,那么肯定会出现如下情况： a站点收录了一个新闻网页,b站点也收录了这个页面,且url相同。 针对这个情况需要读抓到的链接进行去重,常见的去重方式如下： 1 数据库去重：每次拿url去数据库中验证一次 2 缓存去重：同样的那url去缓存中验证，常见的分布式缓存如redi">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://www.sunxing.cc/images/spider/spider-bulong.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/spider/spider-bulong-2.jpg">
+<meta property="og:updated_time" content="2017-04-30T03:58:25.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="网络爬虫学习笔记(四) 数据去重">
+<meta name="twitter:description" content="1 常见去重方式我抓取百度新闻首页的内容后,抽取到了很多超链接,那么我的需求肯定不是一个网站,我肯定监控着几十个上百个网站抓取新闻,那么肯定会出现如下情况： a站点收录了一个新闻网页,b站点也收录了这个页面,且url相同。 针对这个情况需要读抓到的链接进行去重,常见的去重方式如下： 1 数据库去重：每次拿url去数据库中验证一次 2 缓存去重：同样的那url去缓存中验证，常见的分布式缓存如redi">
+<meta name="twitter:image" content="http://www.sunxing.cc/images/spider/spider-bulong.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+ <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258995301'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/z_stat.php%3Fid%3D1258995301' type='text/javascript'%3E%3C/script%3E"));</script>
+
+  <title> 网络爬虫学习笔记(四) 数据去重 | 孙星的个人博客~ </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">孙星的个人博客~</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">搬砖的,码农~</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                网络爬虫学习笔记(四) 数据去重
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-04T11:55:55+08:00" content="2016-07-04">
+              2016-07-04
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/爬虫/" itemprop="url" rel="index">
+                    <span itemprop="name">爬虫</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/04/spider-study004/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/04/spider-study004/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="1-常见去重方式"><a href="#1-常见去重方式" class="headerlink" title="1 常见去重方式"></a>1 常见去重方式</h2><p>我抓取百度新闻首页的内容后,抽取到了很多超链接,那么我的需求肯定不是一个网站,我肯定监控着几十个上百个网站抓取新闻,那么肯定会出现如下情况：</p>
+<pre><code>a站点收录了一个新闻网页,b站点也收录了这个页面,且url相同。
+</code></pre><p>针对这个情况需要读抓到的链接进行去重,常见的去重方式如下：</p>
+<pre><code>1 数据库去重：每次拿url去数据库中验证一次
+2 缓存去重：同样的那url去缓存中验证，常见的分布式缓存如redis
+</code></pre><p>大都是将历史数据存储起来进行验证的。那么问题来了,采用上面两种的话我需要安装一些额外的工具,比如redis,我还需要安装一台redis,同样的,我还需要去维护这个redis。</p>
+<p>同样的历史数据存储这一块,如果我拿到一个url就直接插入到缓存中,或者是数据库中,那么就会占用大量的存储以及内存资源。简单的方法是简化url，常见的简化方式如下：</p>
+<pre><code>1 加密(如MD5)
+2 设定规则简化(剔除http://,站点表示_页面表示等)
+</code></pre><h2 id="2-布隆过滤去重"><a href="#2-布隆过滤去重" class="headerlink" title="2 布隆过滤去重"></a>2 布隆过滤去重</h2><p>通过上面的方式都可以进行验证,下面介绍另外一种验证方式:布隆过滤器</p>
+<p>布隆过滤器：</p>
+<p><img src="/images/spider/spider-bulong.png" alt=""></p>
+<p>（Bloom Filter）是由布隆（Burton Howard Bloom）在1970年提出的。它实际上是由一个很长的二进制向量和一系列随机映射函数组成，布隆过滤器可以用于检索一个元素是否在一个集合中。它的优点是空间效率和查询时间都远远超过一般的算法，缺点是有一定的误识别率（假正例False positives，即Bloom Filter报告某一元素存在于某集合中，但是实际上该元素并不在集合中）和删除困难，但是没有识别错误的情形（即假反例False negatives，如果某个元素确实没有在该集合中，那么Bloom Filter 是不会报告该元素存在于集合中的，所以不会漏报）。</p>
+<p>假 定我们存储一亿个电子邮件地址，我们先建立一个十六亿二进制（比特），即两亿字节的向量，然后将这十六亿个二进制全部设置为零。对于每一个电子邮件地址 X，我们用八个不同的随机数产生器（F1,F2, …,F8） 产生八个信息指纹（f1, f2, …, f8）。再用一个随机数产生器 G 把这八个信息指纹映射到 1 到十六亿中的八个自然数 g1, g2, …,g8。现在我们把这八个位置的二进制全部设置为一。当我们对这一亿个 email 地址都进行这样的处理后。一个针对这些 email 地址的布隆过滤器就建成了。（见下图）</p>
+<p><img src="/images/spider/spider-bulong-2.jpg" alt=""></p>
+<p>现 在，让我们看看如何用布隆过滤器来检测一个可疑的电子邮件地址 Y 是否在黑名单中。我们用相同的八个随机数产生器（F1, F2, …, F8）对这个地址产生八个信息指纹 s1,s2,…,s8，然后将这八个指纹对应到布隆过滤器的八个二进制位，分别是 t1,t2,…,t8。如果 Y 在黑名单中，显然，t1,t2,..,t8 对应的八个二进制一定是一。这样在遇到任何在黑名单中的电子邮件地址，我们都能准确地发现。</p>
+<h2 id="3-布隆过滤器的代码实现"><a href="#3-布隆过滤器的代码实现" class="headerlink" title="3 布隆过滤器的代码实现"></a>3 布隆过滤器的代码实现</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div></pre></td><td class="code"><pre><div class="line">public class BloomFilter &#123;</div><div class="line">	private static BloomFilter filter = new BloomFilter();</div><div class="line">	</div><div class="line">	// 构造函数</div><div class="line">	private BloomFilter() &#123;</div><div class="line">//		初始化布隆过滤器</div><div class="line">		init();</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	public static BloomFilter getInstance()&#123;</div><div class="line">		return filter;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	// DEFAULT_SIZE为2的28次方</div><div class="line">	private final int DEFAULT_SIZE = 2 &lt;&lt; 28;</div><div class="line">	/* 不同哈希函数的种子，一般应取质数,seeds数据共有7个值，则代表采用8种不同的HASH算法 */</div><div class="line">	private final int[] seeds = new int[] &#123; 5, 7, 11, 13, 31, 37, 61 &#125;;</div><div class="line"></div><div class="line">	// BitSet实际是由“二进制位”构成的一个Vector。假如希望高效率地保存大量“开－关”信息，就应使用BitSet.</div><div class="line">	// BitSet的最小长度是一个长整数（Long）的长度：64位</div><div class="line">	private BitSet bits = new BitSet(DEFAULT_SIZE);</div><div class="line"></div><div class="line">	/* 哈希函数对象 */</div><div class="line">	private SimpleHash[] func = new SimpleHash[seeds.length];</div><div class="line"></div><div class="line">	// 将字符串标记到bits中，即设置字符串的8个hash值函数为1</div><div class="line">	public synchronized void insert(String value) &#123;</div><div class="line">		for (SimpleHash f : func) &#123;</div><div class="line">			bits.set(f.hash(value), true);</div><div class="line">		&#125;</div><div class="line"></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	// 判断字符串是否已经被bits标记</div><div class="line">	public synchronized boolean contains(String value) &#123;</div><div class="line">		// 确保传入的不是空值</div><div class="line">		if (value == null) &#123;</div><div class="line">			return false;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		// 计算7种hash算法下各自对应的hash值，并判断</div><div class="line">		for (SimpleHash f : func) &#123;</div><div class="line">			if (!bits.get(f.hash(value)))</div><div class="line">				return false;</div><div class="line">		&#125;</div><div class="line">		return true;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public void init() &#123;</div><div class="line"></div><div class="line">		for (int i = 0; i &lt; seeds.length; i++) &#123;</div><div class="line">			// 给出所有的hash值，共计seeds.length个hash值。共8位。</div><div class="line">			// 通过调用SimpleHash.hash(),可以得到根据7种hash函数计算得出的hash值。</div><div class="line">			// 传入DEFAULT_SIZE(最终字符串的长度），seeds[i](一个指定的质数)即可得到需要的那个hash值的位置。</div><div class="line">			func[i] = new SimpleHash(DEFAULT_SIZE, seeds[i]);</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		InputStream is = null;</div><div class="line">		BufferedReader br = null;</div><div class="line">		try &#123;</div><div class="line">			is = new FileInputStream(Constant.BLOOM_FILTER_FILE);</div><div class="line">			br = new BufferedReader(new InputStreamReader(is,</div><div class="line">					Constant.CHARSET_UTF8));</div><div class="line">			String line = null;</div><div class="line">			while ((line = br.readLine()) != null) &#123;</div><div class="line">				if (!&quot;&quot;.equals(line)) &#123;</div><div class="line">					insert(line.trim());</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125; catch (FileNotFoundException e) &#123;</div><div class="line">//			布隆配置文件未加载到</div><div class="line">//			需要记录日志</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125; catch (IOException e) &#123;</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125; finally&#123;</div><div class="line">			Common.closeStream(is, null, br, null);</div><div class="line">		&#125;</div><div class="line"></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	/* 哈希函数类 */</div><div class="line">	public static class SimpleHash &#123;</div><div class="line">		// cap为DEFAULT_SIZE的值，即用于结果的最大的字符串长度。</div><div class="line">		// seed为计算hash值的一个给定key，具体对应上面定义的seeds数组</div><div class="line">		private int cap;</div><div class="line">		private int seed;</div><div class="line"></div><div class="line">		public SimpleHash(int cap, int seed) &#123;</div><div class="line">			this.cap = cap;</div><div class="line">			this.seed = seed;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		public int hash(String value) &#123;</div><div class="line">			int result = 0;</div><div class="line">			int len = value.length();</div><div class="line">			for (int i = 0; i &lt; len; i++) &#123;</div><div class="line">				result = seed * result + value.charAt(i);</div><div class="line">			&#125;</div><div class="line">			return (cap - 1) &amp; result;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/网络爬虫/" rel="tag">#网络爬虫</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/03/spider-study003/" rel="next" title="网络爬虫学习笔记(三) 自动抽取算法">
+                <i class="fa fa-chevron-left"></i> 网络爬虫学习笔记(三) 自动抽取算法
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/07/05/spider-study005/" rel="prev" title="网络爬虫学习笔记(五) 爬虫分布式">
+                网络爬虫学习笔记(五) 爬虫分布式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+           <!-- 多说热评文章 start -->
+	<div class="ds-top-threads" data-range="daily" data-num-items="5"></div>
+<!-- 多说热评文章 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+
+           <section id="comments">
+   <!-- 多说评论框 start -->
+<div id="ds-thread" class="ds-thread" data-thread-key="<%= post.path %>" data-title="<%= post.title %>" data-url="<%= post.permalink %>"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+  </section>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="孙星" />
+          <p class="site-author-name" itemprop="name">孙星</p>
+          <p class="site-description motion-element" itemprop="description">sunxing's blog | mysql | java | scala | hadoop | spark | kafka | flume</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">65</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-常见去重方式"><span class="nav-number">1.</span> <span class="nav-text">1 常见去重方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-布隆过滤去重"><span class="nav-number">2.</span> <span class="nav-text">2 布隆过滤去重</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-布隆过滤器的代码实现"><span class="nav-number">3.</span> <span class="nav-text">3 布隆过滤器的代码实现</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孙星</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"sunxing"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>

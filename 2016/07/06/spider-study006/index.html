@@ -1,0 +1,675 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="网络爬虫," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="1 jsoup的基本语法jsoup的语法,截图如下:  中文使用手册地址如下:http://www.open-open.com/jsoup/attributes-text-html.htm 2 jsoup的使用jsoup主要是通过将网页解析成一个dom树结构,在通过相应的语法进行抽取.下面做一下简单的介绍和使用。 简答的例子： 12345678910111213141516171819@org.j">
+<meta name="keywords" content="网络爬虫">
+<meta property="og:type" content="article">
+<meta property="og:title" content="网络爬虫学习笔记(六) jsoup抽取工具简介">
+<meta property="og:url" content="http://www.sunxing.cc/2016/07/06/spider-study006/index.html">
+<meta property="og:site_name" content="孙星的个人博客~">
+<meta property="og:description" content="1 jsoup的基本语法jsoup的语法,截图如下:  中文使用手册地址如下:http://www.open-open.com/jsoup/attributes-text-html.htm 2 jsoup的使用jsoup主要是通过将网页解析成一个dom树结构,在通过相应的语法进行抽取.下面做一下简单的介绍和使用。 简答的例子： 12345678910111213141516171819@org.j">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://www.sunxing.cc/images/jsoup/jsoup-yufa.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/jsoup/jsoup-simple.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/jsoup/jsoup-parse.png">
+<meta property="og:updated_time" content="2017-04-30T03:58:25.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="网络爬虫学习笔记(六) jsoup抽取工具简介">
+<meta name="twitter:description" content="1 jsoup的基本语法jsoup的语法,截图如下:  中文使用手册地址如下:http://www.open-open.com/jsoup/attributes-text-html.htm 2 jsoup的使用jsoup主要是通过将网页解析成一个dom树结构,在通过相应的语法进行抽取.下面做一下简单的介绍和使用。 简答的例子： 12345678910111213141516171819@org.j">
+<meta name="twitter:image" content="http://www.sunxing.cc/images/jsoup/jsoup-yufa.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+ <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258995301'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/z_stat.php%3Fid%3D1258995301' type='text/javascript'%3E%3C/script%3E"));</script>
+
+  <title> 网络爬虫学习笔记(六) jsoup抽取工具简介 | 孙星的个人博客~ </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">孙星的个人博客~</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">搬砖的,码农~</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                网络爬虫学习笔记(六) jsoup抽取工具简介
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-06T11:55:55+08:00" content="2016-07-06">
+              2016-07-06
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/爬虫/" itemprop="url" rel="index">
+                    <span itemprop="name">爬虫</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/06/spider-study006/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/06/spider-study006/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="1-jsoup的基本语法"><a href="#1-jsoup的基本语法" class="headerlink" title="1 jsoup的基本语法"></a>1 jsoup的基本语法</h2><p>jsoup的语法,截图如下:</p>
+<p><img src="/images/jsoup/jsoup-yufa.png" alt=""></p>
+<p>中文使用手册地址如下:<a href="http://www.open-open.com/jsoup/attributes-text-html.htm" target="_blank" rel="external">http://www.open-open.com/jsoup/attributes-text-html.htm</a></p>
+<h2 id="2-jsoup的使用"><a href="#2-jsoup的使用" class="headerlink" title="2 jsoup的使用"></a>2 jsoup的使用</h2><p>jsoup主要是通过将网页解析成一个dom树结构,在通过相应的语法进行抽取.下面做一下简单的介绍和使用。</p>
+<p>简答的例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">@org.junit.Test</div><div class="line">public void test() throws  Exception&#123;</div><div class="line">    String url = &quot;http://news.baidu.com&quot;;</div><div class="line">    String charset = &quot;GB2312&quot;;</div><div class="line"></div><div class="line">    //下载网页</div><div class="line">    String html = DownLoader.down(url,charset);</div><div class="line">    Document doc = Jsoup.parse(html);</div><div class="line"></div><div class="line">    Elements eles = doc.select(&quot;a[href]&quot;);</div><div class="line">    for(Element ele : eles)&#123;</div><div class="line">        String clzz1 = ele.className();</div><div class="line">        String text = ele.text();</div><div class="line">        String href = ele.attr(&quot;href&quot;);</div><div class="line">        String clzz2 = ele.attr(&quot;class&quot;);</div><div class="line"></div><div class="line">        System.out.println(clzz1 + &quot;\t&quot; + text + &quot;\t&quot; + href + &quot;\t&quot; + clzz2);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>Document doc = Jsoup.parse(html); 表示将网页解析为一个Document文档,其内部机理是一个树形结构。</p>
+<p>Elements eles = doc.select(“a[href]”);  表示从文档中抽取出所有的含有href属性值的a标签。返回的是一个集合,Elements继承了ArrayList<element>.</element></p>
+<p>每一个Element表示一个满足上面条件的a标签。</p>
+<h2 id="3-jsoup的简单封装"><a href="#3-jsoup的简单封装" class="headerlink" title="3 jsoup的简单封装"></a>3 jsoup的简单封装</h2><p>下面对jsoup的操作做了一个简单的封装,具体的结构如下:</p>
+<p><img src="/images/jsoup/jsoup-simple.png" alt=""></p>
+<p>ExtractorUtils：主要是通过反射调用的方式去调用相应的方法回去相应的数据。</p>
+<p>Node： 主要是用于抽取的结果集合,支持正则查询,同时可以查看结果集合中的第几个</p>
+<p>Page：表示文档</p>
+<p>具体的代码如下:</p>
+<p>Page：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div></pre></td><td class="code"><pre><div class="line">public class Page &#123;</div><div class="line">	private String html = null;</div><div class="line">	private Document doc = null;</div><div class="line">	private boolean isCanParse = false;</div><div class="line">	/**</div><div class="line">	 * 初始化网页源码为dom树结构</div><div class="line">	 */</div><div class="line">	private void initNode()&#123;</div><div class="line">		try &#123;</div><div class="line">			if(html != null &amp;&amp; html.length() &gt;= 0)&#123;</div><div class="line">				doc = Jsoup.parse(html);</div><div class="line">				isCanParse = true;</div><div class="line">			&#125;else&#123;</div><div class="line">				isCanParse = false;</div><div class="line">			&#125;</div><div class="line">		&#125; catch (Exception e) &#123;</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 抽取集合</div><div class="line">	 * @return</div><div class="line">	 */</div><div class="line">	public Node $(String cssQuery)&#123;</div><div class="line">		Elements eles = doc.select(cssQuery);</div><div class="line">		Node node = new Node();</div><div class="line">		return node.$(eles);</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 抽取网页源码中对应标签的数据</div><div class="line">	 * @param cssQuery</div><div class="line">	 * @param cssQuery</div><div class="line">	 * @return</div><div class="line">	 */</div><div class="line">	public String css(String cssQuery)&#123;</div><div class="line">		return css(cssQuery,&quot;text&quot;,&quot;&quot;);</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 抽取网页源码中对应标签的数据</div><div class="line">	 * @param cssQuery</div><div class="line">	 * @param param</div><div class="line">	 * @return</div><div class="line">	 */</div><div class="line">	public String css(String cssQuery, String param)&#123;</div><div class="line">		return css(cssQuery,&quot;attr&quot;,param);</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 抽取网页源码中对应标签的数据</div><div class="line">	 * @param cssQuery</div><div class="line">	 * @param method</div><div class="line">	 * @param param</div><div class="line">	 * @return</div><div class="line">	 */</div><div class="line">	public String css(String cssQuery, String method, String param)&#123;</div><div class="line">		try &#123;</div><div class="line">			Elements eles = doc.select(cssQuery);</div><div class="line">			if(eles == null || eles.size() &lt;= 0)return null;</div><div class="line">			String result = (String) ExtractorUtils.extractor(eles, method, param);</div><div class="line">			return result;</div><div class="line">		&#125; catch (Exception e) &#123;</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125;</div><div class="line">		return null;</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 抽取根据cssQuery查询到的标签集合中的第i个子标签的文本内容</div><div class="line">	 * @param cssQuery</div><div class="line">	 * @param index</div><div class="line">	 * @return</div><div class="line">	 */</div><div class="line">	public String css(String cssQuery, int index)&#123;</div><div class="line">		return css(cssQuery,index,&quot;text&quot;,&quot;&quot;);</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 抽取根据cssQuery查询到的标签集合中的第i个子标签的文本内容</div><div class="line">	 * @param cssQuery</div><div class="line">	 * @param index</div><div class="line">	 * @param param</div><div class="line">	 * @return</div><div class="line">	 */</div><div class="line">	public String css(String cssQuery, int index, String param)&#123;</div><div class="line">		return css(cssQuery,index,&quot;attr&quot;,param);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	/**</div><div class="line">	 * 最总的根方法</div><div class="line">	 * @param cssQuery</div><div class="line">	 * @param index</div><div class="line">	 * @param method</div><div class="line">	 * @param param</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">	public String css(String cssQuery, int index, String method, String param)&#123;</div><div class="line">		try &#123;</div><div class="line">			Elements eles = doc.select(cssQuery);</div><div class="line">			if(eles == null || eles.size() &lt;= 0)return null;</div><div class="line">			if(index &lt;= 0 || index &gt;= eles.size())return null;</div><div class="line">			Element ele = eles.get(index);</div><div class="line">			if(ele == null || ele.toString().length() &lt;= 0)return null;</div><div class="line">			String result = (String)ExtractorUtils.extractor(ele.getAllElements(), method, param);</div><div class="line">			return result;</div><div class="line">		&#125; catch (Exception e) &#123;</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125;</div><div class="line">		return null;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public String getHtml() &#123;</div><div class="line">		return html;</div><div class="line">	&#125;</div><div class="line">	public Page setHtml(String html) &#123;</div><div class="line">		this.html = html;</div><div class="line">		initNode();</div><div class="line">		return this;</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 判定是否可以进行解析</div><div class="line">	 * @return</div><div class="line">     */</div><div class="line">	public boolean isCanParse()&#123;</div><div class="line">		return this.isCanParse;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>Node：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div><div class="line">205</div><div class="line">206</div><div class="line">207</div><div class="line">208</div><div class="line">209</div><div class="line">210</div><div class="line">211</div><div class="line">212</div><div class="line">213</div><div class="line">214</div><div class="line">215</div><div class="line">216</div><div class="line">217</div><div class="line">218</div><div class="line">219</div><div class="line">220</div><div class="line">221</div><div class="line">222</div><div class="line">223</div><div class="line">224</div><div class="line">225</div><div class="line">226</div><div class="line">227</div><div class="line">228</div><div class="line">229</div><div class="line">230</div><div class="line">231</div><div class="line">232</div><div class="line">233</div><div class="line">234</div><div class="line">235</div><div class="line">236</div><div class="line">237</div><div class="line">238</div><div class="line">239</div><div class="line">240</div><div class="line">241</div><div class="line">242</div><div class="line">243</div><div class="line">244</div><div class="line">245</div><div class="line">246</div><div class="line">247</div><div class="line">248</div><div class="line">249</div><div class="line">250</div><div class="line">251</div><div class="line">252</div><div class="line">253</div><div class="line">254</div><div class="line">255</div><div class="line">256</div><div class="line">257</div><div class="line">258</div><div class="line">259</div><div class="line">260</div><div class="line">261</div><div class="line">262</div><div class="line">263</div><div class="line">264</div><div class="line">265</div><div class="line">266</div><div class="line">267</div><div class="line">268</div><div class="line">269</div><div class="line">270</div><div class="line">271</div><div class="line">272</div></pre></td><td class="code"><pre><div class="line">public class Node implements List&lt;Object&gt; &#123;</div><div class="line">    /**</div><div class="line">     * 存储该标签所有的子标签</div><div class="line">     */</div><div class="line">    private List&lt;Object&gt; list = new ArrayList&lt;Object&gt;();</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 将抽取到的添加到集合中</div><div class="line">     *</div><div class="line">     * @param eles</div><div class="line">     */</div><div class="line">    public Node $(Elements eles) &#123;</div><div class="line">        for (Element ele : eles) &#123;</div><div class="line">            list.add(ele);</div><div class="line">        &#125;</div><div class="line">        return this;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 通过cssQuery查询语句来获取结果集合</div><div class="line">     * 对结果集合中重复的数据在进行解析</div><div class="line">     *</div><div class="line">     * @param index</div><div class="line">     * @param cssQuery</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public Object $(int index, String cssQuery) &#123;</div><div class="line">        if (index &gt;= list.size()) return null;</div><div class="line">        Elements eles = ((Element) list.get(index)).select(cssQuery);</div><div class="line">        if (eles == null) return null;</div><div class="line">        Node domNode = new Node();</div><div class="line">        domNode.$(eles);</div><div class="line">        return domNode;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 获取标签内容</div><div class="line">     *</div><div class="line">     * @param index    对象list集合中的下标</div><div class="line">     * @param cssQuery 查询语句</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public String css(int index, String cssQuery) &#123;</div><div class="line">        return css(index, cssQuery, &quot;text&quot;, &quot;&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 获取标签内容</div><div class="line">     *</div><div class="line">     * @param index    对象list集合中的下标</div><div class="line">     * @param cssQuery 查询语句</div><div class="line">     * @param subIndex css查询结果集合中的下标</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public String css(int index, String cssQuery, int subIndex) &#123;</div><div class="line">        return css(index, cssQuery, subIndex, &quot;text&quot;, &quot;&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 获取属性值</div><div class="line">     *</div><div class="line">     * @param index    对象list集合中的下标</div><div class="line">     * @param cssQuery 查询语句</div><div class="line">     * @param attr     属性名称</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public String css(int index, String cssQuery, String attr) &#123;</div><div class="line">        return css(index, cssQuery, &quot;attr&quot;, attr);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 根据给定的参数获取属性值</div><div class="line">     *</div><div class="line">     * @param index    对象list集合中的下标</div><div class="line">     * @param cssQuery 查询语句</div><div class="line">     * @param attr     属性名称</div><div class="line">     * @param subIndex css查询结果集合中的下标</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public String css(int index, String cssQuery, int subIndex, String attr) &#123;</div><div class="line">        return css(index, cssQuery, subIndex, &quot;attr&quot;, attr);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 获取根据cssQuery查询出来的结果标签</div><div class="line">     * 通过正则抽取其中的特定值</div><div class="line">     *</div><div class="line">     * @param index</div><div class="line">     * @param cssQuery</div><div class="line">     * @param regex</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public String regex(int index, String cssQuery, String regex) &#123;</div><div class="line">        return css(index, cssQuery, &quot;regex&quot;, regex);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 根据给定的下标,cssQuery执行相应的方法和参数</div><div class="line">     * 获取执行的值</div><div class="line">     *</div><div class="line">     * @param index</div><div class="line">     * @param cssQuery</div><div class="line">     * @param method</div><div class="line">     * @param param</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public String css(int index, String cssQuery, String method, String param) &#123;</div><div class="line">        Elements ele = null;</div><div class="line">//		如果查询语句为空,则默认查询的为本标签</div><div class="line">        if (index &gt;= list.size()) return null;</div><div class="line">        Element node = (Element) list.get(index);</div><div class="line">        if (cssQuery == null || &quot;&quot;.equals(cssQuery)) &#123;</div><div class="line">            ele = node.getAllElements();</div><div class="line">        &#125; else &#123;</div><div class="line">            ele = node.select(cssQuery);</div><div class="line">        &#125;</div><div class="line">        if (ele == null || ele.toString().length() &lt;= 0) return null;</div><div class="line">        String result = null;</div><div class="line">        if (&quot;regex&quot;.equals(method)) &#123;</div><div class="line">            result = ExtractorUtils.extractor(ele.html(), param);</div><div class="line">        &#125; else &#123;</div><div class="line">            result = (String) ExtractorUtils.extractor(ele, method, param);</div><div class="line">        &#125;</div><div class="line">        return result;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 通过给定的下标以及cssQuery查询语句</div><div class="line">     * 执行相应的方法获取相应的值</div><div class="line">     *</div><div class="line">     * @param index</div><div class="line">     * @param cssQuery</div><div class="line">     * @param cindex</div><div class="line">     * @param method</div><div class="line">     * @param param</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public String css(int index, String cssQuery, int cindex, String method, String param) &#123;</div><div class="line">        Element ele = null;</div><div class="line">//		如果查询语句为空,则默认查询的为本标签</div><div class="line">        if (index &gt;= list.size()) return null;</div><div class="line">        Element node = (Element) list.get(index);</div><div class="line">        Elements eles = node.select(cssQuery);</div><div class="line">        if (eles == null || eles.size() &lt;= 0) return null;</div><div class="line">        ele = eles.get(cindex);</div><div class="line">        if (ele == null || ele.toString().length() &lt;= 0) return null;</div><div class="line">        String result = null;</div><div class="line">        if (&quot;regex&quot;.equals(method)) &#123;</div><div class="line">            result = ExtractorUtils.extractor(ele.html(), param);</div><div class="line">        &#125; else &#123;</div><div class="line">            result = (String) ExtractorUtils.extractor(ele.getAllElements(), method, param);</div><div class="line">        &#125;</div><div class="line">        return result;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 判断满足cssQuery查询语句的标签是否存在</div><div class="line">     * 存在：返回1</div><div class="line">     * 不存在：返回0</div><div class="line">     *</div><div class="line">     * @param index</div><div class="line">     * @param cssQuery</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public int isExit(int index, String cssQuery) &#123;</div><div class="line">        Elements ele = ((Element) list.get(index)).select(cssQuery);</div><div class="line">        if (ele != null &amp;&amp; ele.size() &gt; 0) return 1;</div><div class="line">        return 0;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 获取某个节点的网页源码</div><div class="line">     * @param index</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public String getSrc(int index)&#123;</div><div class="line">        Element ele = ((Element) list.get(index));</div><div class="line">        return ele.html();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public int size() &#123;</div><div class="line">        return list.size();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public boolean isEmpty() &#123;</div><div class="line">        return list.isEmpty();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public boolean contains(Object o) &#123;</div><div class="line">        return list.contains(o);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public Iterator&lt;Object&gt; iterator() &#123;</div><div class="line">        return list.iterator();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public Object[] toArray() &#123;</div><div class="line">        return list.toArray();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public &lt;T&gt; T[] toArray(T[] a) &#123;</div><div class="line">        return list.toArray(a);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public boolean add(Object e) &#123;</div><div class="line">        return list.add(e);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public boolean remove(Object o) &#123;</div><div class="line">        return list.remove(o);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public boolean containsAll(Collection&lt;?&gt; c) &#123;</div><div class="line">        return list.containsAll(c);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public boolean addAll(Collection&lt;? extends Object&gt; c) &#123;</div><div class="line">        return list.addAll(c);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public boolean addAll(int index, Collection&lt;? extends Object&gt; c) &#123;</div><div class="line">        return list.addAll(index, c);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public boolean removeAll(Collection&lt;?&gt; c) &#123;</div><div class="line">        return list.removeAll(c);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public boolean retainAll(Collection&lt;?&gt; c) &#123;</div><div class="line">        return list.retainAll(c);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void clear() &#123;</div><div class="line">        list.clear();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public Object get(int index) &#123;</div><div class="line">        return list.get(index);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public Object set(int index, Object element) &#123;</div><div class="line">        return list.set(index, element);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void add(int index, Object element) &#123;</div><div class="line">        list.add(index, element);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public Object remove(int index) &#123;</div><div class="line">        return list.remove(index);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public int indexOf(Object o) &#123;</div><div class="line">        return list.indexOf(o);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public int lastIndexOf(Object o) &#123;</div><div class="line">        return list.lastIndexOf(o);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public ListIterator&lt;Object&gt; listIterator() &#123;</div><div class="line">        return list.listIterator();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public ListIterator&lt;Object&gt; listIterator(int index) &#123;</div><div class="line">        return list.listIterator(index);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public List&lt;Object&gt; subList(int fromIndex, int toIndex) &#123;</div><div class="line">        return list.subList(fromIndex, toIndex);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>ExtractorUtils:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">public class ExtractorUtils &#123;</div><div class="line">	public static Object extractor(Elements ele, String method, String key)&#123;</div><div class="line">		Method func = null;</div><div class="line">		try &#123;</div><div class="line">			if(key == null || &quot;&quot;.equals(key))&#123;</div><div class="line">				func = ele.getClass().getDeclaredMethod(method);</div><div class="line">				return func.invoke(ele);</div><div class="line">			&#125;else&#123;</div><div class="line">				func = ele.getClass().getDeclaredMethod(method,String.class);</div><div class="line">				return func.invoke(ele, key);</div><div class="line">			&#125;</div><div class="line">		&#125; catch (SecurityException e) &#123;</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125; catch (NoSuchMethodException e) &#123;</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125; catch (IllegalArgumentException e) &#123;</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125; catch (IllegalAccessException e) &#123;</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125; catch (InvocationTargetException e) &#123;</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125;</div><div class="line">		return null;</div><div class="line">	&#125;</div><div class="line">	public static String extractor(String dom,String regex)&#123;</div><div class="line">		if(dom == null || &quot;&quot;.equals(dom))return null;</div><div class="line">		Pattern p = Pattern.compile(regex);</div><div class="line">		Matcher m = p.matcher(dom.trim());</div><div class="line">		if(m.find())return m.group(1);</div><div class="line">		return null;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="4-jsoup的原理"><a href="#4-jsoup的原理" class="headerlink" title="4 jsoup的原理"></a>4 jsoup的原理</h2><h3 id="4-1-jsoup的源码"><a href="#4-1-jsoup的源码" class="headerlink" title="4.1 jsoup的源码"></a>4.1 jsoup的源码</h3><p>jsoup源码中的解析主要代码如下:</p>
+<p>com.sun.jsoup.parser.TreeBuilder</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">protected void runParser() &#123;</div><div class="line">    while (true) &#123;</div><div class="line">        Token token = tokeniser.read();</div><div class="line">        process(token);</div><div class="line"></div><div class="line">        if (token.type == Token.TokenType.EOF)</div><div class="line">            break;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>读取的过程主要是tokeniser读取一个单词,state.read(this,reader);这个过程是一个状态转移过程,其中第一个为状态码,状态吗对应的值为:TokeniserState.Data. 下面代码为read方法和Tokeniser中实例变量。</p>
+<p>com.sun.jsoup.parser.Tokeniser</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line">static final char replacementChar = &apos;\uFFFD&apos;; // replaces null character</div><div class="line"></div><div class="line">   private CharacterReader reader; // html input</div><div class="line">   private ParseErrorList errors; // errors found while tokenising</div><div class="line"></div><div class="line">   private TokeniserState state = TokeniserState.Data; // current tokenisation state</div><div class="line">   private Token emitPending; // the token we are about to emit on next read</div><div class="line">   private boolean isEmitPending = false;</div><div class="line">   private StringBuilder charBuffer = new StringBuilder(); // buffers characters to output as one token</div><div class="line">   StringBuilder dataBuffer; // buffers data looking for &lt;/script&gt;</div><div class="line"></div><div class="line">   Token.Tag tagPending; // tag we are building up</div><div class="line">   Token.Doctype doctypePending; // doctype building up</div><div class="line">   Token.Comment commentPending; // comment building up</div><div class="line">   private Token.StartTag lastStartTag; // the last start tag emitted, to test appropriate end tag</div><div class="line">   private boolean selfClosingFlagAcknowledged = true;</div><div class="line"></div><div class="line">   Token read() &#123;</div><div class="line">       if (!selfClosingFlagAcknowledged) &#123;</div><div class="line">           error(&quot;Self closing flag not acknowledged&quot;);</div><div class="line">           selfClosingFlagAcknowledged = true;</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       while (!isEmitPending)</div><div class="line">           state.read(this, reader);</div><div class="line"></div><div class="line">       // if emit is pending, a non-character token was found: return any chars in buffer, and leave token for next read:</div><div class="line">       if (charBuffer.length() &gt; 0) &#123;</div><div class="line">           String str = charBuffer.toString();</div><div class="line">           charBuffer.delete(0, charBuffer.length());</div><div class="line">           return new Token.Character(str);</div><div class="line">       &#125; else &#123;</div><div class="line">           isEmitPending = false;</div><div class="line">           return emitPending;</div><div class="line">       &#125;</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<p>状态转移在jsoup中使用的是枚举类型来实现的,通过上面的可以看到,第一次解析网页为dom树的时候是Data类型,在枚举类：com.sun.jsoup.parser.TokeniserState 中Data状态对应的代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">Data &#123;</div><div class="line">       // in data state, gather characters until a character reference or tag is found</div><div class="line">       void read(Tokeniser t, CharacterReader r) &#123;</div><div class="line">           switch (r.current()) &#123;</div><div class="line">               case &apos;&amp;&apos;:</div><div class="line">                   t.advanceTransition(CharacterReferenceInData);</div><div class="line">                   break;</div><div class="line">               case &apos;&lt;&apos;:</div><div class="line">                   t.advanceTransition(TagOpen);</div><div class="line">                   break;</div><div class="line">               case nullChar:</div><div class="line">                   t.error(this); // NOT replacement character (oddly?)</div><div class="line">                   t.emit(r.consume());</div><div class="line">                   break;</div><div class="line">               case eof:</div><div class="line">                   t.emit(new Token.EOF());</div><div class="line">                   break;</div><div class="line">               default:</div><div class="line">                   String data = r.consumeToAny(&apos;&amp;&apos;, &apos;&lt;&apos;, nullChar);</div><div class="line">                   t.emit(data);</div><div class="line">                   break;</div><div class="line">           &#125;</div><div class="line">       &#125;</div><div class="line">   &#125;,</div></pre></td></tr></table></figure>
+<p>通过上面的整个过程可以看到通过不同的条件,跳转到不同的状态中执行不同的代码.比如获取tageName的代码如下:</p>
+<p><img src="/images/jsoup/jsoup-parse.png" alt=""></p>
+<p>上面这些都是读取数据,同样的构建树形结构是通过类:com.sun.jsoup.parser.HtmlTreeBuilder. 这个地方也是通过状态转移比较的方式来构建属性结果,封装节点。</p>
+<p>代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">protected boolean process(Token token) &#123;</div><div class="line">    currentToken = token;</div><div class="line">    return this.state.process(token, this);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>状态类为:com.sun.jsoup.parser.HtmlTreeBuilderState,初始状态的代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">Initial &#123;</div><div class="line">        boolean process(Token t, HtmlTreeBuilder tb) &#123;</div><div class="line">            if (isWhitespace(t)) &#123;</div><div class="line">                return true; // ignore whitespace</div><div class="line">            &#125; else if (t.isComment()) &#123;</div><div class="line">                tb.insert(t.asComment());</div><div class="line">            &#125; else if (t.isDoctype()) &#123;</div><div class="line">                // todo: parse error check on expected doctypes</div><div class="line">                // todo: quirk state check on doctype ids</div><div class="line">                Token.Doctype d = t.asDoctype();</div><div class="line">                DocumentType doctype = new DocumentType(d.getName(), d.getPublicIdentifier(), d.getSystemIdentifier(), tb.getBaseUri());</div><div class="line">                tb.getDocument().appendChild(doctype);</div><div class="line">                if (d.isForceQuirks())</div><div class="line">                    tb.getDocument().quirksMode(Document.QuirksMode.quirks);</div><div class="line">                tb.transition(BeforeHtml);</div><div class="line">            &#125; else &#123;</div><div class="line">                // todo: check not iframe srcdoc</div><div class="line">                tb.transition(BeforeHtml);</div><div class="line">                return tb.process(t); // re-process token</div><div class="line">            &#125;</div><div class="line">            return true;</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>有限状态机:（英语：finite-state machine，缩写：FSM）又称有限状态自动机，简称状态机，是表示有限个状态以及在这些状态之间的转移和动作等行为的数学模型。</p>
+<h3 id="4-2-jsoup的查询"><a href="#4-2-jsoup的查询" class="headerlink" title="4.2 jsoup的查询"></a>4.2 jsoup的查询</h3><p>jsoup的查询抽取主要是通过解析过程从dom树中读取数据,主要的代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * Parse the query</div><div class="line"> * @return Evaluator</div><div class="line"> */</div><div class="line">Evaluator parse() &#123;</div><div class="line">    tq.consumeWhitespace();</div><div class="line"></div><div class="line">    if (tq.matchesAny(combinators)) &#123; // if starts with a combinator, use root as elements</div><div class="line">        evals.add(new StructuralEvaluator.Root());</div><div class="line">        combinator(tq.consume());</div><div class="line">    &#125; else &#123;</div><div class="line">        findElements();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    while (!tq.isEmpty()) &#123;</div><div class="line">        // hierarchy and extras</div><div class="line">        boolean seenWhite = tq.consumeWhitespace();</div><div class="line"></div><div class="line">        if (tq.matchesAny(combinators)) &#123;</div><div class="line">            combinator(tq.consume());</div><div class="line">        &#125; else if (seenWhite) &#123;</div><div class="line">            combinator(&apos; &apos;);</div><div class="line">        &#125; else &#123; // E.class, E#id, E[attr] etc. AND</div><div class="line">            findElements(); // take next el, #. etc off queue</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    if (evals.size() == 1)</div><div class="line">        return evals.get(0);</div><div class="line"></div><div class="line">    return new CombiningEvaluator.And(evals);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/网络爬虫/" rel="tag">#网络爬虫</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/05/spider-study005/" rel="next" title="网络爬虫学习笔记(五) 爬虫分布式">
+                <i class="fa fa-chevron-left"></i> 网络爬虫学习笔记(五) 爬虫分布式
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/07/07/spider-study007/" rel="prev" title="网络爬虫学习笔记(七) httpclient的使用">
+                网络爬虫学习笔记(七) httpclient的使用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+           <!-- 多说热评文章 start -->
+	<div class="ds-top-threads" data-range="daily" data-num-items="5"></div>
+<!-- 多说热评文章 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+
+           <section id="comments">
+   <!-- 多说评论框 start -->
+<div id="ds-thread" class="ds-thread" data-thread-key="<%= post.path %>" data-title="<%= post.title %>" data-url="<%= post.permalink %>"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+  </section>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="孙星" />
+          <p class="site-author-name" itemprop="name">孙星</p>
+          <p class="site-description motion-element" itemprop="description">sunxing's blog | mysql | java | scala | hadoop | spark | kafka | flume</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">65</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-jsoup的基本语法"><span class="nav-number">1.</span> <span class="nav-text">1 jsoup的基本语法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-jsoup的使用"><span class="nav-number">2.</span> <span class="nav-text">2 jsoup的使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-jsoup的简单封装"><span class="nav-number">3.</span> <span class="nav-text">3 jsoup的简单封装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-jsoup的原理"><span class="nav-number">4.</span> <span class="nav-text">4 jsoup的原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-jsoup的源码"><span class="nav-number">4.1.</span> <span class="nav-text">4.1 jsoup的源码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-jsoup的查询"><span class="nav-number">4.2.</span> <span class="nav-text">4.2 jsoup的查询</span></a></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孙星</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"sunxing"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>

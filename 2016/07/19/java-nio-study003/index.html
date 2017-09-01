@@ -1,0 +1,703 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="java,NIO," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="1 TCPTCP（Transmission Control Protocol，传输控制协议）是面向连接的协议，也就是说，在收发数据前，必须和对方建立可靠的连接。 TCP协议是面向连接、保证高可靠性(数据无丢失、数据无失序、数据无错误、数据无重复到达)传输层协议。 1.1 tcp报文格式tcp的报文首部格式如下:  其中主要部分解释如下: Source Port： 是源端口,16位。在操作系统层面主">
+<meta name="keywords" content="java,NIO">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaNIO学习笔记(三) JavaNIO DatagramChannel">
+<meta property="og:url" content="http://www.sunxing.cc/2016/07/19/java-nio-study003/index.html">
+<meta property="og:site_name" content="孙星的个人博客~">
+<meta property="og:description" content="1 TCPTCP（Transmission Control Protocol，传输控制协议）是面向连接的协议，也就是说，在收发数据前，必须和对方建立可靠的连接。 TCP协议是面向连接、保证高可靠性(数据无丢失、数据无失序、数据无错误、数据无重复到达)传输层协议。 1.1 tcp报文格式tcp的报文首部格式如下:  其中主要部分解释如下: Source Port： 是源端口,16位。在操作系统层面主">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://www.sunxing.cc/images/io/nio-tcp-header.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/io/nio-tcp-link.jpg">
+<meta property="og:image" content="http://www.sunxing.cc/images/io/nio-tcp-link-close.jpg">
+<meta property="og:image" content="http://www.sunxing.cc/images/io/nio-udp-header.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/io/nio-socket-link.jpg">
+<meta property="og:image" content="http://www.sunxing.cc/images/io/datagramchannel-server-console.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/io/datagramchannel-client-console.png">
+<meta property="og:updated_time" content="2017-04-30T03:58:25.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JavaNIO学习笔记(三) JavaNIO DatagramChannel">
+<meta name="twitter:description" content="1 TCPTCP（Transmission Control Protocol，传输控制协议）是面向连接的协议，也就是说，在收发数据前，必须和对方建立可靠的连接。 TCP协议是面向连接、保证高可靠性(数据无丢失、数据无失序、数据无错误、数据无重复到达)传输层协议。 1.1 tcp报文格式tcp的报文首部格式如下:  其中主要部分解释如下: Source Port： 是源端口,16位。在操作系统层面主">
+<meta name="twitter:image" content="http://www.sunxing.cc/images/io/nio-tcp-header.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+ <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258995301'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/z_stat.php%3Fid%3D1258995301' type='text/javascript'%3E%3C/script%3E"));</script>
+
+  <title> JavaNIO学习笔记(三) JavaNIO DatagramChannel | 孙星的个人博客~ </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">孙星的个人博客~</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">搬砖的,码农~</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                JavaNIO学习笔记(三) JavaNIO DatagramChannel
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-19T09:57:55+08:00" content="2016-07-19">
+              2016-07-19
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/19/java-nio-study003/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/19/java-nio-study003/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="1-TCP"><a href="#1-TCP" class="headerlink" title="1 TCP"></a>1 TCP</h2><p>TCP（Transmission Control Protocol，传输控制协议）是面向连接的协议，也就是说，在收发数据前，必须和对方建立可靠的连接。</p>
+<p>TCP协议是面向连接、保证高可靠性(数据无丢失、数据无失序、数据无错误、数据无重复到达)传输层协议。</p>
+<h3 id="1-1-tcp报文格式"><a href="#1-1-tcp报文格式" class="headerlink" title="1.1 tcp报文格式"></a>1.1 tcp报文格式</h3><p>tcp的报文首部格式如下:</p>
+<p><img src="/images/io/nio-tcp-header.png" alt=""></p>
+<p>其中主要部分解释如下:</p>
+<p>Source Port： 是源端口,16位。在操作系统层面主机与主机之间的通信是通过端口来实现数据传输的,也就是a主机将数据从某个端口发出,发送到目标主机的某个端口,每个端口会有相应的进程监控。</p>
+<p>Destination Port：目标端口,16位</p>
+<p>Sequence Number：32位,发送序号</p>
+<p>Acknowledgment Number: 确认序号</p>
+<p>发送序号：用来标识从 TCP源端向 TCP目的端发送的数据字节流，它表示在这个报文段中的第一个数据字节的顺序号。如果将字节流看作在两个应用程序间的单向流动，则 TCP用顺序号对每个字节进行计数。序号是 32bit的无符号数，序号到达 2  32－ 1后又从 0开始。当建立一个新的连接时， SYN标志变 1，顺序号字段包含由这个主机选择的该连接的初始顺序号 ISN（ Initial Sequence Number）。</p>
+<p>确认序号：包含发送确认的一端所期望收到的下一个顺序号。因此，确认序号应当是上次已成功收到数据字节顺序号加 1。只有 ACK标志为 1时确认序号字段才有效。 TCP为应用层提供全双工服务，这意味数据能在两个方向上独立地进行传输。因此，连接的每一端必须保持每个方向上的传输数据顺序号</p>
+<p>offset ： 偏移量,实际指的是TCP首部的长度，它用来表明TCP首部中32 bit字的数目，通过它可以知道一个TCP包它的用户数据是从哪里开始的。这个字段占4bit,如4bit的值是0101,则说明TCP首部长度是5 <em> 4 = 20字节。 所以TCP的首部长度最大为15 </em> 4 = 60字节。然而没有可选字段，正常长度为20字节。</p>
+<p>Reserved： 6位,暂时没有使用。</p>
+<p>TCP flag : 在TCP首部中有6个标志比特。他们中的多个可同时被置为1 。</p>
+<pre><code>URG         紧急指针(urgent pointer)有效
+ACK         确认序号有效
+PSH         指示接收方应该尽快将这个报文段交给应用层而不用等待缓冲区装满
+RST         一般表示断开一个连接
+SYN         同步序号用来发起一个连接
+FIN         发送端完成发送任务(即断开连接)
+</code></pre><p>Checksum是校验和，16位</p>
+<p>Urgent Pointers是紧急指针，16位，只有URG标志位被设置时该字段才有意义，表示紧急数据相对序列号（Sequence Number字段的值）的偏移</p>
+<h3 id="1-2-链接简历"><a href="#1-2-链接简历" class="headerlink" title="1.2 链接简历"></a>1.2 链接简历</h3><p>TCP三次握手的过程如下：</p>
+<pre><code>1 客户端发送SYN（SEQ=x）报文给服务器端，进入SYN_SEND状态。
+2 服务器端收到SYN报文，回应一个SYN （SEQ=y）ACK(ACK=x+1）报文，进入SYN_RECV状态。
+3 客户端收到服务器端的SYN报文，回应一个ACK(ACK=y+1）报文，进入Established状态。
+</code></pre><p><img src="/images/io/nio-tcp-link.jpg" alt=""></p>
+<p>三次握手完成，TCP客户端和服务器端成功地建立连接，可以开始传输数据了</p>
+<h3 id="1-3-链接的关闭"><a href="#1-3-链接的关闭" class="headerlink" title="1.3 链接的关闭"></a>1.3 链接的关闭</h3><p>a.现在的网络通信都是基于socket实现的，当客户端将自己的socket进行关闭时，内核协议栈会向服务器自动发送一个FIN置位的包，请求断开连接。我们称首先发起断开请求的一方称为主动断开方。</p>
+<p>b.服务器端收到请客端的FIN断开请求后，内核协议栈会立即发送一个ACK包作为应答，表示已经收到客户端的请求</p>
+<p>c.服务器运行一段时间后，关闭了自己的socket。这个时候内核协议栈会向客户端发送一个FIN置位的包，请求断开连接</p>
+<p>d.客户端收到服务端发来的FIN断开请求后，会发送一个ACK做出应答，表示已经收到服务端的请求</p>
+<p><img src="/images/io/nio-tcp-link-close.jpg" alt=""></p>
+<p>部分内容摘抄于：<a href="http://blog.chinaunix.net/uid-26833883-id-3627644.html" target="_blank" rel="external">http://blog.chinaunix.net/uid-26833883-id-3627644.html</a></p>
+<h2 id="2-UDP"><a href="#2-UDP" class="headerlink" title="2 UDP"></a>2 UDP</h2><p>UDP（User Data Protocol，用户数据报协议）,UDP协议也是传输层协议，它是无连接，不保证可靠的传输层协议。它的协议头比较简单</p>
+<p><img src="/images/io/nio-udp-header.png" alt=""></p>
+<pre><code>(1) UDP是一个非连接的协议，传输数据之前源端和终端不建立连接，当它想传送时就简单地去抓取来自应用程序的数据，并尽可能快地把它扔到网络上。在发送端，UDP传送数据的速度仅仅是受应用程序生成数据的速度、计算机的能力和传输带宽的限制；在接收端，UDP把每个消息段放在队列中，应用程序每次从队列中读一个消息段。
+(2) 由于传输数据不建立连接，因此也就不需要维护连接状态，包括收发状态等，因此一台服务机可同时向多个客户机传输相同的消息。
+(3) UDP信息包的标题很短，只有8个字节，相对于TCP的20个字节信息包的额外开销很小。
+(4) 吞吐量不受拥挤控制算法的调节，只受应用软件生成数据的速率、传输带宽、源端和终端主机性能的限制。
+(5) UDP使用尽最大努力交付，即不保证可靠交付，因此主机不需要维持复杂的链接状态表（这里面有许多参数）。
+(6) UDP是面向报文的。发送方的UDP对应用程序交下来的报文，在添加首部后就向下交付给IP层。既不拆分，也不合并，而是保留这些报文的边界，因此，应用程序需要选择合适的报文大小
+</code></pre><p>TCP与UDP的区别：</p>
+<pre><code>1.基于连接与无连接；
+2.对系统资源的要求（TCP较多，UDP少）；
+3.UDP程序结构较简单；
+4.流模式与数据报模式 ；
+5.TCP保证数据正确性，UDP可能丢包，TCP保证数据顺序，UDP不保证
+</code></pre><h2 id="3-socket"><a href="#3-socket" class="headerlink" title="3 socket"></a>3 socket</h2><p>网络上的两个程序通过一个双向的通信连接实现数据的交换，这个连接的一端称为一个socket。</p>
+<p>socket的通信模式如下：</p>
+<p><img src="/images/io/nio-socket-link.jpg" alt=""></p>
+<h2 id="4-DatagramChannel"><a href="#4-DatagramChannel" class="headerlink" title="4 DatagramChannel"></a>4 DatagramChannel</h2><p>Java NIO中的DatagramChannel是一个能收发UDP包的通道。因为UDP是无连接的网络协议，所以不能像其它通道那样读取和写入。它发送和接收的是数据包.</p>
+<p>下面介绍基于DatagramChannel实现的基本的服务端和客户端之间的通信操作,具体的代码如下:</p>
+<p>服务端:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div></pre></td><td class="code"><pre><div class="line">public class Server &#123;</div><div class="line">    //选择器</div><div class="line">    private Selector selector = null;</div><div class="line">    //管道</div><div class="line">    private DatagramChannel channel = null;</div><div class="line">    //服务端的端口</div><div class="line">    private int port;</div><div class="line">    //超时时间</div><div class="line">    private long TIME_OUT = 3000;</div><div class="line">    //缓存的最大大小</div><div class="line">    private int MAX_BUFFER_SIZE = 4096;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 构造函数初始化</div><div class="line">     * @param port</div><div class="line">     */</div><div class="line">    public Server(int port)&#123;</div><div class="line">        this.port = port;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 初始化数据</div><div class="line">     */</div><div class="line">    public Server init()&#123;</div><div class="line">        try&#123;</div><div class="line">            selector = Selector.open();</div><div class="line">            channel = DatagramChannel.open();</div><div class="line">            channel.socket().bind(new InetSocketAddress(port));</div><div class="line">            channel.configureBlocking(false);</div><div class="line">            channel.register(selector, SelectionKey.OP_READ,new IoSession());</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        return this;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 开始准备客户端的链接</div><div class="line">     */</div><div class="line">    public void start()&#123;</div><div class="line">        while(true)&#123;</div><div class="line">            try&#123;</div><div class="line">                //监听是否有链接请求过来</div><div class="line">                if(selector.select(TIME_OUT) == 0)&#123;</div><div class="line">                    System.out.print(&quot;.&quot;);</div><div class="line">                    continue;</div><div class="line">                &#125;</div><div class="line">                //遍历数据</div><div class="line">                Iterator&lt;SelectionKey&gt; it = selector.selectedKeys().iterator();</div><div class="line">                while(it.hasNext())&#123;</div><div class="line">                    SelectionKey key = it.next();</div><div class="line"></div><div class="line">                    if(key.isReadable())&#123;</div><div class="line">                        handlerReader(key);</div><div class="line">                    &#125;</div><div class="line">                    if(key.isValid() &amp;&amp; key.isWritable())&#123;</div><div class="line">                        handlerWriter(key);</div><div class="line">                    &#125;</div><div class="line">                    it.remove();</div><div class="line">                &#125;</div><div class="line">            &#125;catch (Exception e)&#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 处理读取数据情况</div><div class="line">     * @param key</div><div class="line">     */</div><div class="line">    public void handlerReader(SelectionKey key)&#123;</div><div class="line">        try&#123;</div><div class="line">            DatagramChannel channel = (DatagramChannel) key.channel();</div><div class="line">            IoSession session = (IoSession)key.attachment();</div><div class="line">            session.buffer.clear();</div><div class="line">            session.socket = (InetSocketAddress)channel.receive(session.buffer);</div><div class="line">            //如果从客户端中接收到相应的数据,那么久进行数据打印</div><div class="line">            if(session.socket != null)&#123;</div><div class="line">                //打印缓冲区的数据</div><div class="line">                System.out.println(session.toString());</div><div class="line">                //将该管道注册到选择器上,并更改为可写状态</div><div class="line">                key.interestOps(SelectionKey.OP_WRITE);</div><div class="line">            &#125;</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 处理写操作</div><div class="line">     * @param key</div><div class="line">     */</div><div class="line">    public void handlerWriter(SelectionKey key)&#123;</div><div class="line">        try&#123;</div><div class="line">            DatagramChannel channel = (DatagramChannel) key.channel();</div><div class="line">            IoSession session = (IoSession)key.attachment();</div><div class="line">            //重置缓冲区,等待写入</div><div class="line">            session.clean();</div><div class="line">            session.buffer.put(&quot;server send data to client&quot;.getBytes());</div><div class="line">            session.buffer.flip();</div><div class="line">            //服务端想客户端写入数据</div><div class="line">            int cnt = channel.send(session.buffer,session.socket);</div><div class="line">            //如果从客户端中接收到相应的数据,那么久进行数据打印</div><div class="line">            if(cnt != 0)&#123;</div><div class="line">                //打印缓冲区的数据</div><div class="line">                // 将该管道注册到选择器上,并更改为读写状态</div><div class="line">                key.interestOps(SelectionKey.OP_READ);</div><div class="line">            &#125;</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 链接对象话缓冲区</div><div class="line">     */</div><div class="line">    public class IoSession&#123;</div><div class="line">        private InetSocketAddress socket = null;</div><div class="line">        private ByteBuffer buffer = ByteBuffer.allocate(MAX_BUFFER_SIZE);</div><div class="line"></div><div class="line">        public InetSocketAddress getSocket() &#123;</div><div class="line">            return socket;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        public IoSession setSocket(InetSocketAddress socket) &#123;</div><div class="line">            this.socket = socket;</div><div class="line">            return this;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        public ByteBuffer getBuffer() &#123;</div><div class="line">            return buffer;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        public IoSession setBuffer(ByteBuffer buffer) &#123;</div><div class="line">            this.buffer = buffer;</div><div class="line">            return this;</div><div class="line">        &#125;</div><div class="line">        public IoSession clean()&#123;</div><div class="line">            buffer.clear();</div><div class="line">            return this;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        public String toString()&#123;</div><div class="line">            try&#123;</div><div class="line">                return new String(buffer.array(),&quot;UTF-8&quot;);</div><div class="line">            &#125;catch (Exception e)&#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125;</div><div class="line">            return null;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">        new Server(9999).init().start();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>客户端如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div></pre></td><td class="code"><pre><div class="line">public class Client &#123;</div><div class="line">    //服务端的ip和端口</div><div class="line">    private String ip = null;</div><div class="line">    private int port = 9999;</div><div class="line">    //管道</div><div class="line">    private DatagramChannel channel = null;</div><div class="line">    //缓冲区</div><div class="line">    private ByteBuffer buffer = null;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 初始化参数</div><div class="line">     * @param ip</div><div class="line">     * @param port</div><div class="line">     */</div><div class="line">    public Client(String ip,int port)&#123;</div><div class="line">        this.ip = ip;</div><div class="line">        this.port = port;</div><div class="line">    &#125;</div><div class="line">    /**</div><div class="line">     * 初始化</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public Client init()&#123;</div><div class="line">        try&#123;</div><div class="line">            channel = DatagramChannel.open();</div><div class="line">            channel.configureBlocking(false);</div><div class="line">            channel.connect(new InetSocketAddress(ip,port));</div><div class="line"></div><div class="line">            buffer = ByteBuffer.allocate(512);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        return this;</div><div class="line">    &#125;</div><div class="line">    /**</div><div class="line">     * 启动线程</div><div class="line">     */</div><div class="line">    public void start()&#123;</div><div class="line">        try &#123;</div><div class="line">            while (true) &#123;</div><div class="line">                String data = &quot;client send data to server -&gt; &quot; + UUID.randomUUID();</div><div class="line">                channel.write(ByteBuffer.wrap(data.getBytes()));</div><div class="line">                buffer.clear();</div><div class="line">                int cnt = channel.read(buffer);</div><div class="line">                if (cnt &gt; 0) &#123;</div><div class="line">                    buffer.flip();</div><div class="line">                    System.out.println(toString(buffer));</div><div class="line">                &#125;</div><div class="line">                try&#123;</div><div class="line">                    Thread.sleep(1000);</div><div class="line">                &#125;catch (Exception e)&#123;</div><div class="line">                    e.printStackTrace();</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125; catch (IOException e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 读取缓冲区的数据</div><div class="line">     * @param buffer</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public String toString(ByteBuffer buffer)&#123;</div><div class="line">        return new String(buffer.array());</div><div class="line">    &#125;</div><div class="line">    /**</div><div class="line">     *</div><div class="line">     * @param args</div><div class="line">     */</div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">        new Client(&quot;127.0.0.1&quot;,9999).init().start();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>运行结果截图:</p>
+<p><img src="/images/io/datagramchannel-server-console.png" alt=""></p>
+<p><img src="/images/io/datagramchannel-client-console.png" alt=""></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag">#java</a>
+          
+            <a href="/tags/NIO/" rel="tag">#NIO</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/18/java-thread-study001/" rel="next" title="Java 多线程学习笔记(一) 概念介绍">
+                <i class="fa fa-chevron-left"></i> Java 多线程学习笔记(一) 概念介绍
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/07/19/java-thread-study002/" rel="prev" title="Java 多线程学习笔记(二) 线程的同步与锁">
+                Java 多线程学习笔记(二) 线程的同步与锁 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+           <!-- 多说热评文章 start -->
+	<div class="ds-top-threads" data-range="daily" data-num-items="5"></div>
+<!-- 多说热评文章 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+
+           <section id="comments">
+   <!-- 多说评论框 start -->
+<div id="ds-thread" class="ds-thread" data-thread-key="<%= post.path %>" data-title="<%= post.title %>" data-url="<%= post.permalink %>"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+  </section>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="孙星" />
+          <p class="site-author-name" itemprop="name">孙星</p>
+          <p class="site-description motion-element" itemprop="description">sunxing's blog | mysql | java | scala | hadoop | spark | kafka | flume</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">65</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-TCP"><span class="nav-number">1.</span> <span class="nav-text">1 TCP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-tcp报文格式"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 tcp报文格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-链接简历"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 链接简历</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-链接的关闭"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 链接的关闭</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-UDP"><span class="nav-number">2.</span> <span class="nav-text">2 UDP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-socket"><span class="nav-number">3.</span> <span class="nav-text">3 socket</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-DatagramChannel"><span class="nav-number">4.</span> <span class="nav-text">4 DatagramChannel</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孙星</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"sunxing"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>

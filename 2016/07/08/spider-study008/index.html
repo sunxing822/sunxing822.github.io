@@ -1,0 +1,653 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="网络爬虫," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="1 普通数据库连接java连接数据库,操作如下: 123456789101112131415161718192021222324252627282930313233343536373839404142434445public class DB &amp;#123;    private String dbDriver;    private String dbUrl;    private String">
+<meta name="keywords" content="网络爬虫">
+<meta property="og:type" content="article">
+<meta property="og:title" content="网络爬虫学习笔记(八) db插入工具的封装">
+<meta property="og:url" content="http://www.sunxing.cc/2016/07/08/spider-study008/index.html">
+<meta property="og:site_name" content="孙星的个人博客~">
+<meta property="og:description" content="1 普通数据库连接java连接数据库,操作如下: 123456789101112131415161718192021222324252627282930313233343536373839404142434445public class DB &amp;#123;    private String dbDriver;    private String dbUrl;    private String">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-04-30T03:58:25.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="网络爬虫学习笔记(八) db插入工具的封装">
+<meta name="twitter:description" content="1 普通数据库连接java连接数据库,操作如下: 123456789101112131415161718192021222324252627282930313233343536373839404142434445public class DB &amp;#123;    private String dbDriver;    private String dbUrl;    private String">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+ <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258995301'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/z_stat.php%3Fid%3D1258995301' type='text/javascript'%3E%3C/script%3E"));</script>
+
+  <title> 网络爬虫学习笔记(八) db插入工具的封装 | 孙星的个人博客~ </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">孙星的个人博客~</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">搬砖的,码农~</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                网络爬虫学习笔记(八) db插入工具的封装
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-08T11:55:55+08:00" content="2016-07-08">
+              2016-07-08
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/爬虫/" itemprop="url" rel="index">
+                    <span itemprop="name">爬虫</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/08/spider-study008/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/08/spider-study008/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="1-普通数据库连接"><a href="#1-普通数据库连接" class="headerlink" title="1 普通数据库连接"></a>1 普通数据库连接</h2><p>java连接数据库,操作如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line">public class DB &#123;</div><div class="line">    private String dbDriver;</div><div class="line">    private String dbUrl;</div><div class="line">    private String dbUser;</div><div class="line">    private String dbPwd;</div><div class="line"></div><div class="line">    public static DB me()&#123;</div><div class="line">        return new DB();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public Connection getConn() throws ClassNotFoundException, SQLException &#123;</div><div class="line">        Class.forName(dbDriver);</div><div class="line">        Connection conn = DriverManager.getConnection(dbUrl,dbUser,dbPwd);</div><div class="line">        return conn;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public String getDbDriver() &#123;</div><div class="line">        return dbDriver;</div><div class="line">    &#125;</div><div class="line">    public DB setDbDriver(String dbDriver) &#123;</div><div class="line">        this.dbDriver = dbDriver;</div><div class="line">        return this;</div><div class="line">    &#125;</div><div class="line">    public String getDbUrl() &#123;</div><div class="line">        return dbUrl;</div><div class="line">    &#125;</div><div class="line">    public DB setDbUrl(String dbUrl) &#123;</div><div class="line">        this.dbUrl = dbUrl;</div><div class="line">        return this;</div><div class="line">    &#125;</div><div class="line">    public String getDbUser() &#123;</div><div class="line">        return dbUser;</div><div class="line">    &#125;</div><div class="line">    public DB setDbUser(String dbUser) &#123;</div><div class="line">        this.dbUser = dbUser;</div><div class="line">        return this;</div><div class="line">    &#125;</div><div class="line">    public String getDbPwd() &#123;</div><div class="line">        return dbPwd;</div><div class="line">    &#125;</div><div class="line">    public DB setDbPwd(String dbPwd) &#123;</div><div class="line">        this.dbPwd = dbPwd;</div><div class="line">        return this;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>简单的连接数据库：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Connection conn = DB.me().setDbDriver(config.getDriver())</div><div class="line">                            .setDbUrl(config.getUrl())</div><div class="line">                            .setDbUser(config.getUser())</div><div class="line">                            .setDbPwd(config.getPwd())</div><div class="line">                            .getConn();</div></pre></td></tr></table></figure>
+<h2 id="2-操作封装"><a href="#2-操作封装" class="headerlink" title="2 操作封装"></a>2 操作封装</h2><p>数据库操作,其实crud操作主要可以看做两类：</p>
+<pre><code>查询操作
+更新操作
+</code></pre><p>删除和更改都算作是更新操作.针对这一类的操作,可以做一步封装.同样的如果查询操作和更新操作等动作我不想写sql,我只想填写去哪个表中,查询条件为多少的数据,同样的查询多少条出来.</p>
+<p>可能封装的大致的一个思路如下:</p>
+<p>select(String dbPoolName,String tableName,String[] keys,Object[] values,Class bean)</p>
+<p>也就是从指定的链接池中读取数据封装成一个对象.当然这个是最简单一个想法。</p>
+<p>同样的封装成为一个对象的话,我还需要些对象和数据库之间的对应关系,那么如果我这边有很多的表,同样的就需要建立很多对象.所以可以初步的想将数据读取出来放入到map集合中:</p>
+<p>select(String dbPoolName,String tableName,String[] keys,Object[] values,int topNum)</p>
+<p>当然需要查询多少数据出来同样是一个需求点。</p>
+<p>具体的封装的代码如下:</p>
+<p>DBFactory.java</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div><div class="line">205</div><div class="line">206</div><div class="line">207</div><div class="line">208</div><div class="line">209</div><div class="line">210</div><div class="line">211</div><div class="line">212</div><div class="line">213</div><div class="line">214</div><div class="line">215</div><div class="line">216</div><div class="line">217</div><div class="line">218</div><div class="line">219</div><div class="line">220</div><div class="line">221</div><div class="line">222</div><div class="line">223</div><div class="line">224</div><div class="line">225</div><div class="line">226</div><div class="line">227</div><div class="line">228</div><div class="line">229</div><div class="line">230</div><div class="line">231</div><div class="line">232</div><div class="line">233</div><div class="line">234</div><div class="line">235</div><div class="line">236</div><div class="line">237</div><div class="line">238</div><div class="line">239</div><div class="line">240</div><div class="line">241</div><div class="line">242</div><div class="line">243</div><div class="line">244</div><div class="line">245</div><div class="line">246</div><div class="line">247</div><div class="line">248</div><div class="line">249</div><div class="line">250</div><div class="line">251</div><div class="line">252</div><div class="line">253</div><div class="line">254</div><div class="line">255</div><div class="line">256</div><div class="line">257</div><div class="line">258</div><div class="line">259</div><div class="line">260</div><div class="line">261</div><div class="line">262</div><div class="line">263</div><div class="line">264</div><div class="line">265</div><div class="line">266</div><div class="line">267</div><div class="line">268</div><div class="line">269</div><div class="line">270</div><div class="line">271</div><div class="line">272</div><div class="line">273</div><div class="line">274</div><div class="line">275</div><div class="line">276</div><div class="line">277</div><div class="line">278</div><div class="line">279</div><div class="line">280</div><div class="line">281</div><div class="line">282</div><div class="line">283</div><div class="line">284</div><div class="line">285</div><div class="line">286</div><div class="line">287</div><div class="line">288</div><div class="line">289</div><div class="line">290</div><div class="line">291</div></pre></td><td class="code"><pre><div class="line">public class DBFactory &#123;</div><div class="line">//	封装对数据库的操作</div><div class="line">	private DBHandler dbHandler = null;</div><div class="line">	/**</div><div class="line">	 * 创建对象,用以实现链式操作</div><div class="line">	 * @return</div><div class="line">	 */</div><div class="line">	public static DBFactory me()&#123;</div><div class="line">		return new DBFactory();</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 构造函数初始化操作数据库的对象</div><div class="line">	 */</div><div class="line">	private DBFactory()&#123;</div><div class="line">		dbHandler = new DBHandler();</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 创建表</div><div class="line">	 * @param dbPoolName</div><div class="line">	 * @param sql</div><div class="line">	 */</div><div class="line">	public void create(String dbPoolName,String sql)&#123;</div><div class="line">		if(Validate.isStrEmpty(dbPoolName) || Validate.isStrEmpty(sql))return;</div><div class="line">		dbHandler.create(dbPoolName,sql);</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 给定一个sql语句执行查询</div><div class="line">	 * @param dbPoolName</div><div class="line">	 * @param sql</div><div class="line">	 * @return 将结果封装到对象集合中</div><div class="line">	 */</div><div class="line">	public List&lt;Object&gt; select(String dbPoolName,String sql)&#123;</div><div class="line">		if(Validate.isStrEmpty(dbPoolName) || Validate.isStrEmpty(sql))return null;</div><div class="line">		List&lt;Object&gt; list = dbHandler.select(dbPoolName,sql);</div><div class="line">		return list;</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 给定一个sql语句执行查询</div><div class="line">	 * @param dbPoolName</div><div class="line">	 * @param sql</div><div class="line">	 * @param bean</div><div class="line">	 * @return 将结果封装到对象集合中</div><div class="line">	 */</div><div class="line">	public &lt;T&gt; List&lt;T&gt; select(String dbPoolName,String sql,Class bean)&#123;</div><div class="line">		if(Validate.isStrEmpty(dbPoolName) || Validate.isStrEmpty(sql))return null;</div><div class="line">		List&lt;T&gt; list = dbHandler.select(dbPoolName,sql,bean);</div><div class="line">		return list;</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 给定表明,以及条件字段进行查询</div><div class="line">	 * 如果条件中有like类似的语句,使用如下设置</div><div class="line">	 * key：url like</div><div class="line">	 * values: &apos;%www.taobao.com%&apos;</div><div class="line">	 * @param dbPoolName</div><div class="line">	 * @param tableName</div><div class="line">	 * @param values</div><div class="line">	 * @param bean</div><div class="line">	 * @return 将结果封装到对象集合中</div><div class="line">	 */</div><div class="line">	public &lt;T&gt; List&lt;T&gt; select(String dbPoolName,String tableName,String[] keys,Object[] values,Class bean)&#123;</div><div class="line">		if(Validate.isStrEmpty(dbPoolName) || Validate.isStrEmpty(tableName))return null;</div><div class="line">		String sql = &quot;select * from &quot; + tableName + DBUtils.toSQL(keys, values, OperatorType.SELECT);</div><div class="line">		return select(dbPoolName,sql,bean);</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 给定表名,以及条件字段查询出多少条数据</div><div class="line">	 * 封装到对象集合中</div><div class="line">	 * @param dbPoolName</div><div class="line">	 * @param tableName</div><div class="line">	 * @param values</div><div class="line">	 * @param topNum</div><div class="line">	 * @param bean</div><div class="line">	 * @return</div><div class="line">	 */</div><div class="line">	public &lt;T&gt; List&lt;T&gt; select(String dbPoolName,String tableName,String[] keys,Object[] values,int topNum,Class bean)&#123;</div><div class="line">		if(Validate.isStrEmpty(dbPoolName) || Validate.isStrEmpty(tableName))return null;</div><div class="line">		if(Validate.isNegative(topNum))return null;</div><div class="line">		String sql = &quot;select * from &quot; + tableName + DBUtils.toSQL(keys, values, OperatorType.SELECT) + &quot; limit &quot; + topNum;</div><div class="line">		return select(dbPoolName,sql,bean);</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 从数据库中根据条件查询出部分字段</div><div class="line">	 * 封装到对象集合中</div><div class="line">	 * @param dbPoolName</div><div class="line">	 * @param tableName</div><div class="line">	 * @param fields</div><div class="line">	 * @param values</div><div class="line">	 * @param bean</div><div class="line">	 * @return</div><div class="line">	 */</div><div class="line">	public &lt;T&gt; List&lt;T&gt; select(String dbPoolName,String tableName,String[] fields,String[] keys,Object[] values,Class bean)&#123;</div><div class="line">		if(Validate.isStrEmpty(dbPoolName) || Validate.isStrEmpty(tableName))return null;</div><div class="line">		if(Validate.isNull(fields) || Validate.isEmpty(fields))return null;</div><div class="line">		String sql = &quot;select &quot; + DBUtils.toSQL(fields, &quot;,&quot;) + &quot; from &quot; + tableName + DBUtils.toSQL(keys, values, OperatorType.SELECT);</div><div class="line">		return select(dbPoolName,sql,bean);</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 从数据库中根据条件查询出一定数据的部分字段</div><div class="line">	 * 封装到对象集合中</div><div class="line">	 * @param dbPoolName</div><div class="line">	 * @param tableName</div><div class="line">	 * @param fields</div><div class="line">	 * @param values</div><div class="line">	 * @param topNum</div><div class="line">	 * @param bean</div><div class="line">	 * @return</div><div class="line">	 */</div><div class="line">	public &lt;T&gt; List&lt;T&gt; select(String dbPoolName,String tableName,String[] fields,String[] keys,Object[] values,int topNum,Class bean)&#123;</div><div class="line">		if(Validate.isStrEmpty(dbPoolName) || Validate.isStrEmpty(tableName))return null;</div><div class="line">		if(Validate.isNull(fields) || Validate.isEmpty(fields))return null;</div><div class="line">		if(Validate.isNegative(topNum))return null;</div><div class="line">		String sql  = &quot;select top &quot;+ topNum + &quot; &quot; + DBUtils.toSQL(fields, &quot;,&quot;) + &quot; from &quot; + tableName + DBUtils.toSQL(keys, values, OperatorType.SELECT);</div><div class="line">		return select(dbPoolName,sql,bean);</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 根据给定的查询条件,将结果封装到map中</div><div class="line">	 * @param tableName</div><div class="line">	 * @param values</div><div class="line">	 * @param topNum</div><div class="line">	 * @return</div><div class="line">	 */</div><div class="line">	public List&lt;Map&lt;String,Object&gt;&gt; select(String dbPoolName,String tableName,String[] keys,Object[] values,int topNum)&#123;</div><div class="line">		if(Validate.isStrEmpty(dbPoolName) || Validate.isStrEmpty(tableName))return null;</div><div class="line">		if(Validate.isNegative(topNum))return null;</div><div class="line">		String sql  = &quot;select top &quot; + topNum + &quot; * from &quot; + tableName + DBUtils.toSQL(keys, values, OperatorType.SELECT);</div><div class="line">		return dbHandler.select(dbPoolName,sql,0);</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 根据给定的查询条件,将结果封装到map中</div><div class="line">	 * @return</div><div class="line">	 */</div><div class="line">	public List&lt;Map&lt;String,Object&gt;&gt; selectToMap(String dbPoolName,String SQL)&#123;</div><div class="line">		if(Validate.isStrEmpty(dbPoolName))return null;</div><div class="line">		return dbHandler.select(dbPoolName,SQL,0);</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 根据给定的查询条件,将结果封装到map中</div><div class="line">	 * @param tableName</div><div class="line">	 * @param values</div><div class="line">	 * @return</div><div class="line">	 */</div><div class="line">	public List&lt;Map&lt;String,Object&gt;&gt; select(String dbPoolName,String tableName,String[] keys,Object[] values)&#123;</div><div class="line">		if(Validate.isStrEmpty(dbPoolName) || Validate.isStrEmpty(tableName))return null;</div><div class="line">		String sql  = &quot;select * from &quot; + tableName + DBUtils.toSQL(keys, values, OperatorType.SELECT);</div><div class="line">		return dbHandler.select(dbPoolName,sql,0);</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 根据表名以及条件查询出某一个字段</div><div class="line">	 * 放入到集合中，不进行封装到对象中</div><div class="line">	 * @param tableName</div><div class="line">	 * @param field</div><div class="line">	 * @param values</div><div class="line">	 * @return</div><div class="line">	 */</div><div class="line">	public List&lt;Object&gt; select(String dbPoolName,String tableName,String field,String[] keys,Object[] values)&#123;</div><div class="line">		if(Validate.isStrEmpty(dbPoolName) || Validate.isStrEmpty(tableName))return null;</div><div class="line">		String sql  = &quot;select &quot; + field + &quot; from &quot; + tableName + DBUtils.toSQL(keys, values, OperatorType.SELECT);</div><div class="line">		return select(dbPoolName,sql,String.class);</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 根据表名以及条件查询出一定条数据的数据</div><div class="line">	 * @param tableName</div><div class="line">	 * @param field</div><div class="line">	 * @param values</div><div class="line">	 * @param topNum</div><div class="line">	 * @return</div><div class="line">	 */</div><div class="line">	public List&lt;Object&gt; select(String dbPoolName,String tableName,String field,String[] keys,Object[] values,int topNum)&#123;</div><div class="line">		if(Validate.isStrEmpty(dbPoolName) || Validate.isStrEmpty(tableName))return null;</div><div class="line">		if(Validate.isNegative(topNum))return null;</div><div class="line">		String sql  = &quot;select top &quot; + topNum + &quot; &quot; + field + &quot; from &quot; + tableName + DBUtils.toSQL(keys, values, OperatorType.SELECT);</div><div class="line">		return select(dbPoolName,sql);</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 给定sql,执行插入</div><div class="line">	 * @param dbPoolName</div><div class="line">	 * @param sql</div><div class="line">	 */</div><div class="line">	public boolean insert(String dbPoolName,String sql)&#123;</div><div class="line">		if(Validate.isStrEmpty(dbPoolName) || Validate.isStrEmpty(sql))return false;</div><div class="line">		return dbHandler.insert(dbPoolName,sql);</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 给定表名,向表中插入部分字段</div><div class="line">	 * @param dbPoolName</div><div class="line">	 * @param tableName</div><div class="line">	 * @param keys</div><div class="line">	 * @param values</div><div class="line">	 */</div><div class="line">	public boolean insert(String dbPoolName,String tableName,String[] keys,Object[] values)&#123;</div><div class="line">		if(Validate.isStrEmpty(dbPoolName) || Validate.isStrEmpty(tableName))return false;</div><div class="line">		String sql = &quot;insert into &quot; + tableName + DBUtils.toSQL(keys, values);</div><div class="line">		return dbHandler.insert(dbPoolName,sql);</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 向表中插入一个对象</div><div class="line">	 * @param dbPoolName</div><div class="line">	 * @param tableName</div><div class="line">	 * @param bean</div><div class="line">	 */</div><div class="line">	public &lt;T&gt; boolean insert(String dbPoolName,String tableName,T bean)&#123;</div><div class="line">		if(Validate.isStrEmpty(dbPoolName) || Validate.isStrEmpty(tableName))return false;</div><div class="line">		if(Validate.isNull(bean))return false;</div><div class="line">		List&lt;T&gt; list = new ArrayList&lt;T&gt;();</div><div class="line">		list.add(bean);</div><div class="line">		return insert(dbPoolName,tableName,list,bean.getClass());</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 向表中插入一个对象集合</div><div class="line">	 * 批量插入操作</div><div class="line">	 * @param dbPoolName</div><div class="line">	 * @param tableName</div><div class="line">	 * @param beans</div><div class="line">	 */</div><div class="line">	public &lt;T&gt; boolean insert(String dbPoolName,String tableName,List&lt;T&gt; beans,Class cls)&#123;</div><div class="line">		if(Validate.isStrEmpty(dbPoolName) || Validate.isStrEmpty(tableName))return false;</div><div class="line">		if(Validate.isNull(beans) || Validate.isEmpty(beans.toArray()))return false;</div><div class="line">		String sql = &quot;insert into &quot; + tableName + DBUtils.toSQL(cls);</div><div class="line">		return dbHandler.insert(dbPoolName, sql, beans);</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 向表中插入一个对象集合</div><div class="line">	 * 批量插入操作</div><div class="line">	 * @param dbPoolName</div><div class="line">	 * @param tableName</div><div class="line">	 */</div><div class="line">	public boolean insert(String dbPoolName,String tableName,Map&lt;String,Object&gt; fields)&#123;</div><div class="line">		if(Validate.isStrEmpty(dbPoolName) || Validate.isStrEmpty(tableName))return false;</div><div class="line">		if(Validate.isNull(fields) || Validate.isEmpty(fields.entrySet()))return false;</div><div class="line">		String sql = &quot;insert into &quot; + tableName + DBUtils.toSQL(fields);</div><div class="line">		return dbHandler.insert(dbPoolName, sql);</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 给定sql执行更新操作</div><div class="line">	 * @param dbPoolName</div><div class="line">	 * @param sql</div><div class="line">	 */</div><div class="line">	public void update(String dbPoolName,String sql)&#123;</div><div class="line">		if(Validate.isStrEmpty(dbPoolName) || Validate.isStrEmpty(sql))return;</div><div class="line">		dbHandler.update(dbPoolName,sql);</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 根据给定的参数执行更新操作</div><div class="line">	 * @param dbPoolName</div><div class="line">	 * @param tableName</div><div class="line">	 * @param newkeys</div><div class="line">	 * @param newvalues</div><div class="line">	 * @param keys</div><div class="line">	 * @param values</div><div class="line">	 */</div><div class="line">	public void update(String dbPoolName,String tableName,String[]newkeys,Object[]newvalues,String[] keys,Object[] values)&#123;</div><div class="line">		if(Validate.isStrEmpty(dbPoolName) || Validate.isStrEmpty(tableName))return;</div><div class="line">		if(Validate.isNull(newkeys) || Validate.isEmpty(newkeys))return;</div><div class="line">		if(Validate.isNull(newvalues) || Validate.isEmpty(newvalues))return;</div><div class="line">		String sql = &quot;update &quot; + tableName + DBUtils.toSQL(newkeys, newvalues, OperatorType.UPDATE) + </div><div class="line">				DBUtils.toSQL(keys, values, OperatorType.SELECT);</div><div class="line">		dbHandler.update(dbPoolName,sql);</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 根据参数删除表中数据</div><div class="line">	 * @param dbPoolName</div><div class="line">	 * @param tableName</div><div class="line">	 * @param keys</div><div class="line">	 * @param values</div><div class="line">	 */</div><div class="line">	public void delete(String dbPoolName,String tableName,String[] keys,Object[] values)&#123;</div><div class="line">		if(Validate.isStrEmpty(dbPoolName) || Validate.isStrEmpty(tableName))return;</div><div class="line">		String sql = &quot;delete &quot; + tableName + DBUtils.toSQL(keys, values, OperatorType.SELECT);</div><div class="line">		dbHandler.delete(dbPoolName,sql);</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 根据表名清空表</div><div class="line">	 * @param dbPoolName</div><div class="line">	 * @param tableName</div><div class="line">	 */</div><div class="line">	public void truncate(String dbPoolName,String tableName)&#123;</div><div class="line">		if(Validate.isStrEmpty(dbPoolName) || Validate.isStrEmpty(tableName))return;</div><div class="line">		String sql = &quot;truncate table &quot; + tableName;</div><div class="line">		dbHandler.truncate(dbPoolName, sql);</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 根据给定的表名删除表</div><div class="line">	 * @param dbPoolName</div><div class="line">	 * @param tableName</div><div class="line">	 */</div><div class="line">	public void drop(String dbPoolName,String tableName)&#123;</div><div class="line">		if(Validate.isStrEmpty(dbPoolName) || Validate.isStrEmpty(tableName))return;</div><div class="line">		String sql = &quot;drop table &quot; + tableName;</div><div class="line">		dbHandler.drop(dbPoolName, sql);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="3-数据库连接池"><a href="#3-数据库连接池" class="headerlink" title="3 数据库连接池"></a>3 数据库连接池</h2><p>数据库连接池就是对数据库连接的一个维护管理和复用。当然这个其实是相当复杂的,下面介绍一下简单地实现:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div><div class="line">205</div><div class="line">206</div><div class="line">207</div><div class="line">208</div><div class="line">209</div><div class="line">210</div><div class="line">211</div><div class="line">212</div><div class="line">213</div><div class="line">214</div><div class="line">215</div><div class="line">216</div><div class="line">217</div><div class="line">218</div><div class="line">219</div><div class="line">220</div><div class="line">221</div><div class="line">222</div><div class="line">223</div><div class="line">224</div><div class="line">225</div><div class="line">226</div><div class="line">227</div><div class="line">228</div><div class="line">229</div><div class="line">230</div><div class="line">231</div><div class="line">232</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * 数据库连接池</div><div class="line"> * 主要功能：</div><div class="line"> * 1 启动数据库连接池</div><div class="line"> * 2 关闭数据库连接池</div><div class="line"> * 3 增加新的连接</div><div class="line"> * 4 定时检测连接是否失效</div><div class="line"> * @author Administrator</div><div class="line"> */</div><div class="line">public class DBPool &#123;</div><div class="line">    /**</div><div class="line">     * 支持不同的数据</div><div class="line">     */</div><div class="line">    private Map&lt;String,ConcurrentLinkedQueue&lt;Connection&gt;&gt; pool = new HashMap&lt;String,ConcurrentLinkedQueue&lt;Connection&gt;&gt;();</div><div class="line">    private ConcurrentHashMap&lt;String,DBConfig&gt; conf = new ConcurrentHashMap&lt;String,DBConfig&gt;();</div><div class="line"></div><div class="line">    private long DB_POOL_CHECK_TIME = 1000 * 10;</div><div class="line">    private long DB_POOL_INCREASE_TIME = 1000 * 20;</div><div class="line">    /**</div><div class="line">     * 单例对象</div><div class="line">     * @author Administrator</div><div class="line">     *</div><div class="line">     */</div><div class="line">    private static class SingletonClassStance&#123;</div><div class="line">        private static DBPool instance = new DBPool();</div><div class="line">    &#125;</div><div class="line">    /**</div><div class="line">     * 获取单例对象</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public static DBPool me()&#123;</div><div class="line">        return SingletonClassStance.instance;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public DBPool build(DBConfig config)&#123;</div><div class="line">        return build(config,config.getMax(),config.getMin());</div><div class="line">    &#125;</div><div class="line">    public DBPool build(DBConfig config,int max,int min)&#123;</div><div class="line">        try &#123;</div><div class="line">//			数据库参数中有一个为空,则抛出异常</div><div class="line">            if(Validate.isNullOrEmpty(config.getName())</div><div class="line">                    || Validate.isNullOrEmpty(config.getDriver())</div><div class="line">                    || Validate.isNullOrEmpty(config.getUrl()))&#123;</div><div class="line">//			   || Validate.isNullOrEmpty(config.getPwd()))&#123;</div><div class="line">                throw new Exception(&quot;the config of db is error....&quot;);</div><div class="line">            &#125;</div><div class="line">            if(max &lt; min || max &lt;= 0 || min &gt; max)&#123;</div><div class="line">                throw new Exception(&quot;the max-size and min-size of db is error....&quot;);</div><div class="line">            &#125;</div><div class="line">//			经对应的配置写入到配置集合中</div><div class="line">            conf.put(config.getName(),config);</div><div class="line">//			判断该给定数据库是否已经在连接池中有数据库对象</div><div class="line">            if(pool.containsKey(config.getName()))&#123;</div><div class="line">//				判断数据库连接池中是否可用连接是否已经达到上限</div><div class="line">                int temp = min - pool.get(config.getName()).size();</div><div class="line">                if(temp &lt;= 0)&#123;</div><div class="line">                    System.err.println(&quot;数据库连接池有足够的可用连接...&quot;);</div><div class="line">                &#125;else&#123;</div><div class="line">//					数据库连接池中可用连接不足,调用补充程序</div><div class="line">                    build(config,temp);</div><div class="line">                &#125;</div><div class="line">            &#125;else&#123;</div><div class="line">//				该数据库连接池还没有创建,现在重建,并填充连接</div><div class="line">                ConcurrentLinkedQueue&lt;Connection&gt; queue = new ConcurrentLinkedQueue&lt;Connection&gt;();</div><div class="line">                pool.put(config.getName(), queue);</div><div class="line">//				数据初始化完毕,执行添加程序</div><div class="line">                int temp = (max - min + 1)/2 + min;</div><div class="line">                build(config,temp);</div><div class="line">            &#125;</div><div class="line">        &#125; catch (Exception e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        return this;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void build(DBConfig config,int temp)&#123;</div><div class="line">        try &#123;</div><div class="line">            for(int i=0;i&lt;temp;i++)&#123;</div><div class="line">                Connection conn  =  DB.me()</div><div class="line">                        .setDbDriver(config.getDriver())</div><div class="line">                        .setDbUrl(config.getUrl())</div><div class="line">                        .setDbUser(config.getUser())</div><div class="line">                        .setDbPwd(config.getPwd())</div><div class="line">                        .getConn();</div><div class="line">                if(conn == null)continue;</div><div class="line">                pool.get(config.getName()).offer(conn);</div><div class="line">            &#125;</div><div class="line">            System.err.println(&quot;当前缓存池中数据库连接个数为：&quot; + pool.get(config.getName()).size());</div><div class="line">        &#125; catch (Exception e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public Connection getConn(String dbPoolName)&#123;</div><div class="line">        try &#123;</div><div class="line">            if(!pool.containsKey(dbPoolName))&#123;</div><div class="line">                throw new Exception(&quot;the &quot; + dbPoolName + &quot; is not to init....&quot;);</div><div class="line">            &#125;</div><div class="line">            if(!pool.get(dbPoolName).isEmpty())&#123;</div><div class="line">                try &#123;</div><div class="line">                    return pool.get(dbPoolName).poll();</div><div class="line">                &#125; catch (Exception e) &#123;</div><div class="line">                    e.printStackTrace();</div><div class="line">                &#125;</div><div class="line">            &#125;else&#123;</div><div class="line">                DBConfig config = conf.get(dbPoolName);</div><div class="line">                if(config != null)&#123;</div><div class="line">                    return DB.me().setDbDriver(config.getDriver())</div><div class="line">                            .setDbUrl(config.getUrl())</div><div class="line">                            .setDbUser(config.getUser())</div><div class="line">                            .setDbPwd(config.getPwd())</div><div class="line">                            .getConn();</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125; catch (Exception e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void setConn(String dbPoolName,Connection conn)&#123;</div><div class="line">        try &#123;</div><div class="line">            if(conn == null || conn.isClosed())return;</div><div class="line"></div><div class="line">            if(pool.containsKey(dbPoolName))&#123;</div><div class="line">                pool.get(dbPoolName).offer(conn);</div><div class="line">            &#125;</div><div class="line">        &#125; catch (Exception e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    //	自动检测数据库连接是否已经失效</div><div class="line">    public void startTask()&#123;</div><div class="line">        Timer timer = new Timer();</div><div class="line">        CheckTask task = new CheckTask();</div><div class="line">        timer.schedule(task,DB_POOL_CHECK_TIME,DB_POOL_CHECK_TIME);</div><div class="line"></div><div class="line">        IncreaseTask increase = new IncreaseTask();</div><div class="line">        timer.schedule(increase,DB_POOL_INCREASE_TIME,DB_POOL_INCREASE_TIME);</div><div class="line">    &#125;</div><div class="line">    /**</div><div class="line">     * 检测线程,检测数据库连接是否已经失效</div><div class="line">     * @author Administrator</div><div class="line">     */</div><div class="line">    private class CheckTask extends TimerTask &#123;</div><div class="line">        @Override</div><div class="line">        public void run() &#123;</div><div class="line">            check();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        public void check()&#123;</div><div class="line">            for(Map.Entry&lt;String,ConcurrentLinkedQueue&lt;Connection&gt;&gt; entry : pool.entrySet())&#123;</div><div class="line">                for(Connection conn : entry.getValue())&#123;</div><div class="line">                    try &#123;</div><div class="line">                        if(conn.isClosed())&#123;</div><div class="line">                           pool.get(entry.getKey()).remove(conn);</div><div class="line">                            continue;</div><div class="line">                        &#125;</div><div class="line">                        Statement stmt = conn.createStatement();</div><div class="line">                        stmt.executeBatch();</div><div class="line">                    &#125; catch (SQLSyntaxErrorException e) &#123;</div><div class="line">                        e.printStackTrace();</div><div class="line">                    &#125; catch(CommunicationsException e)&#123;</div><div class="line">                        //数据库连接不可用....</div><div class="line">                        System.err.println(&quot;数据库连接不可用,清空连接,重新请求&quot;);</div><div class="line">                        pool.get(entry.getKey()).clear();</div><div class="line">                    &#125; catch(Exception e)&#123;</div><div class="line">                        e.printStackTrace();</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    /**</div><div class="line">     *</div><div class="line">     * @author Administrator</div><div class="line">     */</div><div class="line">    private class IncreaseTask extends TimerTask&#123;</div><div class="line">        @Override</div><div class="line">        public void run() &#123;</div><div class="line">            increase();</div><div class="line">        &#125;</div><div class="line">        /**</div><div class="line">         * 变量配置文件,查找可能需要补充的集合</div><div class="line">         */</div><div class="line">        public void increase()&#123;</div><div class="line">            try &#123;</div><div class="line">                for(Map.Entry&lt;String,DBConfig&gt; entry : conf.entrySet())&#123;</div><div class="line">                    String name = entry.getKey();</div><div class="line">                    DBConfig config = entry.getValue();</div><div class="line">                    if(pool.containsKey(name))&#123;</div><div class="line">                        int temp = config.getMin() - pool.get(name).size();</div><div class="line">                        if(temp &gt; 0)&#123;</div><div class="line">                            addConnection(config,temp,name);</div><div class="line">                        &#125;</div><div class="line">                    &#125;else&#123;</div><div class="line">                        addConnection(config,config.getMin() + (config.getMax() - config.getMin())/2,name);</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125; catch (Exception e) &#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        /**</div><div class="line">         * 给指定域名增加指定的数据库连接</div><div class="line">         * @param name</div><div class="line">         * @param addNum</div><div class="line">         */</div><div class="line">        public void addConnection(DBConfig config,int addNum,String name)&#123;</div><div class="line">            System.err.println(&quot;数据库连接池：&quot; + name + &quot;,可用连接不足,现开始补充&quot; + addNum + &quot;个可用连接&quot;);</div><div class="line">            for(int i=0;i&lt;addNum;i++)&#123;</div><div class="line">                try &#123;</div><div class="line">                    Connection conn = DB.me().setDbDriver(config.getDriver())</div><div class="line">                            .setDbUrl(config.getUrl())</div><div class="line">                            .setDbUser(config.getUser())</div><div class="line">                            .setDbPwd(config.getPwd())</div><div class="line">                            .getConn();</div><div class="line">                    if(pool.containsKey(config.getName()))&#123;</div><div class="line">                        pool.get(config.getName()).offer(conn);</div><div class="line">                    &#125;else&#123;</div><div class="line">                        ConcurrentLinkedQueue&lt;Connection&gt; queue = new ConcurrentLinkedQueue&lt;Connection&gt;();</div><div class="line">                        queue.offer(conn);</div><div class="line">                        pool.put(config.getName(), queue);</div><div class="line">                    &#125;</div><div class="line">                &#125; catch (Exception e) &#123;</div><div class="line">                    e.printStackTrace();</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这个代码只是简单实现了自己的想法,还有很多需要考虑的问题。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/网络爬虫/" rel="tag">#网络爬虫</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/07/spider-study007/" rel="next" title="网络爬虫学习笔记(七) httpclient的使用">
+                <i class="fa fa-chevron-left"></i> 网络爬虫学习笔记(七) httpclient的使用
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/07/10/java-io-4/" rel="prev" title="JavaIO学习笔记(四) Java 流操作和源码">
+                JavaIO学习笔记(四) Java 流操作和源码 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+           <!-- 多说热评文章 start -->
+	<div class="ds-top-threads" data-range="daily" data-num-items="5"></div>
+<!-- 多说热评文章 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+
+           <section id="comments">
+   <!-- 多说评论框 start -->
+<div id="ds-thread" class="ds-thread" data-thread-key="<%= post.path %>" data-title="<%= post.title %>" data-url="<%= post.permalink %>"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+  </section>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="孙星" />
+          <p class="site-author-name" itemprop="name">孙星</p>
+          <p class="site-description motion-element" itemprop="description">sunxing's blog | mysql | java | scala | hadoop | spark | kafka | flume</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">65</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-普通数据库连接"><span class="nav-number">1.</span> <span class="nav-text">1 普通数据库连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-操作封装"><span class="nav-number">2.</span> <span class="nav-text">2 操作封装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-数据库连接池"><span class="nav-number">3.</span> <span class="nav-text">3 数据库连接池</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孙星</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"sunxing"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>

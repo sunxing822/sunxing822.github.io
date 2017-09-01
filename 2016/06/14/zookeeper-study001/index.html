@@ -1,0 +1,748 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="zookeeper," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="1 zookeeper 的定义 zookeeper是一个针对大型分布式系统的可靠协调系统 1) 它提供的功能有：配置维护,名字服务,分布式同步,组服务2) 目标是封装好复杂易出错的关键服务,将简单易用的接口和性能高效,功能稳定的系统提供给用户 2 zookeeper 的特点 1) 最终一致性:为客户端展示同一个试图,不同的客户端访问不同的服务端 2) 可靠性:如果一条消息被一台服务器接受,那么将被">
+<meta name="keywords" content="zookeeper">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Zookeeper学习笔记(一) zookeeper的基本原理">
+<meta property="og:url" content="http://www.sunxing.cc/2016/06/14/zookeeper-study001/index.html">
+<meta property="og:site_name" content="孙星的个人博客~">
+<meta property="og:description" content="1 zookeeper 的定义 zookeeper是一个针对大型分布式系统的可靠协调系统 1) 它提供的功能有：配置维护,名字服务,分布式同步,组服务2) 目标是封装好复杂易出错的关键服务,将简单易用的接口和性能高效,功能稳定的系统提供给用户 2 zookeeper 的特点 1) 最终一致性:为客户端展示同一个试图,不同的客户端访问不同的服务端 2) 可靠性:如果一条消息被一台服务器接受,那么将被">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://www.sunxing.cc/images/zookeeper/zookeeper-juse.jpg">
+<meta property="og:image" content="http://www.sunxing.cc/images/zookeeper/zookeeper-jiagou.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/zookeeper/zookeeper-leader.jpg">
+<meta property="og:image" content="http://www.sunxing.cc/images/zookeeper/zookeeper-fast-paxos.jpg">
+<meta property="og:image" content="http://www.sunxing.cc/images/zookeeper/zookeeper-tongbu.jpg">
+<meta property="og:image" content="http://www.sunxing.cc/images/zookeeper/zookeeper-leader-worker.jpg">
+<meta property="og:image" content="http://www.sunxing.cc/images/zookeeper/zookeeper-follower-liucheng.jpg">
+<meta property="og:image" content="http://www.sunxing.cc/images/zookeeper/zookeeper-writer.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/zookeeper/zookeeper-file-list.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/zookeeper/zookeeper-znode-list.jpg">
+<meta property="og:updated_time" content="2017-04-30T03:58:25.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Zookeeper学习笔记(一) zookeeper的基本原理">
+<meta name="twitter:description" content="1 zookeeper 的定义 zookeeper是一个针对大型分布式系统的可靠协调系统 1) 它提供的功能有：配置维护,名字服务,分布式同步,组服务2) 目标是封装好复杂易出错的关键服务,将简单易用的接口和性能高效,功能稳定的系统提供给用户 2 zookeeper 的特点 1) 最终一致性:为客户端展示同一个试图,不同的客户端访问不同的服务端 2) 可靠性:如果一条消息被一台服务器接受,那么将被">
+<meta name="twitter:image" content="http://www.sunxing.cc/images/zookeeper/zookeeper-juse.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+ <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258995301'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/z_stat.php%3Fid%3D1258995301' type='text/javascript'%3E%3C/script%3E"));</script>
+
+  <title> Zookeeper学习笔记(一) zookeeper的基本原理 | 孙星的个人博客~ </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">孙星的个人博客~</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">搬砖的,码农~</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Zookeeper学习笔记(一) zookeeper的基本原理
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-14T11:55:55+08:00" content="2016-06-14">
+              2016-06-14
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/zookeeper/" itemprop="url" rel="index">
+                    <span itemprop="name">zookeeper</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/14/zookeeper-study001/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/14/zookeeper-study001/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>1 zookeeper 的定义</p>
+<p>zookeeper是一个针对大型分布式系统的可靠协调系统</p>
+<p>1) 它提供的功能有：配置维护,名字服务,分布式同步,组服务<br>2) 目标是封装好复杂易出错的关键服务,将简单易用的接口和性能高效,功能稳定的系统提供给用户</p>
+<p>2 zookeeper 的特点</p>
+<pre><code>1) 最终一致性:为客户端展示同一个试图,不同的客户端访问不同的服务端
+2) 可靠性:如果一条消息被一台服务器接受,那么将被所有的服务器接受
+3）    实时性：zookeeper不能保证两个客户端同时得到刚刚更新的数据,如果需要最新数据,应该在读取数据之前调用sync()接口
+4) 等待无关性: 慢的或者无效的client链接不干预快速的client的请求
+5) 原子性: 更新操作要么成功要么失败,无中间状态
+6) 顺序性: 对于所有的server,统一消息发布顺序一致,全局有序是指如果在一台服务器上消息a在消息b前发布，则在所有Server上消息a都将在消息b前被发布；偏序是指如果一个消息b在消息a后被同一个发送者发布，a必将排在b前面
+</code></pre><p>3 zookeeper 的角色</p>
+<p>zookeeper的角色主要分为以下几种:</p>
+<p><img src="/images/zookeeper/zookeeper-juse.jpg" alt=""></p>
+<p>4 zookeeper 的基本架构流程图</p>
+<p><img src="/images/zookeeper/zookeeper-jiagou.png" alt=""></p>
+<p>zookeeper的核心是原子广播,这个机制保证了各个server之间的同步,实现这个机制的协议叫做zab协议。zab协议有两种模式: </p>
+<pre><code>1) 恢复模式(选举)
+2) 广播模式(同步)
+</code></pre><p>当服务启动或者是领导者崩溃后,zab就进入恢复模式,当领导者被选举出来后,并且和大多数的server完成数据的同步后,恢复模式结束。状态同步是为了使leader和其他的server也就是follower具有相同的状态。</p>
+<p>为了保证事务的顺序一致性,采用了递增的zxid来表示事务,所有的提起(proposal)都在被提出的时候加上zxid,在代码中zxid是一个64位的数子,它搞32为是用来表示属于哪一个leader,也就是leader的表示,每一个leader被选举出来都会有一个新的epoch,zxid的高32位就是这个值,低32位时用来做递增计数的。</p>
+<p>server的状态:</p>
+<pre><code>1) LOOKING         当前server不着调leader是谁,正在搜索
+2) LEADING         当前server就是被选举出来的leader
+3) FOLLOWING        leader已经选举出来了,当前server与之同步
+</code></pre><p>5 zookeeper 的选举流程</p>
+<p>系统启动或者是当前leader崩溃或者是当前leader丢失大多数的follower,zk进入恢复模式,恢复模式需要重新选举出一个新的leader,让所有的server都恢复到正常的状态</p>
+<p>zookeeper的选举采用了Paxos协议,Paxos的核心实现是当多数的server写成功,则任务数据写成功。</p>
+<pre><code>1）如果有3个server,则需要两个写成功即表示任务数据写成功
+2）如果server为4或者是5个,则需要三个写成功即表示任务数据写成功
+</code></pre><p>server数目一般为奇数个,例如:3,5,7个等</p>
+<pre><code>1) 如果3个server,则最多允许1个server挂掉
+2) 如果4个server,则同样最多允许一个server挂掉
+3) 通过上面的可以看出来,奇数个和偶数个server的可靠性是一样的,最多允许一个server挂掉,因此最好选用奇数个server
+</code></pre><p>server的流程如下:    </p>
+<pre><code>1) 选举有当前server发起选举线程担任,主要是对投票结果进行统计,并选出推荐的server
+2）选举线程首先向所有的server发起一次询问(包括自己)
+3) 选举线程收到回复后,验证是否是自己发起的询问(验证zxid是否一致),然后获取对方的id(id),并存储到当前询问的对象列表中.
+4) 最后获取对方提议的leader相关信息(id,zxid),并将这些信息存储到当次选举的投票记录中
+5) 收到所有的server的回复以后,计算出zxid最大的那个server,并将这个Server相关信息设置成下一次要投票的Server
+6) 线程将当前zxid最大的server设置为当前server要推荐的leader,如果此时获胜的server获取n/2 + 1的server票数,设置当前推荐的leader为获胜的server。将根据获胜的leader设置为自己的状态,否则,继续这个过程,知道leader被选举出来
+</code></pre><p>通过流程分析可以看出:leader要获取大多数的server的支持,则server的总数必须是奇数2n+1,存活下来的server的数目不少于n + 1</p>
+<p>每个server启动后都会重复以上流程,在恢复模式下,如果刚从崩溃状态恢复或者是刚启动的server还会从磁盘中读取数据的快照和会话信息,zk会记录事务的日志进行快照,方便在恢复时进行恢复.</p>
+<p>选举具体的流程图如下:</p>
+<p><img src="/images/zookeeper/zookeeper-leader.jpg" alt=""></p>
+<p>fast paxos流程是在选举过程中,某server首先向所有的server提议自己要成为leader,当其他的server收到提议以后,解决epoch和zxid的冲突,并接受对方的提议,向对方发送接受提议并完成的消息,重复这个流程,直到最终选举出leader。流程图如下:</p>
+<p><img src="/images/zookeeper/zookeeper-fast-paxos.jpg" alt=""></p>
+<p>举一个简单的例子:</p>
+<p>假设有五台服务器组成的zookeeper集群,它们的id从1-5,同时它们都是最新启动的,也就是没有历史数据,在存放数据量这一点上,都是一样的.假设这些服务器依序启动,来看看会发生什么.</p>
+<pre><code>1) 服务器1启动,此时只有它一台服务器启动了,它发出去的报没有任何响应,所以它的选举状态一直是LOOKING状态
+2) 服务器2启动,它与最开始启动的服务器1进行通信,互相交换自己的选举结果,由于两者都没有历史数据,所以id值较大的服务器2胜出,但是由于没有达到超过半数以上的服务器都同意选举它(这个例子中的半数以上是3),所以服务器1,2还是继续保持LOOKING状态.
+3) 服务器3启动,根据前面的理论分析,服务器3成为服务器1,2,3中的老大,而与上面不同的是,此时有三台服务器选举了它,所以它成为了这次选举的leader.
+4) 服务器4启动,根据前面的分析,理论上服务器4应该是服务器1,2,3,4中最大的,但是由于前面已经有半数以上的服务器选举了服务器3,所以它只能接收当小弟的命了.
+5) 服务器5启动,同4一样,当小弟.
+</code></pre><p>以上就是fastleader算法的简要分析,还有一些异常情况的处理,比如某台服务器宕机之后的处理,当leader宕机之后的处理等等</p>
+<p>6 zookeeper 的同步流程</p>
+<p>选举完leader后,zk进入同步的状态过程</p>
+<pre><code>1) leader等待server的链接
+2) follower链接leader,并将最大的zxid发送给leader
+3) leader根据follower的zxid确定同步点
+4) 完成同步以后通知follower,已经成为uptodate状态
+5) follower收到uptodate消息后,又可以重新接收客户端的链接进行服务了
+</code></pre><p>具体的流程图如下:</p>
+<p><img src="/images/zookeeper/zookeeper-tongbu.jpg" alt=""></p>
+<p>7 zookeeper 的工作流程图</p>
+<p>Leader的工作流程:</p>
+<pre><code>1) 恢复数据
+2) 维持leader与learner的心跳,接收learner的请求并判定lerner的请求消息类型
+3) learner的消息类型主要有ping消息,Request消息,ack消息,revalidate消息,根据不同的消息类型进行不同的处理。
+
+PING消息是指Learner的心跳信息；
+REQUEST消息是Follower发送的提议信息，包括写请求及同步请求；
+ACK消息是Follower的对提议的回复，超过半数的Follower通过，则commit该提议；
+REVALIDATE消息是用来延长SESSION有效时间
+</code></pre><p>learner的大致工作流程图如下:</p>
+<p><img src="/images/zookeeper/zookeeper-leader-worker.jpg" alt=""></p>
+<p>Follower的工作流程:</p>
+<pre><code>1) 向Leader发送请求信息(ping消息,request消息,ack消息,revalidate消息)
+2) 接收leader消息进行处理
+3) 接收client请求信息,如果为写请求,发送给Leader进行投票
+4) 返回client的结果
+</code></pre><p>Follower的消息循环处理如下几种来自leader的消息:</p>
+<pre><code>1 .PING消息： 心跳消息；
+2 .PROPOSAL消息：Leader发起的提案，要求Follower投票；
+3 .COMMIT消息：服务器端最新一次提案的信息；
+4 .UPTODATE消息：表明同步完成；
+5 .REVALIDATE消息：根据Leader的REVALIDATE结果，关闭待revalidate的session还是允许其接受消息；
+6 .SYNC消息：返回SYNC结果到客户端，这个消息最初由客户端发起，用来强制得到最新的更新。
+</code></pre><p>Follower的工作流程大致如下:</p>
+<p><img src="/images/zookeeper/zookeeper-follower-liucheng.jpg" alt=""></p>
+<p>8 zookeeper的写操作</p>
+<p><img src="/images/zookeeper/zookeeper-writer.png" alt=""></p>
+<p>9 zookeeper的数据模型</p>
+<p>1) zookeeper提供了一个层次化的目录结构,命名符合常规文件系统规范,每个节点在zookeeper中叫做znode,并且它有一个唯一的路径标识</p>
+<p>2)znode有两种类型:短暂的(ephemeral) 和 持久化的(persistent),节点znode可以包含数据和子节点</p>
+<p>3) znode中的数据可以有多个版本</p>
+<p>4) 客户端引用，可以在节点上设置监视器(Vwatcher)</p>
+<p>5) 节点的znode不支持部分读写,而是一次性完整的读写吧</p>
+<p>6)znode的类型在创建时确定,并且之后不能再进行修改</p>
+<p>7) znode有四种形式的目录节点.Persistent,Persistent_sequential,Ephemeral,Ephemeral_sequential</p>
+<p>数据结构目录如下:</p>
+<p><img src="/images/zookeeper/zookeeper-file-list.png" alt=""></p>
+<p>zookeeper目录中的每一个节点对应着一个znode，每个znode维护着一个属性结构，它包含数据的版本号、时间戳、等信息。Zookeeper就是通过这些属性来实现它特定的功能。每当znode的数据改变时，相应的版本号会增加，每当客户端查询、更新和删除数据时，也必须提供要被操作的znode版本号，如果所提供的数据版本号与实际的不匹配，那么将会操作失败</p>
+<p>节点属性如下:</p>
+<p><img src="/images/zookeeper/zookeeper-znode-list.jpg" alt=""></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/zookeeper/" rel="tag">#zookeeper</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/12/hbase-study008/" rel="next" title="HBase学习笔记(八) Phoenix的JDBC操作">
+                <i class="fa fa-chevron-left"></i> HBase学习笔记(八) Phoenix的JDBC操作
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/06/15/zookeeper-study002/" rel="prev" title="Zookeeper学习笔记(二) zookeeper的应用场景">
+                Zookeeper学习笔记(二) zookeeper的应用场景 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+           <!-- 多说热评文章 start -->
+	<div class="ds-top-threads" data-range="daily" data-num-items="5"></div>
+<!-- 多说热评文章 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+
+           <section id="comments">
+   <!-- 多说评论框 start -->
+<div id="ds-thread" class="ds-thread" data-thread-key="<%= post.path %>" data-title="<%= post.title %>" data-url="<%= post.permalink %>"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+  </section>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="孙星" />
+          <p class="site-author-name" itemprop="name">孙星</p>
+          <p class="site-description motion-element" itemprop="description">sunxing's blog | mysql | java | scala | hadoop | spark | kafka | flume</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">65</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <p class="post-toc-empty">此文章未包含目录</p>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孙星</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"sunxing"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,727 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="java," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="1 BlockingQueue介绍 阻塞队列通常用生产者和消费者场景,一个线程用于生产一个线程用于消费。具体的结构图如下：   阻塞队列与普通队列的区别在于，当队列是空的时，从队列中获取元素的操作将会被阻塞，或者当队列是满时，往队列里添加元素的操作会被阻塞。试图从空的阻塞队列中获取元素的线程将会被阻塞，直到其他的线程往空的队列插入新的元素。同样，试图往已满的阻塞队列中添加新元素的线程同样也会被阻塞">
+<meta name="keywords" content="java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 多线程学习笔记(六) 阻塞队列">
+<meta property="og:url" content="http://www.sunxing.cc/2016/07/23/java-thread-study006/index.html">
+<meta property="og:site_name" content="孙星的个人博客~">
+<meta property="og:description" content="1 BlockingQueue介绍 阻塞队列通常用生产者和消费者场景,一个线程用于生产一个线程用于消费。具体的结构图如下：   阻塞队列与普通队列的区别在于，当队列是空的时，从队列中获取元素的操作将会被阻塞，或者当队列是满时，往队列里添加元素的操作会被阻塞。试图从空的阻塞队列中获取元素的线程将会被阻塞，直到其他的线程往空的队列插入新的元素。同样，试图往已满的阻塞队列中添加新元素的线程同样也会被阻塞">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://www.sunxing.cc/images/thread/blocking-queue.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/thread/blocking-queue-method.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/thread/block-queue-method-detail.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/thread/block-queue-poll.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/thread/block-queue-peek.png">
+<meta property="og:updated_time" content="2017-04-30T03:58:25.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java 多线程学习笔记(六) 阻塞队列">
+<meta name="twitter:description" content="1 BlockingQueue介绍 阻塞队列通常用生产者和消费者场景,一个线程用于生产一个线程用于消费。具体的结构图如下：   阻塞队列与普通队列的区别在于，当队列是空的时，从队列中获取元素的操作将会被阻塞，或者当队列是满时，往队列里添加元素的操作会被阻塞。试图从空的阻塞队列中获取元素的线程将会被阻塞，直到其他的线程往空的队列插入新的元素。同样，试图往已满的阻塞队列中添加新元素的线程同样也会被阻塞">
+<meta name="twitter:image" content="http://www.sunxing.cc/images/thread/blocking-queue.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+ <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258995301'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/z_stat.php%3Fid%3D1258995301' type='text/javascript'%3E%3C/script%3E"));</script>
+
+  <title> Java 多线程学习笔记(六) 阻塞队列 | 孙星的个人博客~ </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">孙星的个人博客~</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">搬砖的,码农~</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Java 多线程学习笔记(六) 阻塞队列
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-23T09:57:55+08:00" content="2016-07-23">
+              2016-07-23
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/23/java-thread-study006/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/23/java-thread-study006/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="1-BlockingQueue介绍"><a href="#1-BlockingQueue介绍" class="headerlink" title="1 BlockingQueue介绍"></a>1 BlockingQueue介绍</h2><blockquote>
+<p>阻塞队列通常用生产者和消费者场景,一个线程用于生产一个线程用于消费。具体的结构图如下：</p>
+</blockquote>
+<p><img src="/images/thread/blocking-queue.png" alt=""></p>
+<p>阻塞队列与普通队列的区别在于，当队列是空的时，从队列中获取元素的操作将会被阻塞，或者当队列是满时，往队列里添加元素的操作会被阻塞。试图从空的阻塞队列中获取元素的线程将会被阻塞，直到其他的线程往空的队列插入新的元素。同样，试图往已满的阻塞队列中添加新元素的线程同样也会被阻塞，直到其他的线程使队列重新变得空闲起来，如从队列中移除一个或者多个元素，或者完全清空队列</p>
+<p>BlockingQueue的常用方法截图如下：</p>
+<p><img src="/images/thread/blocking-queue-method.png" alt=""></p>
+<p>其中队列主要的方法为：插入,移除,检测,大小,转化。等操作。</p>
+<p>数据插入的方法,具体的插入数据的方式以及每个方法是否会抛异常,返回值内容,以及备注。</p>
+<p><img src="/images/thread/block-queue-method-detail.png" alt=""></p>
+<p>删除数据的各种方法具体的方法名称,结果,异常等,具体的如下：</p>
+<p><img src="/images/thread/block-queue-poll.png" alt=""></p>
+<p>获取获取队列首部的数据,但是不移除对象,具体的方法调用如下：</p>
+<p><img src="/images/thread/block-queue-peek.png" alt=""></p>
+<p>通过上面的都已经了解到了,其实BlockingQueue的实现类主要有一下集中,常用的是前三个：</p>
+<pre><code>1 LinkedBlockingQueue
+2 ArrayBlockingQueue
+3 PriorityBlockingQueue
+4 DelayQueue
+5 SynchronousQueue
+</code></pre><p>下面开始详细介绍下以上几个BlockingQueue的详细用法和内部实现机理。</p>
+<h2 id="2-LinkedBlockingQueue"><a href="#2-LinkedBlockingQueue" class="headerlink" title="2 LinkedBlockingQueue"></a>2 LinkedBlockingQueue</h2><p>LinkedBlockingQueue内部实现的是一个链表,在数据结构中,链表中每一个节点都有一个向上和向下的指针,在java中也就是一个应用,同时每个节点需要保存当前的内容.同样的LinkedBlockingQueue其内部的链表数据结构如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">static class Node&lt;E&gt; &#123;</div><div class="line">        E item;</div><div class="line"></div><div class="line">        /**</div><div class="line">         * One of:</div><div class="line">         * - the real successor Node</div><div class="line">         * - this Node, meaning the successor is head.next</div><div class="line">         * - null, meaning there is no successor (this is the last node)</div><div class="line">         */</div><div class="line">        Node&lt;E&gt; next;</div><div class="line"></div><div class="line">        Node(E x) &#123; item = x; &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>既然是链表,那么大小应该没有限制了？其实不是的,对于java中的集合和队列一般都会有大小的限制,用户可以自己在初始化的时候指定或者是内部有一个初始化的大小,当然有的时候是根据进行扩容。那么在LinkedBlockingQueue中内部用于表示集合大小的参数是什么？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">/** The capacity bound, or Integer.MAX_VALUE if none */</div><div class="line">private final int capacity;</div><div class="line"></div><div class="line">/** Current number of elements */</div><div class="line">private final AtomicInteger count = new AtomicInteger(0);</div></pre></td></tr></table></figure>
+<p>从上面可以看到其中capacity是用来表示用户指定的或者默认的集合大小,同时count是一个Integer原子操作类,用于统计当前的链表集合的大小。</p>
+<p>对于链表的数据结构基本的操作是添加一个,查找下一个。下面介绍基本的操作添加,删除操作的方法和内部机理。</p>
+<p>添加数据的方法如下一共有5个：</p>
+<pre><code>1 add(object)
+2 put(object)
+3 offer(object)
+4 offer(object,timeout,TimeUnit)
+5 addAll(Collection)
+</code></pre><p>下面主要介绍一下put方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">public void put(E e) throws InterruptedException &#123;</div><div class="line">       if (e == null) throw new NullPointerException();</div><div class="line">       // Note: convention in all put/take/etc is to preset local var</div><div class="line">       // holding count negative to indicate failure unless set.</div><div class="line">       int c = -1;</div><div class="line">       Node&lt;E&gt; node = new Node(e);</div><div class="line">       final ReentrantLock putLock = this.putLock;</div><div class="line">       final AtomicInteger count = this.count;</div><div class="line">       putLock.lockInterruptibly();</div><div class="line">       try &#123;</div><div class="line">           /*</div><div class="line">            * Note that count is used in wait guard even though it is</div><div class="line">            * not protected by lock. This works because count can</div><div class="line">            * only decrease at this point (all other puts are shut</div><div class="line">            * out by lock), and we (or some other waiting put) are</div><div class="line">            * signalled if it ever changes from capacity. Similarly</div><div class="line">            * for all other uses of count in other wait guards.</div><div class="line">            */</div><div class="line">           while (count.get() == capacity) &#123;</div><div class="line">               notFull.await();</div><div class="line">           &#125;</div><div class="line">           enqueue(node);</div><div class="line">           c = count.getAndIncrement();</div><div class="line">           if (c + 1 &lt; capacity)</div><div class="line">               notFull.signal();</div><div class="line">       &#125; finally &#123;</div><div class="line">           putLock.unlock();</div><div class="line">       &#125;</div><div class="line">       if (c == 0)</div><div class="line">           signalNotEmpty();</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<p>说明：</p>
+<p>1 如果当前链表的数据达到用户设定或者默认值的大小(count.get() == capacity),则等待队列数据移除队列,释放空间。</p>
+<p>2 一个队列有头部和尾部,一般从尾部添加数据,头部获取数据,同样的,在LinkedBlockingQueue中如下成员变量：</p>
+<pre><code>/**
+ * Head of linked list.
+ * Invariant: head.item == null
+ */
+private transient Node&lt;E&gt; head;
+
+/**
+ * Tail of linked list.
+ * Invariant: last.next == null
+ */
+private transient Node&lt;E&gt; last;
+</code></pre><p>每次有新的数据需要添加进来,从尾部开始添加,也就是：last = last.next = node;</p>
+<p>下面介绍一下offer(object),这个方法的源码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">public boolean offer(E e) &#123;</div><div class="line">       if (e == null) throw new NullPointerException();</div><div class="line">       final AtomicInteger count = this.count;</div><div class="line">       if (count.get() == capacity)</div><div class="line">           return false;</div><div class="line">       int c = -1;</div><div class="line">       Node&lt;E&gt; node = new Node(e);</div><div class="line">       final ReentrantLock putLock = this.putLock;</div><div class="line">       putLock.lock();</div><div class="line">       try &#123;</div><div class="line">           if (count.get() &lt; capacity) &#123;</div><div class="line">               enqueue(node);</div><div class="line">               c = count.getAndIncrement();</div><div class="line">               if (c + 1 &lt; capacity)</div><div class="line">                   notFull.signal();</div><div class="line">           &#125;</div><div class="line">       &#125; finally &#123;</div><div class="line">           putLock.unlock();</div><div class="line">       &#125;</div><div class="line">       if (c == 0)</div><div class="line">           signalNotEmpty();</div><div class="line">       return c &gt;= 0;</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<p>由此可以看到当前队列没有满,就向其中添加一个数据,如果队列还没有满,就唤醒所有阻塞的插入数据动作。</p>
+<p>下面开始看看出队的操作,出队的方法很很多,主要的看上面的截图介绍,现在来看下take()方法的源码:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">public E take() throws InterruptedException &#123;</div><div class="line">        E x;</div><div class="line">        int c = -1;</div><div class="line">        final AtomicInteger count = this.count;</div><div class="line">        final ReentrantLock takeLock = this.takeLock;</div><div class="line">        takeLock.lockInterruptibly();</div><div class="line">        try &#123;</div><div class="line">            while (count.get() == 0) &#123;</div><div class="line">                notEmpty.await();</div><div class="line">            &#125;</div><div class="line">            x = dequeue();</div><div class="line">            c = count.getAndDecrement();</div><div class="line">            if (c &gt; 1)</div><div class="line">                notEmpty.signal();</div><div class="line">        &#125; finally &#123;</div><div class="line">            takeLock.unlock();</div><div class="line">        &#125;</div><div class="line">        if (c == capacity)</div><div class="line">            signalNotFull();</div><div class="line">        return x;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>首先检查队列是否为空,如果为空,则阻塞等待队列中有数据,如果队列中有数据了,进行出队动作,如果出队后队列中有数据,则唤醒其他阻塞的出队线程。</p>
+<p>在阻塞队列中用到的锁如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">/** Lock held by take, poll, etc */</div><div class="line">private final ReentrantLock takeLock = new ReentrantLock();</div><div class="line"></div><div class="line">/** Wait queue for waiting takes */</div><div class="line">private final Condition notEmpty = takeLock.newCondition();</div><div class="line"></div><div class="line">/** Lock held by put, offer, etc */</div><div class="line">private final ReentrantLock putLock = new ReentrantLock();</div><div class="line"></div><div class="line">/** Wait queue for waiting puts */</div><div class="line">private final Condition notFull = putLock.newCondition();</div></pre></td></tr></table></figure>
+<p>出队和入队都有锁对象来进行控制,同时一些阻塞类方法是通过条件阻塞Condition来实现的,同样的通过上面的与那吗可以看出队列的操作是线程安全的。</p>
+<h2 id="3-ArrayBlockingQueue"><a href="#3-ArrayBlockingQueue" class="headerlink" title="3 ArrayBlockingQueue"></a>3 ArrayBlockingQueue</h2><p>ArrayBlockingQueue 是一个有界的阻塞队列，其内部实现是将对象放到一个数组里.和缓冲区的构造思想相同,通过构建一个数组,在提供一些指针来表示不同操作,同样的和LinkedBlockingQueue一样,ArrayBlockingQueue也是线程安全的队列,在对其中数据进行操作的时候是进行加锁的.</p>
+<p>来看下他的内部是怎么实现初始化的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">     * Creates an &#123;@code ArrayBlockingQueue&#125; with the given (fixed)</div><div class="line">     * capacity and default access policy.</div><div class="line">     *</div><div class="line">     * @param capacity the capacity of this queue</div><div class="line">     * @throws IllegalArgumentException if &#123;@code capacity &lt; 1&#125;</div><div class="line">     */</div><div class="line">    public ArrayBlockingQueue(int capacity) &#123;</div><div class="line">        this(capacity, false);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * Creates an &#123;@code ArrayBlockingQueue&#125; with the given (fixed)</div><div class="line">     * capacity and the specified access policy.</div><div class="line">     *</div><div class="line">     * @param capacity the capacity of this queue</div><div class="line">     * @param fair if &#123;@code true&#125; then queue accesses for threads blocked</div><div class="line">     *        on insertion or removal, are processed in FIFO order;</div><div class="line">     *        if &#123;@code false&#125; the access order is unspecified.</div><div class="line">     * @throws IllegalArgumentException if &#123;@code capacity &lt; 1&#125;</div><div class="line">     */</div><div class="line">    public ArrayBlockingQueue(int capacity, boolean fair) &#123;</div><div class="line">        if (capacity &lt;= 0)</div><div class="line">            throw new IllegalArgumentException();</div><div class="line">        this.items = new Object[capacity];</div><div class="line">        lock = new ReentrantLock(fair);</div><div class="line">        notEmpty = lock.newCondition();</div><div class="line">        notFull =  lock.newCondition();</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>也就是在ArrayBlockingQueue的初始化中开发者必须指定队列的大小,jdk中没有提供默认的大小.这个是和其他的有点区别的。同样的,因为是数组,在java中数组的大小一旦指定以后是不能改变的,也就是这个队列的大小是定死了。从第二个构造函数中可以看到,指定了锁是公平还是非公平锁.公平锁死指按照FIFO的方式来分配锁,非公平锁死是按照优先级或者是线程锁获取次数,或者是自定义方式来分配。</p>
+<p>同样的插入数据到队列中也是同样的,在插入时进行加锁,检测队列容量,如果当前队列满了,则等待出队动作移除数据后唤醒,同样的,如果阻塞了多个线程,其中一个线程检测发现已经有数据出队了,同样的插入数据后,队列还是没满,继续进行唤醒,唤醒阻塞的入队操作。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">     * Inserts the specified element at the tail of this queue, waiting</div><div class="line">     * for space to become available if the queue is full.</div><div class="line">     *</div><div class="line">     * @throws InterruptedException &#123;@inheritDoc&#125;</div><div class="line">     * @throws NullPointerException &#123;@inheritDoc&#125;</div><div class="line">     */</div><div class="line">    public void put(E e) throws InterruptedException &#123;</div><div class="line">        checkNotNull(e);</div><div class="line">        final ReentrantLock lock = this.lock;</div><div class="line">        lock.lockInterruptibly();</div><div class="line">        try &#123;</div><div class="line">            while (count == items.length)</div><div class="line">                notFull.await();</div><div class="line">            insert(e);</div><div class="line">        &#125; finally &#123;</div><div class="line">            lock.unlock();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">     private void insert(E x) &#123;</div><div class="line">        items[putIndex] = x;</div><div class="line">        putIndex = inc(putIndex);</div><div class="line">        ++count;</div><div class="line">        notEmpty.signal();</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<h2 id="4-PriorityBlockingQueue"><a href="#4-PriorityBlockingQueue" class="headerlink" title="4 PriorityBlockingQueue"></a>4 PriorityBlockingQueue</h2><p>优先级队列,主要用于处理有优先级需求的数据,根据自定义的比较方式进行队列数据的排序。内部实现四通过封装一个数组来实现的队列,同样的内部有一个比较器,这个比较器是用来进行优先级的判定的。不同于ArrayBlockingQueue,PriorityBlockingQueue有一个默认的数组大小,为11。</p>
+<p>PriorityBlockingQueue 是一个无界的并发队列。它使用了和类 java.util.PriorityQueue 一样的排序规则。你无法向这个队列中插入 null 值。所有插入到 PriorityBlockingQueue 的元素必须实现<br>java.lang.Comparable 接口。因此该队列中元素的排序就取决于你自己的 Comparable 实现。注意 PriorityBlockingQueue 对于具有相等优先级(compare() == 0)的元素并不强制任何特定行为。同时注意，如果你从一个 PriorityBlockingQueue 获得一个 Iterator 的话，该 Iterator 并不能保证它对元素的遍历是以优先级为序的。</p>
+<p>下面来看下添加数据的操作的源代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">public boolean offer(E e) &#123;</div><div class="line">    if (e == null)</div><div class="line">        throw new NullPointerException();</div><div class="line">    final ReentrantLock lock = this.lock;</div><div class="line">    lock.lock();</div><div class="line">    int n, cap;</div><div class="line">    Object[] array;</div><div class="line">    while ((n = size) &gt;= (cap = (array = queue).length))</div><div class="line">        tryGrow(array, cap);</div><div class="line">    try &#123;</div><div class="line">        Comparator&lt;? super E&gt; cmp = comparator;</div><div class="line">        if (cmp == null)</div><div class="line">            siftUpComparable(n, e, array);</div><div class="line">        else</div><div class="line">            siftUpUsingComparator(n, e, array, cmp);</div><div class="line">        size = n + 1;</div><div class="line">        notEmpty.signal();</div><div class="line">    &#125; finally &#123;</div><div class="line">        lock.unlock();</div><div class="line">    &#125;</div><div class="line">    return true;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>检测当前队列是否已经满了,如果满了进行扩容,具体的扩容细节就不说了,下面开始看try{}catch(){}中的代码。<br>如果比较器为空则调用siftUpComparable(n, e, array);,否则siftUpUsingComparator(n, e, array, cmp);那么我们来看下如果我指定了了Comparator后,具体是怎么排序的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">private static &lt;T&gt; void siftUpUsingComparator(int k, T x, Object[] array,</div><div class="line">                                   Comparator&lt;? super T&gt; cmp) &#123;</div><div class="line">    while (k &gt; 0) &#123;</div><div class="line">        int parent = (k - 1) &gt;&gt;&gt; 1;</div><div class="line">        Object e = array[parent];</div><div class="line">        if (cmp.compare(x, (T) e) &gt;= 0)</div><div class="line">            break;</div><div class="line">        array[k] = e;</div><div class="line">        k = parent;</div><div class="line">    &#125;</div><div class="line">    array[k] = x;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面的代码可以简单的使用一句话进行说明：k位置上的数与(k-1)/2位置上的数进行比较,如果如果满足自定义的比较规则,也就是(cmp.compare(x, (T) e) &gt;= 0)为true,数据不动,也就是就放在k这个位置上。如果为false,则交换两个位置的数据。</p>
+<p>下面开始举个具体的例子来说明,自定义比较方式如果x - e &gt; 0 返回1,否则返回-1,也就是升序排序。那么如果数据来的顺序是降序的那么就会出现下面的情况：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">1 k=0,x=9  									    =&gt; array[k] = array[0] = 9</div><div class="line">2 k=1,parent=0,x=8,</div><div class="line">  array[parent]=9,</div><div class="line">  x - array[parent] &lt; 0,					</div><div class="line">  a[1] = 9,</div><div class="line">  a[0]	= 8										=&gt; array[1] = 9,array[0] = 8</div><div class="line">3 k=2,parent = 0,x = 7</div><div class="line">  array[parent]=8,</div><div class="line">  x - array[parent] &lt; 0,					</div><div class="line">  a[2] = 8,</div><div class="line">  a[0]	= 7										=&gt; array[2] = 8,array[0] = 7</div><div class="line">  </div><div class="line">=&gt; 数据插入顺序为: 9,8,7 结果在数组中为 =&gt; 7,9,8</div></pre></td></tr></table></figure>
+<p>由此可以看到在优先级队列中数据并不是有序的,同样由上面可以看出每次其实只是对比了两个点上对应的数据,并没有全部比较,同样可能是基于效率上的考虑,比较两个点相对于那些各种的排序来实现优先级队列的话,效率是极大的提高了.</p>
+<p>那么数据不是有序的,那么是怎么获取优先级最高的数据？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">private E dequeue() &#123;</div><div class="line">       int n = size - 1;</div><div class="line">       if (n &lt; 0)</div><div class="line">           return null;</div><div class="line">       else &#123;</div><div class="line">           Object[] array = queue;</div><div class="line">           E result = (E) array[0];</div><div class="line">           E x = (E) array[n];</div><div class="line">           array[n] = null;</div><div class="line">           Comparator&lt;? super E&gt; cmp = comparator;</div><div class="line">           if (cmp == null)</div><div class="line">               siftDownComparable(0, x, array, n);</div><div class="line">           else</div><div class="line">               siftDownUsingComparator(0, x, array, n, cmp);</div><div class="line">           size = n;</div><div class="line">           return result;</div><div class="line">       &#125;</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<p>上面是出队的代码,同样的代码中获取了第1个和最后一个数据,然后在调用方法：siftDownUsingComparator(0, x, array, n, cmp);</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">private static &lt;T&gt; void siftDownUsingComparator(int k, T x, Object[] array,</div><div class="line">                                                int n,</div><div class="line">                                                Comparator&lt;? super T&gt; cmp) &#123;</div><div class="line">    if (n &gt; 0) &#123;</div><div class="line">        int half = n &gt;&gt;&gt; 1;</div><div class="line">        while (k &lt; half) &#123;</div><div class="line">            int child = (k &lt;&lt; 1) + 1;</div><div class="line">            Object c = array[child];</div><div class="line">            int right = child + 1;</div><div class="line">            if (right &lt; n &amp;&amp; cmp.compare((T) c, (T) array[right]) &gt; 0)</div><div class="line">                c = array[child = right];</div><div class="line">            if (cmp.compare(x, (T) c) &lt;= 0)</div><div class="line">                break;</div><div class="line">            array[k] = c;</div><div class="line">            k = child;</div><div class="line">        &#125;</div><div class="line">        array[k] = x;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>其实这里就是进行二分查找的过程,找到最大的值。</p>
+<h2 id="5-DelayQueue"><a href="#5-DelayQueue" class="headerlink" title="5 DelayQueue"></a>5 DelayQueue</h2><p>Delayed 元素的一个无界阻塞队列，只有在延迟期满时才能从中提取元素。该队列的头部 是延迟期满后保存时间最长的 Delayed 元素。如果延迟都还没有期满，则队列没有头部，并且 poll 将返回 null。当一个元素的getDelay(TimeUnit.NANOSECONDS) 方法返回一个小于或等于零的值时，则出现期满。此队列不允许使用 null 元素</p>
+<p>它的内部成员变量如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">private transient final ReentrantLock lock = new ReentrantLock();</div><div class="line">    private final PriorityQueue&lt;E&gt; q = new PriorityQueue&lt;E&gt;();</div><div class="line"></div><div class="line">    /**</div><div class="line">     * Thread designated to wait for the element at the head of</div><div class="line">     * the queue.  This variant of the Leader-Follower pattern</div><div class="line">     * (http://www.cs.wustl.edu/~schmidt/POSA/POSA2/) serves to</div><div class="line">     * minimize unnecessary timed waiting.  When a thread becomes</div><div class="line">     * the leader, it waits only for the next delay to elapse, but</div><div class="line">     * other threads await indefinitely.  The leader thread must</div><div class="line">     * signal some other thread before returning from take() or</div><div class="line">     * poll(...), unless some other thread becomes leader in the</div><div class="line">     * interim.  Whenever the head of the queue is replaced with</div><div class="line">     * an element with an earlier expiration time, the leader</div><div class="line">     * field is invalidated by being reset to null, and some</div><div class="line">     * waiting thread, but not necessarily the current leader, is</div><div class="line">     * signalled.  So waiting threads must be prepared to acquire</div><div class="line">     * and lose leadership while waiting.</div><div class="line">     */</div><div class="line">    private Thread leader = null;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * Condition signalled when a newer element becomes available</div><div class="line">     * at the head of the queue or a new thread may need to</div><div class="line">     * become leader.</div><div class="line">     */</div><div class="line">    private final Condition available = lock.newCondition();</div></pre></td></tr></table></figure>
+<p>有这个可以看到其内部实现的是一个优先级队列,其中该队列中的元素必须继承Delayed：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">public class DelayQueue&lt;E extends Delayed&gt; extends AbstractQueue&lt;E&gt;</div><div class="line">    implements BlockingQueue&lt;E&gt;</div></pre></td></tr></table></figure>
+<p>下面给一个简单的测试代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">public void test1()&#123;</div><div class="line">    DelayQueue delayQueue = new DelayQueue();</div><div class="line">    delayQueue.add(new MyDelayItem());</div><div class="line">&#125;</div><div class="line"></div><div class="line">public class MyDelayItem implements Delayed&#123;</div><div class="line">    @Override</div><div class="line">    public long getDelay(TimeUnit unit) &#123;</div><div class="line">        return 0;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public int compareTo(Delayed o) &#123;</div><div class="line">        return 0;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="6-SynchronousQueue"><a href="#6-SynchronousQueue" class="headerlink" title="6 SynchronousQueue"></a>6 SynchronousQueue</h2><p>SynchronousQueue 是一个特殊的队列，它的内部同时只能够容纳单个元素。如果该队列已有一元素的话，试图向队列中插入一个新元素的线程将会阻塞，直到另一个线程将该元素从队列中抽走。同样，如果该队列为空，试图向队列中抽取一个元素的线程将会阻塞，直到另一个线程向队列中插入了一条新的元素。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag">#java</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/22/java-thread-study005/" rel="next" title="Java 多线程学习笔记(五) 线程安全集合">
+                <i class="fa fa-chevron-left"></i> Java 多线程学习笔记(五) 线程安全集合
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/11/21/maven-study001/" rel="prev" title="maven学习笔记(一) windows下安装maven">
+                maven学习笔记(一) windows下安装maven <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+           <!-- 多说热评文章 start -->
+	<div class="ds-top-threads" data-range="daily" data-num-items="5"></div>
+<!-- 多说热评文章 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+
+           <section id="comments">
+   <!-- 多说评论框 start -->
+<div id="ds-thread" class="ds-thread" data-thread-key="<%= post.path %>" data-title="<%= post.title %>" data-url="<%= post.permalink %>"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+  </section>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="孙星" />
+          <p class="site-author-name" itemprop="name">孙星</p>
+          <p class="site-description motion-element" itemprop="description">sunxing's blog | mysql | java | scala | hadoop | spark | kafka | flume</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">65</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-BlockingQueue介绍"><span class="nav-number">1.</span> <span class="nav-text">1 BlockingQueue介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-LinkedBlockingQueue"><span class="nav-number">2.</span> <span class="nav-text">2 LinkedBlockingQueue</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-ArrayBlockingQueue"><span class="nav-number">3.</span> <span class="nav-text">3 ArrayBlockingQueue</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-PriorityBlockingQueue"><span class="nav-number">4.</span> <span class="nav-text">4 PriorityBlockingQueue</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-DelayQueue"><span class="nav-number">5.</span> <span class="nav-text">5 DelayQueue</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-SynchronousQueue"><span class="nav-number">6.</span> <span class="nav-text">6 SynchronousQueue</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孙星</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"sunxing"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>

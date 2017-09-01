@@ -1,0 +1,670 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="zookeeper," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="1 zookeeper的统一命名服务在分布式环境下,经常需要对应用/服务进行统一命名,便于识别不同的服务. 1) 类似于域名与ip之间的关系 2) 通过名称来获取资源或服务的地址等信息 按照城市结果组织服务/应用名称 1) 可以将服务名称和地址信息写到zookeeper中,客户端通过zookeeper获取服务的列表信息 具体的结构图如下：  如：在路径下/app/p_1  表示服务p_1,可以进服">
+<meta name="keywords" content="zookeeper">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Zookeeper学习笔记(二) zookeeper的应用场景">
+<meta property="og:url" content="http://www.sunxing.cc/2016/06/15/zookeeper-study002/index.html">
+<meta property="og:site_name" content="孙星的个人博客~">
+<meta property="og:description" content="1 zookeeper的统一命名服务在分布式环境下,经常需要对应用/服务进行统一命名,便于识别不同的服务. 1) 类似于域名与ip之间的关系 2) 通过名称来获取资源或服务的地址等信息 按照城市结果组织服务/应用名称 1) 可以将服务名称和地址信息写到zookeeper中,客户端通过zookeeper获取服务的列表信息 具体的结构图如下：  如：在路径下/app/p_1  表示服务p_1,可以进服">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://www.sunxing.cc/images/zookeeper/zookeeper-tongyimingming.jpg">
+<meta property="og:image" content="http://www.sunxing.cc/images/zookeeper/zookeeper-conf-manager.jpg">
+<meta property="og:updated_time" content="2017-04-30T03:58:25.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Zookeeper学习笔记(二) zookeeper的应用场景">
+<meta name="twitter:description" content="1 zookeeper的统一命名服务在分布式环境下,经常需要对应用/服务进行统一命名,便于识别不同的服务. 1) 类似于域名与ip之间的关系 2) 通过名称来获取资源或服务的地址等信息 按照城市结果组织服务/应用名称 1) 可以将服务名称和地址信息写到zookeeper中,客户端通过zookeeper获取服务的列表信息 具体的结构图如下：  如：在路径下/app/p_1  表示服务p_1,可以进服">
+<meta name="twitter:image" content="http://www.sunxing.cc/images/zookeeper/zookeeper-tongyimingming.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+ <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258995301'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/z_stat.php%3Fid%3D1258995301' type='text/javascript'%3E%3C/script%3E"));</script>
+
+  <title> Zookeeper学习笔记(二) zookeeper的应用场景 | 孙星的个人博客~ </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">孙星的个人博客~</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">搬砖的,码农~</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Zookeeper学习笔记(二) zookeeper的应用场景
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-15T11:55:55+08:00" content="2016-06-15">
+              2016-06-15
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/zookeeper/" itemprop="url" rel="index">
+                    <span itemprop="name">zookeeper</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/15/zookeeper-study002/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/15/zookeeper-study002/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="1-zookeeper的统一命名服务"><a href="#1-zookeeper的统一命名服务" class="headerlink" title="1 zookeeper的统一命名服务"></a>1 zookeeper的统一命名服务</h2><p>在分布式环境下,经常需要对应用/服务进行统一命名,便于识别不同的服务.</p>
+<pre><code>1) 类似于域名与ip之间的关系
+2) 通过名称来获取资源或服务的地址等信息
+</code></pre><p>按照城市结果组织服务/应用名称</p>
+<pre><code>1) 可以将服务名称和地址信息写到zookeeper中,客户端通过zookeeper获取服务的列表信息
+</code></pre><p>具体的结构图如下：</p>
+<p><img src="/images/zookeeper/zookeeper-tongyimingming.jpg" alt=""></p>
+<p>如：在路径下/app/p_1  表示服务p_1,可以进服务对应的数据存在这个目录下.</p>
+<h2 id="2-配置管理"><a href="#2-配置管理" class="headerlink" title="2 配置管理"></a>2 配置管理</h2><p>在分布式环境下,进程需要配置文件管理和同步</p>
+<pre><code>1) 一个集群中,所有节点的配置信息应该一致
+2) 我们队配置文件修改后,希望能够快速同步到各个节点上
+</code></pre><p>配置管理可以交给zookeeper实现:</p>
+<pre><code>1) 可以将配置信息写入到zookeeper中的一个znode节点上
+2) 各个节点监听这个znode
+3) 一旦znode中的数据被修改了,zookeeper将通知各个节点
+</code></pre><p>具体的管理构造图如下:</p>
+<p><img src="/images/zookeeper/zookeeper-conf-manager.jpg" alt=""></p>
+<h2 id="3-zookeeper的集群管理"><a href="#3-zookeeper的集群管理" class="headerlink" title="3 zookeeper的集群管理"></a>3 zookeeper的集群管理</h2><p>分布式管理中我们需要实时掌握每个节点的状态,可根据节点实时状态做出一些调整</p>
+<p>可交由zookeeper进行实现:</p>
+<pre><code>1) 可将节点信息写入到zookeeper上的一个znode钟
+2) 监听这个znode可获取他的实时状态变化
+</code></pre><p>典型的应用：HBase中master状态监控和选举</p>
+<p>1 hbase regionserver 向zookeeper注册，提供hbase regionserver状态信息（是否在线）</p>
+<p>2 HMaster主要作用在于，通过HMaster维护系统表-ROOT-,.META.，记录regionserver所对应region变化信息。此外还负责监控处理当前hbase cluster中regionserver状态变化信息。</p>
+<pre><code>hbase regionserver则用于多个/单个维护region。
+region则对应为hbase数据表的表分区数据维护。
+</code></pre><h2 id="4-分布式通知与协调"><a href="#4-分布式通知与协调" class="headerlink" title="4 分布式通知与协调"></a>4 分布式通知与协调</h2><p>分布式环境下,经常存在一个服务需要知道它所管理的子服务的状态.</p>
+<pre><code>1) NameNode所需要知道哥哥DateNode的状态
+2) ResourceManager需要知道各个NodeManager的状态
+</code></pre><p>zookeeper可以实现心跳检测机制,信息推送,它相当于一个发布和订阅系统</p>
+<h2 id="5-分布式队列"><a href="#5-分布式队列" class="headerlink" title="5 分布式队列"></a>5 分布式队列</h2><p>当一个队列的成员都聚齐时,这个队列才可用,否则一直等待所有的成员到达,这种是同步队列</p>
+<pre><code>1) 一个job由多个task组成,只有所有的任务完成后,job才运行完成
+2) 可为jbo创建一个/job目录,然后在该目录下,为每一个完成的task创建一个临时的znode,一旦临时节点数达到task总数,则表示job完成
+</code></pre><p>队列按照FIFO方式进行入队和出队列操作,例如实现生产者和消费者模型。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/zookeeper/" rel="tag">#zookeeper</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/14/zookeeper-study001/" rel="next" title="Zookeeper学习笔记(一) zookeeper的基本原理">
+                <i class="fa fa-chevron-left"></i> Zookeeper学习笔记(一) zookeeper的基本原理
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/06/16/zookeeper-study003/" rel="prev" title="Zookeeper学习笔记(三) zookeeper的安装和使用">
+                Zookeeper学习笔记(三) zookeeper的安装和使用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+           <!-- 多说热评文章 start -->
+	<div class="ds-top-threads" data-range="daily" data-num-items="5"></div>
+<!-- 多说热评文章 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+
+           <section id="comments">
+   <!-- 多说评论框 start -->
+<div id="ds-thread" class="ds-thread" data-thread-key="<%= post.path %>" data-title="<%= post.title %>" data-url="<%= post.permalink %>"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+  </section>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="孙星" />
+          <p class="site-author-name" itemprop="name">孙星</p>
+          <p class="site-description motion-element" itemprop="description">sunxing's blog | mysql | java | scala | hadoop | spark | kafka | flume</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">65</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-zookeeper的统一命名服务"><span class="nav-number">1.</span> <span class="nav-text">1 zookeeper的统一命名服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-配置管理"><span class="nav-number">2.</span> <span class="nav-text">2 配置管理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-zookeeper的集群管理"><span class="nav-number">3.</span> <span class="nav-text">3 zookeeper的集群管理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-分布式通知与协调"><span class="nav-number">4.</span> <span class="nav-text">4 分布式通知与协调</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-分布式队列"><span class="nav-number">5.</span> <span class="nav-text">5 分布式队列</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孙星</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"sunxing"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>

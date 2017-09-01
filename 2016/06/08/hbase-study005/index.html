@@ -1,0 +1,664 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="hbase," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="以下内容摘抄与官网文档中 1 HBase MapReduce Read ExampleThe following is an example of using HBase as a MapReduce source in read-only manner. Specifically, there is a Mapper instance but no Reducer, and nothing is">
+<meta name="keywords" content="hbase">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HBase学习笔记(五) HBase与MapReduce的集成">
+<meta property="og:url" content="http://www.sunxing.cc/2016/06/08/hbase-study005/index.html">
+<meta property="og:site_name" content="孙星的个人博客~">
+<meta property="og:description" content="以下内容摘抄与官网文档中 1 HBase MapReduce Read ExampleThe following is an example of using HBase as a MapReduce source in read-only manner. Specifically, there is a Mapper instance but no Reducer, and nothing is">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-04-30T03:58:25.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HBase学习笔记(五) HBase与MapReduce的集成">
+<meta name="twitter:description" content="以下内容摘抄与官网文档中 1 HBase MapReduce Read ExampleThe following is an example of using HBase as a MapReduce source in read-only manner. Specifically, there is a Mapper instance but no Reducer, and nothing is">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+ <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258995301'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/z_stat.php%3Fid%3D1258995301' type='text/javascript'%3E%3C/script%3E"));</script>
+
+  <title> HBase学习笔记(五) HBase与MapReduce的集成 | 孙星的个人博客~ </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">孙星的个人博客~</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">搬砖的,码农~</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                HBase学习笔记(五) HBase与MapReduce的集成
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-08T11:55:55+08:00" content="2016-06-08">
+              2016-06-08
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/hbase/" itemprop="url" rel="index">
+                    <span itemprop="name">hbase</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/08/hbase-study005/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/08/hbase-study005/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>以下内容摘抄与官网文档中</p>
+<h2 id="1-HBase-MapReduce-Read-Example"><a href="#1-HBase-MapReduce-Read-Example" class="headerlink" title="1 HBase MapReduce Read Example"></a>1 HBase MapReduce Read Example</h2><p>The following is an example of using HBase as a MapReduce source in read-only manner. Specifically, there is a Mapper instance but no Reducer, and nothing is being emitted from the Mapper. The job would be defined as follows…​</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">Configuration config = HBaseConfiguration.create();</div><div class="line">Job job = new Job(config, &quot;ExampleRead&quot;);</div><div class="line">job.setJarByClass(MyReadJob.class);     // class that contains mapper</div><div class="line"></div><div class="line">Scan scan = new Scan();</div><div class="line">scan.setCaching(500);        // 1 is the default in Scan, which will be bad for MapReduce jobs</div><div class="line">scan.setCacheBlocks(false);  // don&apos;t set to true for MR jobs</div><div class="line">// set other scan attrs</div><div class="line">...</div><div class="line"></div><div class="line">TableMapReduceUtil.initTableMapperJob(</div><div class="line">  tableName,        // input HBase table name</div><div class="line">  scan,             // Scan instance to control CF and attribute selection</div><div class="line">  MyMapper.class,   // mapper</div><div class="line">  null,             // mapper output key</div><div class="line">  null,             // mapper output value</div><div class="line">  job);</div><div class="line">job.setOutputFormatClass(NullOutputFormat.class);   // because we aren&apos;t emitting anything from mapper</div><div class="line"></div><div class="line">boolean b = job.waitForCompletion(true);</div><div class="line">if (!b) &#123;</div><div class="line">  throw new IOException(&quot;error with job!&quot;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>the mapper instance would extend TableMapper</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">public static class MyMapper extends TableMapper&lt;Text, Text&gt; &#123;</div><div class="line"></div><div class="line">  public void map(ImmutableBytesWritable row, Result value, Context context) throws InterruptedException, IOException &#123;</div><div class="line">    // process data for the row from the Result instance.</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="2-HBase-MapReduce-Read-Write-Example"><a href="#2-HBase-MapReduce-Read-Write-Example" class="headerlink" title="2 HBase MapReduce Read/Write Example"></a>2 HBase MapReduce Read/Write Example</h2><p>The following is an example of using HBase both as a source and as a sink with MapReduce. This example will simply copy data from one table to another.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">Configuration config = HBaseConfiguration.create();</div><div class="line">Job job = new Job(config,&quot;ExampleReadWrite&quot;);</div><div class="line">job.setJarByClass(MyReadWriteJob.class);    // class that contains mapper</div><div class="line"></div><div class="line">Scan scan = new Scan();</div><div class="line">scan.setCaching(500);        // 1 is the default in Scan, which will be bad for MapReduce jobs</div><div class="line">scan.setCacheBlocks(false);  // don&apos;t set to true for MR jobs</div><div class="line">// set other scan attrs</div><div class="line"></div><div class="line">TableMapReduceUtil.initTableMapperJob(</div><div class="line">  sourceTable,      // input table</div><div class="line">  scan,             // Scan instance to control CF and attribute selection</div><div class="line">  MyMapper.class,   // mapper class</div><div class="line">  null,             // mapper output key</div><div class="line">  null,             // mapper output value</div><div class="line">  job);</div><div class="line">TableMapReduceUtil.initTableReducerJob(</div><div class="line">  targetTable,      // output table</div><div class="line">  null,             // reducer class</div><div class="line">  job);</div><div class="line">job.setNumReduceTasks(0);</div><div class="line"></div><div class="line">boolean b = job.waitForCompletion(true);</div><div class="line">if (!b) &#123;</div><div class="line">    throw new IOException(&quot;error with job!&quot;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>An explanation is required of what TableMapReduceUtil is doing, especially with the reducer. TableOutputFormat is being used as the outputFormat class, and several parameters are being set on the config (e.g., TableOutputFormat.OUTPUT_TABLE), as well as setting the reducer output key to ImmutableBytesWritable and reducer value to Writable. These could be set by the programmer on the job and conf, but TableMapReduceUtil tries to make things easier.</p>
+<p>The following is the example mapper, which will create a Put and matching the input Result and emit it. Note: this is what the CopyTable utility does.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">public static class MyMapper extends TableMapper&lt;ImmutableBytesWritable, Put&gt;  &#123;</div><div class="line"></div><div class="line">  public void map(ImmutableBytesWritable row, Result value, Context context) throws IOException, InterruptedException &#123;</div><div class="line">    // this example is just copying the data from the source table...</div><div class="line">      context.write(row, resultToPut(row,value));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private static Put resultToPut(ImmutableBytesWritable key, Result result) throws IOException &#123;</div><div class="line">      Put put = new Put(key.get());</div><div class="line">      for (KeyValue kv : result.raw()) &#123;</div><div class="line">        put.add(kv);</div><div class="line">      &#125;</div><div class="line">      return put;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>There isn’t actually a reducer step, so TableOutputFormat takes care of sending the Put to the target table.</p>
+<p>This is just an example, developers could choose not to use TableOutputFormat and connect to the target table themselves.</p>
+<h2 id="3-HBase-MapReduce-Read-Write-Example-With-Multi-Table-Output"><a href="#3-HBase-MapReduce-Read-Write-Example-With-Multi-Table-Output" class="headerlink" title="3 HBase MapReduce Read/Write Example With Multi-Table Output"></a>3 HBase MapReduce Read/Write Example With Multi-Table Output</h2><p>TODO: example for MultiTableOutputFormat.</p>
+<h2 id="4-HBase-MapReduce-Summary-to-HBase-Example"><a href="#4-HBase-MapReduce-Summary-to-HBase-Example" class="headerlink" title="4 HBase MapReduce Summary to HBase Example"></a>4 HBase MapReduce Summary to HBase Example</h2><p>The following example uses HBase as a MapReduce source and sink with a summarization step. This example will count the number of distinct instances of a value in a table and write those summarized counts in another table.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">Configuration config = HBaseConfiguration.create();</div><div class="line">Job job = new Job(config,&quot;ExampleSummary&quot;);</div><div class="line">job.setJarByClass(MySummaryJob.class);     // class that contains mapper and reducer</div><div class="line"></div><div class="line">Scan scan = new Scan();</div><div class="line">scan.setCaching(500);        // 1 is the default in Scan, which will be bad for MapReduce jobs</div><div class="line">scan.setCacheBlocks(false);  // don&apos;t set to true for MR jobs</div><div class="line">// set other scan attrs</div><div class="line"></div><div class="line">TableMapReduceUtil.initTableMapperJob(</div><div class="line">  sourceTable,        // input table</div><div class="line">  scan,               // Scan instance to control CF and attribute selection</div><div class="line">  MyMapper.class,     // mapper class</div><div class="line">  Text.class,         // mapper output key</div><div class="line">  IntWritable.class,  // mapper output value</div><div class="line">  job);</div><div class="line">TableMapReduceUtil.initTableReducerJob(</div><div class="line">  targetTable,        // output table</div><div class="line">  MyTableReducer.class,    // reducer class</div><div class="line">  job);</div><div class="line">job.setNumReduceTasks(1);   // at least one, adjust as required</div><div class="line"></div><div class="line">boolean b = job.waitForCompletion(true);</div><div class="line">if (!b) &#123;</div><div class="line">  throw new IOException(&quot;error with job!&quot;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>In this example mapper a column with a String-value is chosen as the value to summarize upon. This value is used as the key to emit from the mapper, and an IntWritable represents an instance counter.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">public static class MyMapper extends TableMapper&lt;Text, IntWritable&gt;  &#123;</div><div class="line">  public static final byte[] CF = &quot;cf&quot;.getBytes();</div><div class="line">  public static final byte[] ATTR1 = &quot;attr1&quot;.getBytes();</div><div class="line"></div><div class="line">  private final IntWritable ONE = new IntWritable(1);</div><div class="line">  private Text text = new Text();</div><div class="line"></div><div class="line">  public void map(ImmutableBytesWritable row, Result value, Context context) throws IOException, InterruptedException &#123;</div><div class="line">    String val = new String(value.getValue(CF, ATTR1));</div><div class="line">    text.set(val);     // we can only emit Writables...</div><div class="line">    context.write(text, ONE);</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>In the reducer, the “ones” are counted (just like any other MR example that does this), and then emits a Put.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">public static class MyTableReducer extends TableReducer&lt;Text, IntWritable, ImmutableBytesWritable&gt;  &#123;</div><div class="line">  public static final byte[] CF = &quot;cf&quot;.getBytes();</div><div class="line">  public static final byte[] COUNT = &quot;count&quot;.getBytes();</div><div class="line"></div><div class="line">  public void reduce(Text key, Iterable&lt;IntWritable&gt; values, Context context) throws IOException, InterruptedException &#123;</div><div class="line">    int i = 0;</div><div class="line">    for (IntWritable val : values) &#123;</div><div class="line">      i += val.get();</div><div class="line">    &#125;</div><div class="line">    Put put = new Put(Bytes.toBytes(key.toString()));</div><div class="line">    put.add(CF, COUNT, Bytes.toBytes(i));</div><div class="line"></div><div class="line">    context.write(null, put);</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="5-HBase-MapReduce-Summary-to-File-Example"><a href="#5-HBase-MapReduce-Summary-to-File-Example" class="headerlink" title="5 HBase MapReduce Summary to File Example"></a>5 HBase MapReduce Summary to File Example</h2><p>This very similar to the summary example above, with exception that this is using HBase as a MapReduce source but HDFS as the sink. The differences are in the job setup and in the reducer. The mapper remains the same.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">Configuration config = HBaseConfiguration.create();</div><div class="line">Job job = new Job(config,&quot;ExampleSummaryToFile&quot;);</div><div class="line">job.setJarByClass(MySummaryFileJob.class);     // class that contains mapper and reducer</div><div class="line"></div><div class="line">Scan scan = new Scan();</div><div class="line">scan.setCaching(500);        // 1 is the default in Scan, which will be bad for MapReduce jobs</div><div class="line">scan.setCacheBlocks(false);  // don&apos;t set to true for MR jobs</div><div class="line">// set other scan attrs</div><div class="line"></div><div class="line">TableMapReduceUtil.initTableMapperJob(</div><div class="line">  sourceTable,        // input table</div><div class="line">  scan,               // Scan instance to control CF and attribute selection</div><div class="line">  MyMapper.class,     // mapper class</div><div class="line">  Text.class,         // mapper output key</div><div class="line">  IntWritable.class,  // mapper output value</div><div class="line">  job);</div><div class="line">job.setReducerClass(MyReducer.class);    // reducer class</div><div class="line">job.setNumReduceTasks(1);    // at least one, adjust as required</div><div class="line">FileOutputFormat.setOutputPath(job, new Path(&quot;/tmp/mr/mySummaryFile&quot;));  // adjust directories as required</div><div class="line"></div><div class="line">boolean b = job.waitForCompletion(true);</div><div class="line">if (!b) &#123;</div><div class="line">  throw new IOException(&quot;error with job!&quot;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>As stated above, the previous Mapper can run unchanged with this example. As for the Reducer, it is a “generic” Reducer instead of extending TableMapper and emitting Puts.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">public static class MyReducer extends Reducer&lt;Text, IntWritable, Text, IntWritable&gt;  &#123;</div><div class="line"></div><div class="line">  public void reduce(Text key, Iterable&lt;IntWritable&gt; values, Context context) throws IOException, InterruptedException &#123;</div><div class="line">    int i = 0;</div><div class="line">    for (IntWritable val : values) &#123;</div><div class="line">      i += val.get();</div><div class="line">    &#125;</div><div class="line">    context.write(key, new IntWritable(i));</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="7-HBase-MapReduce-Summary-to-HBase-Without-Reducer"><a href="#7-HBase-MapReduce-Summary-to-HBase-Without-Reducer" class="headerlink" title="7 HBase MapReduce Summary to HBase Without Reducer"></a>7 HBase MapReduce Summary to HBase Without Reducer</h2><p>It is also possible to perform summaries without a reducer - if you use HBase as the reducer.</p>
+<p>An HBase target table would need to exist for the job summary. The Table method incrementColumnValue would be used to atomically increment values. From a performance perspective, it might make sense to keep a Map of values with their values to be incremented for each map-task, and make one update per key at during the cleanup method of the mapper. However, your mileage may vary depending on the number of rows to be processed and unique keys.</p>
+<p>In the end, the summary results are in HBase.</p>
+<h2 id="8-HBase-MapReduce-Summary-to-RDBMS"><a href="#8-HBase-MapReduce-Summary-to-RDBMS" class="headerlink" title="8 HBase MapReduce Summary to RDBMS"></a>8 HBase MapReduce Summary to RDBMS</h2><p>Sometimes it is more appropriate to generate summaries to an RDBMS. For these cases, it is possible to generate summaries directly to an RDBMS via a custom reducer. The setup method can connect to an RDBMS (the connection information can be passed via custom parameters in the context) and the cleanup method can close the connection.</p>
+<p>It is critical to understand that number of reducers for the job affects the summarization implementation, and you’ll have to design this into your reducer. Specifically, whether it is designed to run as a singleton (one reducer) or multiple reducers. Neither is right or wrong, it depends on your use-case. Recognize that the more reducers that are assigned to the job, the more simultaneous connections to the RDBMS will be created - this will scale, but only to a point.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">public static class MyRdbmsReducer extends Reducer&lt;Text, IntWritable, Text, IntWritable&gt;  &#123;</div><div class="line"></div><div class="line">  private Connection c = null;</div><div class="line"></div><div class="line">  public void setup(Context context) &#123;</div><div class="line">    // create DB connection...</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  public void reduce(Text key, Iterable&lt;IntWritable&gt; values, Context context) throws IOException, InterruptedException &#123;</div><div class="line">    // do summarization</div><div class="line">    // in this example the keys are Text, but this is just an example</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  public void cleanup(Context context) &#123;</div><div class="line">    // close db connection</div><div class="line">  &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>In the end, the summary results are written to your RDBMS table/s.</p>
+<h2 id="9-Accessing-Other-HBase-Tables-in-a-MapReduce-Job"><a href="#9-Accessing-Other-HBase-Tables-in-a-MapReduce-Job" class="headerlink" title="9 Accessing Other HBase Tables in a MapReduce Job"></a>9 Accessing Other HBase Tables in a MapReduce Job</h2><p>Although the framework currently allows one HBase table as input to a MapReduce job, other HBase tables can be accessed as lookup tables, etc., in a MapReduce job via creating an Table instance in the setup method of the Mapper.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">public class MyMapper extends TableMapper&lt;Text, LongWritable&gt; &#123;</div><div class="line">  private Table myOtherTable;</div><div class="line"></div><div class="line">  public void setup(Context context) &#123;</div><div class="line">    // In here create a Connection to the cluster and save it or use the Connection</div><div class="line">    // from the existing table</div><div class="line">    myOtherTable = connection.getTable(&quot;myOtherTable&quot;);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  public void map(ImmutableBytesWritable row, Result value, Context context) throws IOException, InterruptedException &#123;</div><div class="line">    // process Result...</div><div class="line">    // use &apos;myOtherTable&apos; for lookups</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/hbase/" rel="tag">#hbase</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/07/hbase-study004/" rel="next" title="HBase学习笔记(四) HBase的java操作">
+                <i class="fa fa-chevron-left"></i> HBase学习笔记(四) HBase的java操作
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/06/12/hbase-study006/" rel="prev" title="HBase学习笔记(六) Phoenix的安装使用">
+                HBase学习笔记(六) Phoenix的安装使用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+           <!-- 多说热评文章 start -->
+	<div class="ds-top-threads" data-range="daily" data-num-items="5"></div>
+<!-- 多说热评文章 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+
+           <section id="comments">
+   <!-- 多说评论框 start -->
+<div id="ds-thread" class="ds-thread" data-thread-key="<%= post.path %>" data-title="<%= post.title %>" data-url="<%= post.permalink %>"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+  </section>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="孙星" />
+          <p class="site-author-name" itemprop="name">孙星</p>
+          <p class="site-description motion-element" itemprop="description">sunxing's blog | mysql | java | scala | hadoop | spark | kafka | flume</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">65</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-HBase-MapReduce-Read-Example"><span class="nav-number">1.</span> <span class="nav-text">1 HBase MapReduce Read Example</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-HBase-MapReduce-Read-Write-Example"><span class="nav-number">2.</span> <span class="nav-text">2 HBase MapReduce Read/Write Example</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-HBase-MapReduce-Read-Write-Example-With-Multi-Table-Output"><span class="nav-number">3.</span> <span class="nav-text">3 HBase MapReduce Read/Write Example With Multi-Table Output</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-HBase-MapReduce-Summary-to-HBase-Example"><span class="nav-number">4.</span> <span class="nav-text">4 HBase MapReduce Summary to HBase Example</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-HBase-MapReduce-Summary-to-File-Example"><span class="nav-number">5.</span> <span class="nav-text">5 HBase MapReduce Summary to File Example</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-HBase-MapReduce-Summary-to-HBase-Without-Reducer"><span class="nav-number">6.</span> <span class="nav-text">7 HBase MapReduce Summary to HBase Without Reducer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-HBase-MapReduce-Summary-to-RDBMS"><span class="nav-number">7.</span> <span class="nav-text">8 HBase MapReduce Summary to RDBMS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-Accessing-Other-HBase-Tables-in-a-MapReduce-Job"><span class="nav-number">8.</span> <span class="nav-text">9 Accessing Other HBase Tables in a MapReduce Job</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孙星</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"sunxing"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>

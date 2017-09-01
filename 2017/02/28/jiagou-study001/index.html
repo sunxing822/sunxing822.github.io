@@ -1,0 +1,814 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="大数据," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="离线计算数据统计主要是讲数据落地到hdfs中,通过hive来进行离线统计,这种离线统计的方式可以很方便的进行数据的统计和分析。hive是支持mysql语法的。  搭建hadoop环境下载hadoop：12wget http://apache.fayea.com/hadoop/common/hadoop-2.7.1/hadoop-2.7.1.tar.gztar -zxvf hadoop-2.7.1">
+<meta name="keywords" content="大数据">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据离线统计架构设计">
+<meta property="og:url" content="http://www.sunxing.cc/2017/02/28/jiagou-study001/index.html">
+<meta property="og:site_name" content="孙星的个人博客~">
+<meta property="og:description" content="离线计算数据统计主要是讲数据落地到hdfs中,通过hive来进行离线统计,这种离线统计的方式可以很方便的进行数据的统计和分析。hive是支持mysql语法的。  搭建hadoop环境下载hadoop：12wget http://apache.fayea.com/hadoop/common/hadoop-2.7.1/hadoop-2.7.1.tar.gztar -zxvf hadoop-2.7.1">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://www.sunxing.cc/images/hadoop/hosts.jpg">
+<meta property="og:image" content="http://www.sunxing.cc/images/hadoop/conf-list.jpg">
+<meta property="og:image" content="http://www.sunxing.cc/images/hadoop/hadoop-env.jpg">
+<meta property="og:image" content="http://www.sunxing.cc/images/hadoop/core-site.jpg">
+<meta property="og:image" content="http://www.sunxing.cc/images/hadoop/hdfs-site.jpg">
+<meta property="og:image" content="http://www.sunxing.cc/images/hadoop/mapred-site.jpg">
+<meta property="og:image" content="http://www.sunxing.cc/images/hadoop/yarn-site.jpg">
+<meta property="og:image" content="http://www.sunxing.cc/images/hadoop/jps.jpg">
+<meta property="og:image" content="http://www.sunxing.cc/images/hadoop/cluster-view.jpg">
+<meta property="og:image" content="http://www.sunxing.cc/images/hadoop/code-tree.jpg">
+<meta property="og:image" content="http://www.sunxing.cc/images/hadoop/mapper.jpg">
+<meta property="og:image" content="http://www.sunxing.cc/images/hadoop/reduce.jpg">
+<meta property="og:image" content="http://www.sunxing.cc/images/hadoop/wordcount-data.jpg">
+<meta property="og:image" content="http://www.sunxing.cc/images/hadoop/wordcount.jpg">
+<meta property="og:image" content="http://www.sunxing.cc/images/hadoop/wordcount-result.jpg">
+<meta property="og:image" content="http://www.sunxing.cc/images/hive/first.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/hive/conf-list.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/hive/env-conf.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/hive/log-conf.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/hive/hive-site.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/hive/hive-use.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/kafka/kafka-downloader.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/kafka/zookeeper-downloader.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/kafka/zookeeper-node.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/kafka/zookeeper-myid.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/kafka/zookeeper-list.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/kafka/kafka-start.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/kafka/kafka-create.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/kafka/kafka-list.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/kafka/kafka-alter.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/kafka/kafka-delete.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/kafka/kafka-producer.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/kafka/kafka-consumer.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/flow/flow.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/flume/flume-file.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/flume/flume-simple.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/flume/flume-mult.png">
+<meta property="og:updated_time" content="2017-08-31T12:39:20.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数据离线统计架构设计">
+<meta name="twitter:description" content="离线计算数据统计主要是讲数据落地到hdfs中,通过hive来进行离线统计,这种离线统计的方式可以很方便的进行数据的统计和分析。hive是支持mysql语法的。  搭建hadoop环境下载hadoop：12wget http://apache.fayea.com/hadoop/common/hadoop-2.7.1/hadoop-2.7.1.tar.gztar -zxvf hadoop-2.7.1">
+<meta name="twitter:image" content="http://www.sunxing.cc/images/hadoop/hosts.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+ <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258995301'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/z_stat.php%3Fid%3D1258995301' type='text/javascript'%3E%3C/script%3E"));</script>
+
+  <title> 数据离线统计架构设计 | 孙星的个人博客~ </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">孙星的个人博客~</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">搬砖的,码农~</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                数据离线统计架构设计
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2017-02-28T15:22:46+08:00" content="2017-02-28">
+              2017-02-28
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/大数据/" itemprop="url" rel="index">
+                    <span itemprop="name">大数据</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2017/02/28/jiagou-study001/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/28/jiagou-study001/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>离线计算数据统计主要是讲数据落地到hdfs中,通过hive来进行离线统计,这种离线统计的方式可以很方便的进行数据的统计和分析。hive是支持mysql语法的。</p>
+</blockquote>
+<h2 id="搭建hadoop环境"><a href="#搭建hadoop环境" class="headerlink" title="搭建hadoop环境"></a>搭建hadoop环境</h2><h3 id="下载hadoop："><a href="#下载hadoop：" class="headerlink" title="下载hadoop："></a>下载hadoop：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">wget http://apache.fayea.com/hadoop/common/hadoop-2.7.1/hadoop-2.7.1.tar.gz</div><div class="line">tar -zxvf hadoop-2.7.1.tar.gz</div></pre></td></tr></table></figure>
+<h3 id="解压配置免密码登陆"><a href="#解压配置免密码登陆" class="headerlink" title="解压配置免密码登陆:"></a>解压配置免密码登陆:</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">//生成秘钥</div><div class="line">ssh-keygen -t rsa</div><div class="line"></div><div class="line">//一直回车,在当前目录中会出现2个文件,一个是公钥,一个是私钥</div><div class="line">id_rsa:			私钥</div><div class="line">id_rsa.pub:		公钥</div><div class="line"></div><div class="line">//创建认证文件</div><div class="line">cat id_rsa.pub &gt;&gt; authorized_keys</div></pre></td></tr></table></figure>
+<h3 id="配置hosts"><a href="#配置hosts" class="headerlink" title="配置hosts"></a>配置hosts</h3><p>主要是修改其中的hostname和对应的ip,修改如下:</p>
+<center><br>    <img src="/images/hadoop/hosts.jpg" alt=""><br></center>
+
+<h3 id="配置相应的配置文件"><a href="#配置相应的配置文件" class="headerlink" title="配置相应的配置文件"></a>配置相应的配置文件</h3><p>进入到hadoop的解压目录中,其中etc/hadoop目录是配置目录,进入到目录中可以看到:</p>
+<center><br>    <img src="/images/hadoop/conf-list.jpg" alt=""><br></center>
+
+<p>其中主要配置的是环境变量(hadoop-env.sh)和core-site.xml,hdfs-site.xml,mapred.site.xml以及yarn-site.xml则五个文件,相关的配置如下:</p>
+<p>hadoop-env.sh:</p>
+<center><br>    <img src="/images/hadoop/hadoop-env.jpg" alt=""><br></center>
+
+<p>core-site.xml:</p>
+<center><br>    <img src="/images/hadoop/core-site.jpg" alt=""><br></center>
+
+<p>hdfs-site.xml:</p>
+<center><br>    <img src="/images/hadoop/hdfs-site.jpg" alt=""><br></center>
+
+<p>mapred-site.xml:</p>
+<center><br>    <img src="/images/hadoop/mapred-site.jpg" alt=""><br></center>
+
+<p>yarn-site.sh:</p>
+<center><br>    <img src="/images/hadoop/yarn-site.jpg" alt=""><br></center>
+
+<h3 id="运行hadoop"><a href="#运行hadoop" class="headerlink" title="运行hadoop"></a>运行hadoop</h3><p>配置好以后,需要先格式化一下,格式的命令如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hadoop namenode -format</div></pre></td></tr></table></figure>
+<p>格式化NameNode的动作,主要做了一下一下内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">* 如果dfs.namenode.name.dir对应的文件夹目录不存在,则创建一个目录,并初始化fsimage,和edits并且写入一些初始值,这个动作在文件系统中一样,格式化主要是清空重置。</div><div class="line">* 如果对应的目录地址的数据已经存在了,则删除相应的,目录下的文件,在重新建立</div></pre></td></tr></table></figure>
+<p>格式完hadoop以后就可以启动hadoop了,启动的命令如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">cd /usr/loca/share/hadoop2.7.1</div><div class="line"></div><div class="line">./sbin/start-all.sh</div></pre></td></tr></table></figure>
+<p>启动过后的进程数据如下：</p>
+<center><br>    <img src="/images/hadoop/jps.jpg" alt=""><br></center>
+
+<center><br>    <img src="/images/hadoop/cluster-view.jpg" alt=""><br></center>
+
+
+
+<h3 id="hadoop的wordcount的程序的开发"><a href="#hadoop的wordcount的程序的开发" class="headerlink" title="hadoop的wordcount的程序的开发"></a>hadoop的wordcount的程序的开发</h3><p>代码结构如下:</p>
+<center><br>    <img src="/images/hadoop/code-tree.jpg" alt="流程图"><br></center>
+
+
+<p>自定义mapper类代码如下:</p>
+<center><br>    <img src="/images/hadoop/mapper.jpg" alt="流程图"><br></center>
+
+
+<p>自定义reducer类代码如下:</p>
+<center><br>    <img src="/images/hadoop/reduce.jpg" alt="流程图"><br></center>
+
+<p>wordcount程序的数据源：</p>
+<center><br>    <img src="/images/hadoop/wordcount-data.jpg" alt=""><br></center>
+
+<p>wordcount程序的执行过程：</p>
+<center><br>    <img src="/images/hadoop/wordcount.jpg" alt=""><br></center>
+
+<p>wordcount程序的结果展示:</p>
+<center><br>    <img src="/images/hadoop/wordcount-result.jpg" alt=""><br></center>
+
+<h2 id="搭建hive环境"><a href="#搭建hive环境" class="headerlink" title="搭建hive环境"></a>搭建hive环境</h2><blockquote>
+<p>Hive相当于是一个客户端,抽象的mysql客户端,而这个客户端对应的数据存储是存在HDFS中,Hive中相应的sql解析器主要是将sql语言解析封装成为一个可执行的MapReduce作业.</p>
+</blockquote>
+<p>Hive的元数据存储模式一共有三种:</p>
+<ul>
+<li>内嵌metastore</li>
+<li>本地metastore</li>
+<li>远程metastore</li>
+</ul>
+<p>由于内嵌的metastore不是很稳定,hive的原始配置文件中数据源的配置为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;property&gt;</div><div class="line">    &lt;name&gt;javax.jdo.option.ConnectionURL&lt;/name&gt;</div><div class="line">    &lt;value&gt;jdbc:derby:;databaseName=metastore_db;create=true&lt;/value&gt;</div><div class="line">    &lt;description&gt;JDBC connect string for a JDBC metastore&lt;/description&gt;</div><div class="line">  &lt;/property&gt;</div></pre></td></tr></table></figure>
+<p>Apache Derby是一个完全用java编写的数据库，Derby是一个Open source的产品,Apache Derby非常小巧，核心部分derby.jar只有2M，所以既可以做为单独的数据库服务器使用，也可以内嵌在应用程序中使用。但是不稳定,针对hive使用中不是很适合。因此这里使用mysql用作元数据的存储。</p>
+<h3 id="开始安装"><a href="#开始安装" class="headerlink" title="开始安装"></a>开始安装</h3><p>hive 安装版本使用的是1.2.1，安装模式采用的是本地模式，其中，安装文件夹路径如下：</p>
+<p><img src="/images/hive/first.png" alt=""></p>
+<p>安装方式:<br>1 解压hive1.2.1的安装包<br>2 修改配置文件</p>
+<p><img src="/images/hive/conf-list.png" alt=""></p>
+<p>在hive中配置文件中主要是hive-default.xml.template，以及hive-env.sh.template<br>其中hive中有要求，如果hive-default.xml和hive-site.xml同时存在的时候的，如果hive-site.xml和hive-default.xml中的key有相同的话<br>以hive-site.xml中为准。因此创建了一个hive-site.xml文件.</p>
+<p>3 首先需要修改的是环境变量，配置hadoop的路径以及hive的配置文件路径，如果需要积累hive的日志文件记录，需要修改hive-log4j.properties<br>修改的内容如下:<br>hive-env.sh<br><img src="/images/hive/env-conf.png" alt=""></p>
+<p>log4j日志配置<br>hive-log4j.properties<br><img src="/images/hive/log-conf.png" alt=""></p>
+<p>hive-site.xml的配置详细如下:<br><img src="/images/hive/hive-site.png" alt=""><br>​<br>​对以上配置信息进行初步的说明:</p>
+<ul>
+<li>javax.jdo.option.ConnectionURL                        数据库的链接</li>
+<li>javax.jdo.option.ConnectionDriverName                 数据库驱动名称</li>
+<li>javax.jdo.option.ConnectionUserName                   登陆数据库的用户名称</li>
+<li>javax.jbo.option.ConnectionPassword                   登陆用户的密码</li>
+<li>hive.exec.local.scratchdir                            hive本地粗糙你的一些临时文件</li>
+<li>hive.metastore.warehouse.dir                          hive的数据库存储的路径</li>
+<li>hive.exec.mode.local.auto                             是否是本地模式</li>
+<li>hive.querylog.location                                hive查询操作的日志目录</li>
+</ul>
+<p>配置完成以后启动hive:<br><img src="/images/hive/hive-use.png" alt=""></p>
+<h2 id="搭建kafka环境"><a href="#搭建kafka环境" class="headerlink" title="搭建kafka环境"></a>搭建kafka环境</h2><p>首先下载kafka，以及zookeeper</p>
+<p><img src="/images/kafka/kafka-downloader.png" alt=""></p>
+<p><img src="/images/kafka/zookeeper-downloader.png" alt=""></p>
+<h3 id="配置zookeeper服务"><a href="#配置zookeeper服务" class="headerlink" title="配置zookeeper服务"></a>配置zookeeper服务</h3><p>1 解压zookeeper3.4.9压缩包后修改主要配置如下<br>修改文件夹下的配置文件conf/zoo_sample.cfg 重命名为zoo.cfg<br>修改的主要内容如下:</p>
+<p><img src="/images/kafka/zookeeper-node.png" alt=""></p>
+<p>对应的参数：</p>
+<p>tickTime：这个参数主要是用来针对 ZooKeeper 服务端和客户端的会话控制，包括心跳控制，一般来说，会话超时时间是该值的两倍，它的单位是毫秒，我们设置为 2000 毫秒。</p>
+<p>dataDir：这个目录用来存放数据库的镜像和操作数据库的日志。注意，如果这个文件夹不存在，需要手动创建一个并赋予读写权限，我们设置为/data/zookeeper3.4.7/data，不用手动创建这个文件夹，系统运行后会自动创建或覆盖。</p>
+<p>clientPort：ZooKeeper 服务端监听客户端的端口，默认是 2181，这里沿用默认设置。</p>
+<p>initLimit：follower 对于 Leader 的初始化连接 timeout 时间；</p>
+<p>syncLimit：follower 对于 Leader 的同步 timeout 时间；</p>
+<p>timeout 的计算公式是 initLimit <em> tickTime，syncLimit </em> tickTime。</p>
+<p>server.A=B：C：D：其中 A 是一个数字，表示这个是第几号服务器；B 是这个服务器的 ip 地址；C 表示的是这个服务器与集群中的 Leader 服务器交换信息的端口；D 表示的是万一集群中的 Leader 服务器挂了，需要一个端口来重新进行选举，选出一个新的 Leader，而这个端口就是用来执行选举时服务器相互通信的端口。如果是伪集群的配置方式，由于 B 都是一样，所以不同的 Zookeeper 实例通信端口号不能一样，所以要给它们分配不同的端口号。</p>
+<p>2 在对应的机器中的data目录下创建相应的myid文件,该文件内容为对应的服务机器的id.</p>
+<p><img src="/images/kafka/zookeeper-myid.png" alt=""></p>
+<p>3 拷贝数据到相应的客户机上后重新建立myid文件，同时,修改zoo.cfg中的文件地址目录</p>
+<p><img src="/images/kafka/zookeeper-list.png" alt=""></p>
+<h3 id="启动服务"><a href="#启动服务" class="headerlink" title="启动服务"></a>启动服务</h3><p>1 接下来通过 bin 目录下面的 zkServer.sh 脚本启动 ZooKeeper 服务，如果不清楚具体参数，可以直接调用脚本查看输出，ZooKeeper 采用的是 Bourne Shell</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">localhost:bin sunxing$ ./zkServer.sh start</div><div class="line">ZooKeeper JMX enabled by default</div><div class="line">Using config: /usr/local/share/zookeeper3.4.7/bin/../conf/zoo.cfg</div><div class="line">Starting zookeeper ... STARTED</div></pre></td></tr></table></figure>
+<h3 id="解压配置kafka"><a href="#解压配置kafka" class="headerlink" title="解压配置kafka"></a>解压配置kafka</h3><p>kafka和zookeeper的部署过程相同,先解压压缩包,kafka的配置主要都在config中,其中主要的配置项为：service.properites</p>
+<p>该文件的内容为:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div></pre></td><td class="code"><pre><div class="line"># Licensed to the Apache Software Foundation (ASF) under one or more</div><div class="line"># contributor license agreements.  See the NOTICE file distributed with</div><div class="line"># this work for additional information regarding copyright ownership.</div><div class="line"># The ASF licenses this file to You under the Apache License, Version 2.0</div><div class="line"># (the &quot;License&quot;); you may not use this file except in compliance with</div><div class="line"># the License.  You may obtain a copy of the License at</div><div class="line">#</div><div class="line">#    http://www.apache.org/licenses/LICENSE-2.0</div><div class="line">#</div><div class="line"># Unless required by applicable law or agreed to in writing, software</div><div class="line"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</div><div class="line"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</div><div class="line"># See the License for the specific language governing permissions and</div><div class="line"># limitations under the License.</div><div class="line"></div><div class="line"># see kafka.server.KafkaConfig for additional details and defaults</div><div class="line"></div><div class="line">############################# Server Basics #############################</div><div class="line"></div><div class="line"># The id of the broker. This must be set to a unique integer for each broker.</div><div class="line">broker.id=1</div><div class="line"></div><div class="line"># Switch to enable topic deletion or not, default value is false</div><div class="line">delete.topic.enable=true</div><div class="line"></div><div class="line">############################# Socket Server Settings #############################</div><div class="line"></div><div class="line"># The address the socket server listens on. It will get the value returned from </div><div class="line"># java.net.InetAddress.getCanonicalHostName() if not configured.</div><div class="line">#   FORMAT:</div><div class="line">#     listeners = security_protocol://host_name:port</div><div class="line">#   EXAMPLE:</div><div class="line">#     listeners = PLAINTEXT://your.host.name:9092</div><div class="line">listeners=PLAINTEXT://sunx:9091</div><div class="line"></div><div class="line"># Hostname and port the broker will advertise to producers and consumers. If not set, </div><div class="line"># it uses the value for &quot;listeners&quot; if configured.  Otherwise, it will use the value</div><div class="line"># returned from java.net.InetAddress.getCanonicalHostName().</div><div class="line">advertised.listeners=PLAINTEXT://your.host.name:9092</div><div class="line"></div><div class="line"># The number of threads handling network requests</div><div class="line">num.network.threads=3</div><div class="line"></div><div class="line"># The number of threads doing disk I/O</div><div class="line">num.io.threads=8</div><div class="line"></div><div class="line"># The send buffer (SO_SNDBUF) used by the socket server</div><div class="line">socket.send.buffer.bytes=102400</div><div class="line"></div><div class="line"># The receive buffer (SO_RCVBUF) used by the socket server</div><div class="line">socket.receive.buffer.bytes=102400</div><div class="line"></div><div class="line"># The maximum size of a request that the socket server will accept (protection against OOM)</div><div class="line">socket.request.max.bytes=104857600</div><div class="line"></div><div class="line"></div><div class="line">############################# Log Basics #############################</div><div class="line"></div><div class="line"># A comma seperated list of directories under which to store log files</div><div class="line">log.dirs=/data/service/kafka/kafka-node1/data/</div><div class="line"></div><div class="line"># The default number of log partitions per topic. More partitions allow greater</div><div class="line"># parallelism for consumption, but this will also result in more files across</div><div class="line"># the brokers.</div><div class="line">num.partitions=20</div><div class="line"></div><div class="line"># The number of threads per data directory to be used for log recovery at startup and flushing at shutdown.</div><div class="line"># This value is recommended to be increased for installations with data dirs located in RAID array.</div><div class="line">num.recovery.threads.per.data.dir=1</div><div class="line"></div><div class="line">############################# Log Flush Policy #############################</div><div class="line"></div><div class="line"># Messages are immediately written to the filesystem but by default we only fsync() to sync</div><div class="line"># the OS cache lazily. The following configurations control the flush of data to disk.</div><div class="line"># There are a few important trade-offs here:</div><div class="line">#    1. Durability: Unflushed data may be lost if you are not using replication.</div><div class="line">#    2. Latency: Very large flush intervals may lead to latency spikes when the flush does occur as there will be a lot of data to </div><div class="line">flush.</div><div class="line">#    3. Throughput: The flush is generally the most expensive operation, and a small flush interval may lead to exceessive seeks.</div><div class="line"># The settings below allow one to configure the flush policy to flush data after a period of time or</div><div class="line"># every N messages (or both). This can be done globally and overridden on a per-topic basis.</div><div class="line"></div><div class="line"># The number of messages to accept before forcing a flush of data to disk</div><div class="line">#log.flush.interval.messages=10000</div><div class="line"></div><div class="line"># The maximum amount of time a message can sit in a log before we force a flush</div><div class="line">#log.flush.interval.ms=1000</div><div class="line"></div><div class="line">############################# Log Retention Policy #############################</div><div class="line"></div><div class="line"># The following configurations control the disposal of log segments. The policy can</div><div class="line"># be set to delete segments after a period of time, or after a given size has accumulated.</div><div class="line"># A segment will be deleted whenever *either* of these criteria are met. Deletion always happens</div><div class="line"># from the end of the log.</div><div class="line"></div><div class="line"># The minimum age of a log file to be eligible for deletion</div><div class="line">log.retention.hours=72</div><div class="line"></div><div class="line"># A size-based retention policy for logs. Segments are pruned from the log as long as the remaining</div><div class="line"># segments don&apos;t drop below log.retention.bytes.</div><div class="line">#log.retention.bytes=1073741824</div><div class="line"></div><div class="line"># The maximum size of a log segment file. When this size is reached a new log segment will be created.</div><div class="line">log.segment.bytes=1073741824</div><div class="line"></div><div class="line"># The interval at which log segments are checked to see if they can be deleted according</div><div class="line"># to the retention policies</div><div class="line">log.retention.check.interval.ms=300000</div><div class="line"></div><div class="line">############################# Zookeeper #############################</div><div class="line"></div><div class="line"># Zookeeper connection string (see zookeeper docs for details).</div><div class="line"># This is a comma separated host:port pairs, each corresponding to a zk</div><div class="line"># server. e.g. &quot;127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3002&quot;.</div><div class="line"># You can also append an optional chroot string to the urls to specify the</div><div class="line"># root directory for all kafka znodes.</div><div class="line">zookeeper.connect=sunx:2181,sunx:2182,sunx:2183</div><div class="line"></div><div class="line"># Timeout in ms for connecting to zookeeper</div><div class="line">zookeeper.connection.timeout.ms=6000</div></pre></td></tr></table></figure></p>
+<p>以上为主要的配置项,那么配置好以后，需要将kafka拷贝部署三个节点,修改其中主要的几个点:</p>
+<p>logs.dir: kafka中所有topic存储的目录<br>log.retention.hours：kafka中数据失效的时间,默认是小时为单位<br>num.partitions:每个topic的分区<br>advertised.listeners:对位给生产者和消费者提供的端口地址<br>delete.topic.enable:是否直接删除topic,如果为true,则删除topic时，直接删除并清掉该topic数据。</p>
+<p>同时对于服务需要监控日志,在日志中配置需要配置相应的日志存储的文件地址:</p>
+<pre><code>kafka.logs.dir=/data/service/kafka/kafka-node1/logs
+</code></pre><h3 id="启动kafka"><a href="#启动kafka" class="headerlink" title="启动kafka"></a>启动kafka</h3><p>启动zookeeper集群节点后,在启动kafka:</p>
+<p><img src="/images/kafka/kafka-start.png" alt=""></p>
+<h3 id="kafka常用命令"><a href="#kafka常用命令" class="headerlink" title="kafka常用命令"></a>kafka常用命令</h3><p>创建topic<br><img src="/images/kafka/kafka-create.png" alt=""></p>
+<p>查看是topic列表:<br><img src="/images/kafka/kafka-list.png" alt=""></p>
+<p>修改topic,增加topic的分区<br><img src="/images/kafka/kafka-alter.png" alt=""></p>
+<p>删除topic<br><img src="/images/kafka/kafka-delete.png" alt=""></p>
+<p>发送数据<br><img src="/images/kafka/kafka-producer.png" alt=""></p>
+<p>消费数据<br><img src="/images/kafka/kafka-consumer.png" alt=""></p>
+<h2 id="部署数据迁移程序"><a href="#部署数据迁移程序" class="headerlink" title="部署数据迁移程序"></a>部署数据迁移程序</h2><p>数据迁移程序主要是讲数据从生产的环境中迁移到现在的中转kafka中,将数据汇总.具体的目录结构如下:<br><img src="/images/flow/flow.png" alt=""></p>
+<p>下面为配置的文件:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div></pre></td><td class="code"><pre><div class="line">#数据源列表</div><div class="line">kafka-sources-list=kafka-sources-1,kafka-sources-2,kafka-sources-3,kafka-sources-4,kafka-sources-5,kafka-sources-6,kafka-sources-7,kafka-sources-8</div><div class="line"></div><div class="line">#数据源</div><div class="line">kafka-sources-1.source.zookeeper.connect=fonova-stargazer-test-info01:3181,fonova-stargazer-test-info01:3182,fonova-stargazer-test-info01:3183</div><div class="line">kafka-sources-1.source.topic=STARGAZER-CLEANUP-APPCOMMENT</div><div class="line">kafka-sources-1.source.group.id=test-data-flow</div><div class="line">kafka-sources-1.source.threadNum=4</div><div class="line">kafka-sources-1.source.auto.offset.reset=smallest</div><div class="line">kafka-sources-1.source.zookeeper.session.timeout.ms=40000</div><div class="line">kafka-sources-1.source.zookeeper.sync.time.ms=200</div><div class="line">kafka-sources-1.source.auto.commit.interval.ms=1000</div><div class="line"></div><div class="line">#结果数据源</div><div class="line">kafka-sources-1.result.metadata.broker.list=fonova-clubmed03:9091,fonova-clubmed03:9092,fonova-clubmed03:9093</div><div class="line">kafka-sources-1.result.topic=STARGAZER-CLEANUP-APPCOMMENT</div><div class="line">kafka-sources-1.result.serializer.class=kafka.serializer.StringEncoder</div><div class="line">kafka-sources-1.result.request.required.acks=1</div><div class="line"></div><div class="line">#数据源</div><div class="line">kafka-sources-2.source.zookeeper.connect=fonova-stargazer-test-info01:3181,fonova-stargazer-test-info01:3182,fonova-stargazer-test-info01:3183</div><div class="line">kafka-sources-2.source.topic=STARGAZER-CLEANUP-APP</div><div class="line">kafka-sources-2.source.group.id=test-data-flow</div><div class="line">kafka-sources-2.source.threadNum=4</div><div class="line">kafka-sources-2.source.auto.offset.reset=smallest</div><div class="line">kafka-sources-2.source.zookeeper.session.timeout.ms=40000</div><div class="line">kafka-sources-2.source.zookeeper.sync.time.ms=200</div><div class="line">kafka-sources-2.source.auto.commit.interval.ms=1000</div><div class="line"></div><div class="line">#结果数据源</div><div class="line">kafka-sources-2.result.metadata.broker.list=fonova-clubmed03:9091,fonova-clubmed03:9092,fonova-clubmed03:9093</div><div class="line">kafka-sources-2.result.topic=STARGAZER-CLEANUP-APP</div><div class="line">kafka-sources-2.result.serializer.class=kafka.serializer.StringEncoder</div><div class="line">kafka-sources-2.result.request.required.acks=1</div><div class="line"></div><div class="line">#数据源</div><div class="line">kafka-sources-3.source.zookeeper.connect=fonova-stargazer-test-info01:3181,fonova-stargazer-test-info01:3182,fonova-stargazer-test-info01:3183</div><div class="line">kafka-sources-3.source.topic=STARGAZER-REPETITION-APP</div><div class="line">kafka-sources-3.source.group.id=test-data-flow</div><div class="line">kafka-sources-3.source.threadNum=4</div><div class="line">kafka-sources-3.source.auto.offset.reset=smallest</div><div class="line">kafka-sources-3.source.zookeeper.session.timeout.ms=40000</div><div class="line">kafka-sources-3.source.zookeeper.sync.time.ms=200</div><div class="line">kafka-sources-3.source.auto.commit.interval.ms=1000</div><div class="line"></div><div class="line">#结果数据源</div><div class="line">kafka-sources-3.result.metadata.broker.list=fonova-clubmed03:9091,fonova-clubmed03:9092,fonova-clubmed03:9093</div><div class="line">kafka-sources-3.result.topic=STARGAZER-REPETITION-APP</div><div class="line">kafka-sources-3.result.serializer.class=kafka.serializer.StringEncoder</div><div class="line">kafka-sources-3.result.request.required.acks=1</div><div class="line"></div><div class="line">#数据源</div><div class="line">kafka-sources-4.source.zookeeper.connect=fonova-stargazer-test-info01:3181,fonova-stargazer-test-info01:3182,fonova-stargazer-test-info01:3183</div><div class="line">kafka-sources-4.source.topic=STARGAZER-STORE-APP</div><div class="line">kafka-sources-4.source.group.id=test-data-flow</div><div class="line">kafka-sources-4.source.threadNum=4</div><div class="line">kafka-sources-4.source.auto.offset.reset=smallest</div><div class="line">kafka-sources-4.source.zookeeper.session.timeout.ms=40000</div><div class="line">kafka-sources-4.source.zookeeper.sync.time.ms=200</div><div class="line">kafka-sources-4.source.auto.commit.interval.ms=1000</div><div class="line"></div><div class="line">#结果数据源</div><div class="line">kafka-sources-4.result.metadata.broker.list=fonova-clubmed03:9091,fonova-clubmed03:9092,fonova-clubmed03:9093</div><div class="line">kafka-sources-4.result.topic=STARGAZER-STORE-APP</div><div class="line">kafka-sources-4.result.serializer.class=kafka.serializer.StringEncoder</div><div class="line">kafka-sources-4.result.request.required.acks=1</div><div class="line"></div><div class="line">#数据源</div><div class="line">kafka-sources-5.source.zookeeper.connect=fonova-stargazer-test-info01:3181,fonova-stargazer-test-info01:3182,fonova-stargazer-test-info01:3183</div><div class="line">kafka-sources-5.source.topic=STARGAZER-DISCARD-APP</div><div class="line">kafka-sources-5.source.group.id=test-data-flow</div><div class="line">kafka-sources-5.source.threadNum=4</div><div class="line">kafka-sources-5.source.auto.offset.reset=smallest</div><div class="line">kafka-sources-5.source.zookeeper.session.timeout.ms=40000</div><div class="line">kafka-sources-5.source.zookeeper.sync.time.ms=200</div><div class="line">kafka-sources-5.source.auto.commit.interval.ms=1000</div><div class="line"></div><div class="line">#结果数据源</div><div class="line">kafka-sources-5.result.metadata.broker.list=fonova-clubmed03:9091,fonova-clubmed03:9092,fonova-clubmed03:9093</div><div class="line">kafka-sources-5.result.topic=STARGAZER-DISCARD-APP</div><div class="line">kafka-sources-5.result.serializer.class=kafka.serializer.StringEncoder</div><div class="line">kafka-sources-5.result.request.required.acks=1</div><div class="line"></div><div class="line">#数据源</div><div class="line">kafka-sources-6.source.zookeeper.connect=fonova-stargazer-test-info01:3181,fonova-stargazer-test-info01:3182,fonova-stargazer-test-info01:3183</div><div class="line">kafka-sources-6.source.topic=STARGAZER-REINDEX-APP</div><div class="line">kafka-sources-6.source.group.id=test-data-flow</div><div class="line">kafka-sources-6.source.threadNum=4</div><div class="line">kafka-sources-6.source.auto.offset.reset=smallest</div><div class="line">kafka-sources-6.source.zookeeper.session.timeout.ms=40000</div><div class="line">kafka-sources-6.source.zookeeper.sync.time.ms=200</div><div class="line">kafka-sources-6.source.auto.commit.interval.ms=1000</div><div class="line"></div><div class="line">#结果数据源</div><div class="line">kafka-sources-6.result.metadata.broker.list=fonova-clubmed03:9091,fonova-clubmed03:9092,fonova-clubmed03:9093</div><div class="line">kafka-sources-6.result.topic=STARGAZER-REINDEX-APP</div><div class="line">kafka-sources-6.result.serializer.class=kafka.serializer.StringEncoder</div><div class="line">kafka-sources-6.result.request.required.acks=1</div><div class="line"></div><div class="line">#数据源</div><div class="line">kafka-sources-7.source.zookeeper.connect=fonova-stargazer-test-info01:3181,fonova-stargazer-test-info01:3182,fonova-stargazer-test-info01:3183</div><div class="line">kafka-sources-7.source.topic=STARGAZER-INDEX-APP</div><div class="line">kafka-sources-7.source.group.id=test-data-flow</div><div class="line">kafka-sources-7.source.threadNum=4</div><div class="line">kafka-sources-7.source.auto.offset.reset=smallest</div><div class="line">kafka-sources-7.source.zookeeper.session.timeout.ms=40000</div><div class="line">kafka-sources-7.source.zookeeper.sync.time.ms=200</div><div class="line">kafka-sources-7.source.auto.commit.interval.ms=1000</div><div class="line"></div><div class="line">#结果数据源</div><div class="line">kafka-sources-7.result.metadata.broker.list=fonova-clubmed03:9091,fonova-clubmed03:9092,fonova-clubmed03:9093</div><div class="line">kafka-sources-7.result.topic=STARGAZER-INDEX-APP</div><div class="line">kafka-sources-7.result.serializer.class=kafka.serializer.StringEncoder</div><div class="line">kafka-sources-7.result.request.required.acks=1</div><div class="line"></div><div class="line">#数据源</div><div class="line">kafka-sources-8.source.zookeeper.connect=fonova-stargazer-test-info01:3181,fonova-stargazer-test-info01:3182,fonova-stargazer-test-info01:3183</div><div class="line">kafka-sources-8.source.topic=STARGAZER-CLEANUP</div><div class="line">kafka-sources-8.source.group.id=test-data-flow</div><div class="line">kafka-sources-8.source.threadNum=4</div><div class="line">kafka-sources-8.source.auto.offset.reset=smallest</div><div class="line">kafka-sources-8.source.zookeeper.session.timeout.ms=40000</div><div class="line">kafka-sources-8.source.zookeeper.sync.time.ms=200</div><div class="line">kafka-sources-8.source.auto.commit.interval.ms=1000</div><div class="line"></div><div class="line">#结果数据源</div><div class="line">kafka-sources-8.result.metadata.broker.list=fonova-clubmed03:9091,fonova-clubmed03:9092,fonova-clubmed03:9093</div><div class="line">kafka-sources-8.result.topic=STARGAZER-CLEANUP</div><div class="line">kafka-sources-8.result.serializer.class=kafka.serializer.StringEncoder</div><div class="line">kafka-sources-8.result.request.required.acks=1</div></pre></td></tr></table></figure></p>
+<p>配置好以后,直接进行启动即可,主要的启动方式是：java -jar ….</p>
+<h2 id="搭建flume环境-并且部署flume"><a href="#搭建flume环境-并且部署flume" class="headerlink" title="搭建flume环境,并且部署flume"></a>搭建flume环境,并且部署flume</h2><p>下面既然数据已经拉去到对应的kafka环境中,那么就可以将数据拉去到对应的系统中,主要采用的是flume将相应的数据拉去到hdfs中。flume的配置依赖于hadoop。flume的主要文件夹如下：</p>
+<p><img src="/images/flume/flume-file.png" alt=""></p>
+<p>bin:命令脚本<br>conf:配置文件<br>lib:依赖库,这个地方注意:如果当前机器配置了hadoop环境,并且配置了相应的目录地址环境变量,lib中不用添加hadoop的一些依赖包,否则需要将comment,hdfs，yarn等依赖包加入进来(主要是hadoop文件目录中share/hadoop文件夹下的)</p>
+<p>那么如何配置flume:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div></pre></td><td class="code"><pre><div class="line"># Sources, channels, and sinks are defined per</div><div class="line"># agent name, in this case flume1.</div><div class="line">flume1.sources  = kafka-source-1 kafka-source-2 kafka-source-3</div><div class="line">flume1.channels = hdfs-channel-1 hdfs-channel-2 hdfs-channel-3</div><div class="line">flume1.sinks    = hdfs-sink-1 hdfs-sink-2 hdfs-sink-3</div><div class="line"></div><div class="line">###########################################################开始配置***数据写入###################################################################</div><div class="line"># For each source, channel, and sink, set</div><div class="line"># standard properties.</div><div class="line">flume1.sources.kafka-source-1.type = org.apache.flume.source.kafka.KafkaSource</div><div class="line">flume1.sources.kafka-source-1.zookeeperConnect = fonova-clubmed03:2181,fonova-clubmed03:2182,fonova-clubmed03:2183</div><div class="line">flume1.sources.kafka-source-1.topic = pro_cleanup</div><div class="line">flume1.sources.kafka-source-1.batchSize = 300</div><div class="line">flume1.sources.kafka-source-1.channels = hdfs-channel-1</div><div class="line">flume1.channels.hdfs-channel-1.type   = memory</div><div class="line">flume1.sinks.hdfs-sink-1.channel = hdfs-channel-1</div><div class="line">flume1.sinks.hdfs-sink-1.type = hdfs</div><div class="line">flume1.sinks.hdfs-sink-1.hdfs.writeFormat = Text</div><div class="line">flume1.sinks.hdfs-sink-1.hdfs.fileType = DataStream</div><div class="line">flume1.sinks.hdfs-sink-1.hdfs.filePrefix = log</div><div class="line">flume1.sinks.hdfs-sink-1.hdfs.path = hdfs://*.*.*.*:8020/user/hive/warehouse/spider/cleanup/dt=%Y-%m-%d/h=%H</div><div class="line">flume1.sinks.hdfs-sink-1.hdfs.callTimeout=40000</div><div class="line"></div><div class="line">flume1.sinks.hdfs-sink-1.hdfs.useLocalTimeStamp = true </div><div class="line">flume1.sinks.hdfs-sink-1.hdfs.minBlockReplicas=1</div><div class="line">flume1.sinks.hdfs-sink-1.hdfs.rollInterval=30</div><div class="line">flume1.sinks.hdfs-sink-1.hdfs.rollSize=0</div><div class="line">flume1.sinks.hdfs-sink-1.hdfs.rollCount=0</div><div class="line">flume1.sinks.hdfs-sink-1.hdfs.idleTimeout=0</div><div class="line"></div><div class="line">#flume1.sinks.hdfs-sink-1.hdfs.batchSize = 300</div><div class="line">#flume1.sinks.hdfs-sink-1.hdfs.round = true</div><div class="line">#flume1.sinks.hdfs-sink-1.hdfs.roundUnit= minute</div><div class="line">#flume1.sinks.hdfs-sink-1.hdfs.roundValue  = 1</div><div class="line">#flume1.sinks.hdfs-sink-1.hdfs.rollSize = 10240</div><div class="line">#flume1.sinks.hdfs-sink-1.hdfs.rollCount = 0</div><div class="line"># Other properties are specific to each type of</div><div class="line"># source, channel, or sink. In this case, we</div><div class="line"># specify the capacity of the memory channel.</div><div class="line">flume1.channels.hdfs-channel-1.capacity = 1000000</div><div class="line">flume1.channels.hdfs-channel-1.type=memory</div><div class="line">flume1.channels.hdfs-channel-1.transactionCapacity=1000</div><div class="line"></div><div class="line"></div><div class="line"># For each source, channel, and sink, set</div><div class="line"># standard properties.</div><div class="line">flume1.sources.kafka-source-2.type = org.apache.flume.source.kafka.KafkaSource</div><div class="line">flume1.sources.kafka-source-2.zookeeperConnect = fonova-clubmed03:2181,fonova-clubmed03:2182,fonova-clubmed03:2183</div><div class="line">flume1.sources.kafka-source-2.topic = pro_app</div><div class="line">flume1.sources.kafka-source-2.batchSize = 300</div><div class="line">flume1.sources.kafka-source-2.channels = hdfs-channel-2</div><div class="line">flume1.channels.hdfs-channel-2.type   = memory</div><div class="line">flume1.sinks.hdfs-sink-2.channel = hdfs-channel-2</div><div class="line">flume1.sinks.hdfs-sink-2.type = hdfs</div><div class="line">flume1.sinks.hdfs-sink-2.hdfs.writeFormat = Text</div><div class="line">flume1.sinks.hdfs-sink-2.hdfs.fileType = DataStream</div><div class="line">flume1.sinks.hdfs-sink-2.hdfs.filePrefix = log</div><div class="line">flume1.sinks.hdfs-sink-2.hdfs.path = hdfs://*.*.*.*:8020/user/hive/warehouse/spider/app/dt=%Y-%m-%d/h=%H</div><div class="line">flume1.sinks.hdfs-sink-2.hdfs.callTimeout=40000</div><div class="line"></div><div class="line">flume1.sinks.hdfs-sink-2.hdfs.useLocalTimeStamp = true </div><div class="line">flume1.sinks.hdfs-sink-2.hdfs.minBlockReplicas=1</div><div class="line">flume1.sinks.hdfs-sink-2.hdfs.rollInterval=30</div><div class="line">flume1.sinks.hdfs-sink-2.hdfs.rollSize=0</div><div class="line">flume1.sinks.hdfs-sink-2.hdfs.rollCount=0</div><div class="line">flume1.sinks.hdfs-sink-2.hdfs.idleTimeout=0</div><div class="line"></div><div class="line"># Other properties are specific to each type of</div><div class="line"># source, channel, or sink. In this case, we</div><div class="line"># specify the capacity of the memory channel.</div><div class="line">flume1.channels.hdfs-channel-2.capacity = 1000000</div><div class="line">flume1.channels.hdfs-channel-2.type=memory</div><div class="line">flume1.channels.hdfs-channel-2.transactionCapacity=1000</div><div class="line"></div><div class="line"></div><div class="line"># For each source, channel, and sink, set</div><div class="line"># standard properties.</div><div class="line">flume1.sources.kafka-source-3.type = org.apache.flume.source.kafka.KafkaSource</div><div class="line">flume1.sources.kafka-source-3.zookeeperConnect = fonova-clubmed03:2181,fonova-clubmed03:2182,fonova-clubmed03:2183</div><div class="line">flume1.sources.kafka-source-3.topic = pro_reindex</div><div class="line">flume1.sources.kafka-source-3.batchSize = 300</div><div class="line">flume1.sources.kafka-source-3.channels = hdfs-channel-3</div><div class="line">flume1.channels.hdfs-channel-3.type   = memory</div><div class="line">flume1.sinks.hdfs-sink-3.channel = hdfs-channel-3</div><div class="line">flume1.sinks.hdfs-sink-3.type = hdfs</div><div class="line">flume1.sinks.hdfs-sink-3.hdfs.writeFormat = Text</div><div class="line">flume1.sinks.hdfs-sink-3.hdfs.fileType = DataStream</div><div class="line">flume1.sinks.hdfs-sink-3.hdfs.filePrefix = log</div><div class="line">flume1.sinks.hdfs-sink-3.hdfs.path = hdfs://*.*.*.*:8020/user/hive/warehouse/spider/reindex/dt=%Y-%m-%d/h=%H</div><div class="line"></div><div class="line">flume1.sinks.hdfs-sink-3.hdfs.useLocalTimeStamp = true </div><div class="line">flume1.sinks.hdfs-sink-3.hdfs.minBlockReplicas=1</div><div class="line">flume1.sinks.hdfs-sink-3.hdfs.rollInterval=30</div><div class="line">flume1.sinks.hdfs-sink-3.hdfs.rollSize=0</div><div class="line">flume1.sinks.hdfs-sink-3.hdfs.rollCount=0</div><div class="line">flume1.sinks.hdfs-sink-3.hdfs.idleTimeout=0</div><div class="line"></div><div class="line"># Other properties are specific to each type of</div><div class="line"># source, channel, or sink. In this case, we</div><div class="line"># specify the capacity of the memory channel.</div><div class="line">flume1.channels.hdfs-channel-3.capacity = 1000000</div><div class="line">flume1.channels.hdfs-channel-3.type=memory</div><div class="line">flume1.channels.hdfs-channel-3.transactionCapacity=1000</div></pre></td></tr></table></figure></p>
+<p>上面的主要配置是:<br>source:数据源,指定数据源是kafka</p>
+<p>其中hdfs的文件写入时按照时间来定的，每隔30s写入一个文件，文件的命名方式为，log.时间戳。</p>
+<p>flume的主要结构如下：<br><img src="/images/flume/flume-simple.png" alt=""></p>
+<p><img src="/images/flume/flume-mult.png" alt=""></p>
+<p>其实flume可以简单的数据一个是数据收集源，将根据不同的系统收集到的数据写入到管道中。管道后端有一个数据处理源，从管道中,根据配置拿取数据,比如比如每次拿去多少数据写入到对应的结果数据中。</p>
+<h2 id="解析统计数据"><a href="#解析统计数据" class="headerlink" title="解析统计数据"></a>解析统计数据</h2><p>创建常用表,将数据load到表中,进行解析处理.建表语句如下:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">create table clean_data(</div><div class="line">	str string</div><div class="line">)PARTITIONED  by(dt string,h string);</div></pre></td></tr></table></figure></p>
+<p>建完表以后,将今天的数据load到表中,对应的已经编写为shell脚本,具体的代码如下:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">vd=$1</div><div class="line">hour=$2</div><div class="line"></div><div class="line">sh /data/sunx/plan/shell/load.sh clean clean_data $vd $hour</div><div class="line"></div><div class="line"># 开始处理sql语句</div><div class="line">/data/sunx/hive/hive1.2.1/bin/hive -d vday=$vd -d vhour=$hour -f /data/sunx/plan/sql/rawdata.sql</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">source=$1</div><div class="line">result=$2</div><div class="line">vday=$3</div><div class="line">hour=$4</div><div class="line"></div><div class="line">echo $source $result $vday  $hour </div><div class="line"></div><div class="line">/data/sunx/hive/hive1.2.1/bin/hive -e &quot;load data inpath &apos;/usr/hive/warehouse/raw_data.db/$&#123;source&#125;/dt=$&#123;vday&#125;/h=$&#123;hour&#125;/&apos; into table raw_data.$&#123;result&#125; partition(dt=&apos;$&#123;vday&#125;&apos;,h=&apos;$&#123;hour&#125;&apos;)&quot;</div></pre></td></tr></table></figure>
+<p>将数据load到表中以后,可以执行sql语句来进行数据的处理,如第一个shell脚本的最后一行所示：将日期和小时当成参数传递进去,同时执行该sql.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div></pre></td><td class="code"><pre><div class="line">insert overwrite table raw_data.article_data partition(dt=&apos;$&#123;vday&#125;&apos;,h=&apos;$&#123;vhour&#125;&apos;)</div><div class="line">select </div><div class="line">get_json_object(str,&apos;$.channelId&apos;),</div><div class="line">get_json_object(str,&apos;$.channelType&apos;),</div><div class="line">get_json_object(str,&apos;$.crawlerTime&apos;),</div><div class="line">get_json_object(str,&apos;$.dataType&apos;),</div><div class="line">get_json_object(str,&apos;$.dayId&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.site&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.siteDomain&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.siteUrl&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.siteType&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.sourceType&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.searchWord&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.id&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.title&apos;),</div><div class="line">get_json_object(get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.releaseDate&apos;),&apos;$.time&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.content&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.url&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.lookNum&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.replyNum&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.likeNum&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.onFootNum&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.collectNum&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.shareNum&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.recommendationNum&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.isReferer&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.repeatNum&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.isReply&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.originalUrl&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.parentId&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.parent&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.tags&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.pageDeep&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.summary&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.topic&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.featureWords&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.classify&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.emotion&apos;),</div><div class="line">get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.socre&apos;),</div><div class="line">get_json_object(get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.user&apos;),&apos;$.userId&apos;),</div><div class="line">get_json_object(get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.user&apos;),&apos;$.mid&apos;),</div><div class="line">get_json_object(get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.user&apos;),&apos;$.userName&apos;),</div><div class="line">get_json_object(get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.user&apos;),&apos;$.nickName&apos;),</div><div class="line">get_json_object(get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.user&apos;),&apos;$.imgUrl&apos;),</div><div class="line">get_json_object(get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.user&apos;),&apos;$.userType&apos;),</div><div class="line">get_json_object(get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.user&apos;),&apos;$.userTypeDesc&apos;),</div><div class="line">get_json_object(get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.user&apos;),&apos;$.userDesc&apos;),</div><div class="line">get_json_object(get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.user&apos;),&apos;$.gender&apos;),</div><div class="line">get_json_object(get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.user&apos;),&apos;$.age&apos;),</div><div class="line">get_json_object(get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.user&apos;),&apos;$.province&apos;),</div><div class="line">get_json_object(get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.user&apos;),&apos;$.city&apos;),</div><div class="line">get_json_object(get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.user&apos;),&apos;$.addr&apos;),</div><div class="line">get_json_object(get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.user&apos;),&apos;$.school&apos;),</div><div class="line">get_json_object(get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.user&apos;),&apos;$.company&apos;),</div><div class="line">get_json_object(get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.user&apos;),&apos;$.focusNum&apos;),</div><div class="line">get_json_object(get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.user&apos;),&apos;$.followerNum&apos;),</div><div class="line">get_json_object(get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.user&apos;),&apos;$.articleNum&apos;),</div><div class="line">get_json_object(get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.user&apos;),&apos;$.replyArticleNum&apos;),</div><div class="line">get_json_object(get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.user&apos;),&apos;$.friendNum&apos;),</div><div class="line">get_json_object(get_json_object(get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.user&apos;),&apos;$.createAt&apos;),&apos;$.time&apos;),</div><div class="line">get_json_object(get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.user&apos;),&apos;$.domain&apos;),</div><div class="line">get_json_object(get_json_object(get_json_object(str,&apos;$.bean&apos;),&apos;$.user&apos;),&apos;$.userUrl&apos;)</div><div class="line">from raw_data.clean_data</div><div class="line">where dt = &apos;$&#123;vday&#125;&apos; and h = &apos;$&#123;vhour&#125;&apos;</div><div class="line">and get_json_object(str,&apos;$.dataType&apos;) = 7</div><div class="line">;</div></pre></td></tr></table></figure>
+<p>通过上面的步骤可以将数据按照天小时解析存储到指定的文件目录中。由于数据的存储空间有限,需要定时清洗数据,数据保留3天内的,可以在直接删除掉3天前的文件夹即可。具体的shell如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"> #！/bin/bash</div><div class="line"> # 今天删除前面第三天的数据文件夹</div><div class="line"></div><div class="line">last=`date -d &apos;-2 days&apos; -I`</div><div class="line">source=$1</div><div class="line"></div><div class="line"># 开始删除数据</div><div class="line">hadoop fs -rm -r /usr/hive/warehouse/raw_data.db/$source/dt=$last</div></pre></td></tr></table></figure></p>
+<p>至于删除那些东西,删除那些目录,可以在构建一个shell来调用这个shell进行删除.</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/大数据/" rel="tag">#大数据</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/28/java-thread-study007/" rel="next" title="java并发编程学习(七) Thread中常用方法说明">
+                <i class="fa fa-chevron-left"></i> java并发编程学习(七) Thread中常用方法说明
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/28/java-thread-study008/" rel="prev" title="java并发编程学习(八) 线程池深入理解">
+                java并发编程学习(八) 线程池深入理解 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+           <!-- 多说热评文章 start -->
+	<div class="ds-top-threads" data-range="daily" data-num-items="5"></div>
+<!-- 多说热评文章 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+
+           <section id="comments">
+   <!-- 多说评论框 start -->
+<div id="ds-thread" class="ds-thread" data-thread-key="<%= post.path %>" data-title="<%= post.title %>" data-url="<%= post.permalink %>"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+  </section>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="孙星" />
+          <p class="site-author-name" itemprop="name">孙星</p>
+          <p class="site-description motion-element" itemprop="description">sunxing's blog | mysql | java | scala | hadoop | spark | kafka | flume</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">65</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#搭建hadoop环境"><span class="nav-number">1.</span> <span class="nav-text">搭建hadoop环境</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#下载hadoop："><span class="nav-number">1.1.</span> <span class="nav-text">下载hadoop：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解压配置免密码登陆"><span class="nav-number">1.2.</span> <span class="nav-text">解压配置免密码登陆:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置hosts"><span class="nav-number">1.3.</span> <span class="nav-text">配置hosts</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置相应的配置文件"><span class="nav-number">1.4.</span> <span class="nav-text">配置相应的配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行hadoop"><span class="nav-number">1.5.</span> <span class="nav-text">运行hadoop</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hadoop的wordcount的程序的开发"><span class="nav-number">1.6.</span> <span class="nav-text">hadoop的wordcount的程序的开发</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#搭建hive环境"><span class="nav-number">2.</span> <span class="nav-text">搭建hive环境</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#开始安装"><span class="nav-number">2.1.</span> <span class="nav-text">开始安装</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#搭建kafka环境"><span class="nav-number">3.</span> <span class="nav-text">搭建kafka环境</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#配置zookeeper服务"><span class="nav-number">3.1.</span> <span class="nav-text">配置zookeeper服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动服务"><span class="nav-number">3.2.</span> <span class="nav-text">启动服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解压配置kafka"><span class="nav-number">3.3.</span> <span class="nav-text">解压配置kafka</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动kafka"><span class="nav-number">3.4.</span> <span class="nav-text">启动kafka</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#kafka常用命令"><span class="nav-number">3.5.</span> <span class="nav-text">kafka常用命令</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#部署数据迁移程序"><span class="nav-number">4.</span> <span class="nav-text">部署数据迁移程序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#搭建flume环境-并且部署flume"><span class="nav-number">5.</span> <span class="nav-text">搭建flume环境,并且部署flume</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解析统计数据"><span class="nav-number">6.</span> <span class="nav-text">解析统计数据</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孙星</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"sunxing"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>

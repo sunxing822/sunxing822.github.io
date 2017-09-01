@@ -1,0 +1,745 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="java," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="1 InputStream1.1 FileInputStream and FileOutputStream1.1.1 FileInputStream文件输入流,主要是读取文件的内容,构造方法有三个,分布式如下: 123public FileInputStream(String name) throws FileNotFoundExceptionpublic FileInputStream(File">
+<meta name="keywords" content="java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaIO学习笔记(四) Java 流操作和源码">
+<meta property="og:url" content="http://www.sunxing.cc/2016/07/10/java-io-4/index.html">
+<meta property="og:site_name" content="孙星的个人博客~">
+<meta property="og:description" content="1 InputStream1.1 FileInputStream and FileOutputStream1.1.1 FileInputStream文件输入流,主要是读取文件的内容,构造方法有三个,分布式如下: 123public FileInputStream(String name) throws FileNotFoundExceptionpublic FileInputStream(File">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://www.sunxing.cc/images/io/io-hanzi-0.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/io/io-hanzi.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/io/io-peekinpustream.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/io/io-block-object.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/io/io-object-execute.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/io/io-object-writer.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/io/io-piped-test.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/io/io-sequence.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/io/io-sequence-next.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/io/io-sequence-init.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/io/io-buffered-input.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/io/io-print-stream.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/io/io-print-stream-init.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/io/io-random-seek.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/io/io-random-rw.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/io/io-random-rw-2.png">
+<meta property="og:updated_time" content="2017-04-30T03:58:25.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JavaIO学习笔记(四) Java 流操作和源码">
+<meta name="twitter:description" content="1 InputStream1.1 FileInputStream and FileOutputStream1.1.1 FileInputStream文件输入流,主要是读取文件的内容,构造方法有三个,分布式如下: 123public FileInputStream(String name) throws FileNotFoundExceptionpublic FileInputStream(File">
+<meta name="twitter:image" content="http://www.sunxing.cc/images/io/io-hanzi-0.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+ <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258995301'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/z_stat.php%3Fid%3D1258995301' type='text/javascript'%3E%3C/script%3E"));</script>
+
+  <title> JavaIO学习笔记(四) Java 流操作和源码 | 孙星的个人博客~ </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">孙星的个人博客~</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">搬砖的,码农~</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                JavaIO学习笔记(四) Java 流操作和源码
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-10T09:57:55+08:00" content="2016-07-10">
+              2016-07-10
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/10/java-io-4/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/10/java-io-4/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="1-InputStream"><a href="#1-InputStream" class="headerlink" title="1 InputStream"></a>1 InputStream</h2><h3 id="1-1-FileInputStream-and-FileOutputStream"><a href="#1-1-FileInputStream-and-FileOutputStream" class="headerlink" title="1.1 FileInputStream and FileOutputStream"></a>1.1 FileInputStream and FileOutputStream</h3><h4 id="1-1-1-FileInputStream"><a href="#1-1-1-FileInputStream" class="headerlink" title="1.1.1 FileInputStream"></a>1.1.1 FileInputStream</h4><p>文件输入流,主要是读取文件的内容,构造方法有三个,分布式如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public FileInputStream(String name) throws FileNotFoundException</div><div class="line">public FileInputStream(File file) throws FileNotFoundException</div><div class="line">public FileInputStream(FileDescriptor fdObj)</div></pre></td></tr></table></figure>
+<p>FileInputStream是字节流,下面展示下简单额使用方式:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">/*****</div><div class="line">     * FileInputStream</div><div class="line">     *</div><div class="line">     * @throws Exception</div><div class="line">     */</div><div class="line">    @Test</div><div class="line">    public void testFileInputStream() throws Exception&#123;</div><div class="line">        String filePath = &quot;conf/file/test1.txt&quot;;</div><div class="line">        File file = new File(filePath);</div><div class="line">        InputStream is1 = new FileInputStream(filePath);</div><div class="line">        InputStream is2 = new FileInputStream(file);</div><div class="line"></div><div class="line">        show(is1);</div><div class="line">        show(is2,new byte[3]);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void show(InputStream is) throws  Exception&#123;</div><div class="line">        System.out.println(&quot;打印读取到的byte..&quot;);</div><div class="line">        int data = is.read();</div><div class="line">        while(data != -1)&#123;</div><div class="line">            char ch = (char)data;</div><div class="line">            System.out.println(ch);</div><div class="line">            data = is.read();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void show(InputStream is,byte[] b) throws  Exception&#123;</div><div class="line">        int data = is.read();</div><div class="line">        int i=0;</div><div class="line">        System.out.println(&quot;打印读取到的中文汉字对应的byte..&quot;);</div><div class="line">        while(data != -1)&#123;</div><div class="line">            b[i] = (byte)(data - 256);</div><div class="line">            i++;</div><div class="line">            System.out.println(data);</div><div class="line">            data = is.read();</div><div class="line">        &#125;</div><div class="line">        System.out.println(&quot;将读取到的byte转化为汉字...&quot;);</div><div class="line">        System.out.println(new String(new byte[]&#123;b[0],b[1],b[2]&#125;));</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>执行结果截图如下:</p>
+<p><img src="/images/io/io-hanzi-0.png" alt=""></p>
+<p>执行上面的代码会发现,如果是英文的文件可以看出英文文档是写入的字母会正常显示出来,如果是中文汉字,按照上面的打印会出现乱码,主要是因为读取的动作是一个字节一个自己的读取的,中文汉字一个汉字占用的字节数是根据编码格式来的,在GBK和GB2312编码情况下,一个汉字对应的还是连个字节,在UTF-8编码下一个汉字对应的是三个字节,在ISO-8859-1编码下是无法识别汉字的,汉字只能转为问好,同样的在有些大字符集编码中汉字可能对应的是四个字节,具体的举例如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">@Test</div><div class="line">   public void test2() throws Exception&#123;</div><div class="line">       String hanzi = &quot;个&quot;;</div><div class="line"></div><div class="line">       byte[] a = hanzi.getBytes(&quot;UTF-8&quot;);</div><div class="line">       byte[] b = hanzi.getBytes(&quot;GBK&quot;);</div><div class="line">       byte[] c = hanzi.getBytes(&quot;GB2312&quot;);</div><div class="line"></div><div class="line">       System.out.println(a.length + &quot;\t&quot; + b.length + &quot;\t&quot; + c.length);</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<p>执行的结果如下:</p>
+<p><img src="/images/io/io-hanzi.png" alt=""></p>
+<h4 id="1-1-2-FileOutputStream"><a href="#1-1-2-FileOutputStream" class="headerlink" title="1.1.2 FileOutputStream"></a>1.1.2 FileOutputStream</h4><p>文件输出流,主要是写入文件的内容,构造方法有三个,分布式如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">public FileOutputStream(String name) throws FileNotFoundException</div><div class="line">public FileOutputStream(String name, boolean append)</div><div class="line">public FileOutputStream(File file)</div><div class="line">public FileOutputStream(File file, boolean append)</div><div class="line">public FileOutputStream(FileDescriptor fdObj)</div></pre></td></tr></table></figure>
+<p>FileInputStream是字节流,下面展示下简单额使用方式:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">@Test</div><div class="line">public void test6() throws Exception&#123;</div><div class="line">    OutputStream os = new FileOutputStream(&quot;conf/h.txt&quot;,true);</div><div class="line">    os.write(&quot;第一行数据&quot;.getBytes());</div><div class="line">    os.flush();</div><div class="line">    os.close();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>主意这里FileOutputStream是没有换行的写入文件,如果想一行一行写,需要写入一个换行符。也就是:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">os.write(&quot;第一行数据\n&quot;.getBytes());</div></pre></td></tr></table></figure>
+<h3 id="1-2-ByteArrayInputStream-and-ByteArrayOutputStream"><a href="#1-2-ByteArrayInputStream-and-ByteArrayOutputStream" class="headerlink" title="1.2 ByteArrayInputStream and ByteArrayOutputStream"></a>1.2 ByteArrayInputStream and ByteArrayOutputStream</h3><h4 id="1-2-1-ByteArrayInputStream"><a href="#1-2-1-ByteArrayInputStream" class="headerlink" title="1.2.1 ByteArrayInputStream"></a>1.2.1 ByteArrayInputStream</h4><p>ByteArrayInputStream其实就是对一个byte数组的封装,内部有一个相对的数组缓存,以及指针,通过这个指针的移动来读取相应地方的具体的数据,实例变量如下为:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">//内部缓存</div><div class="line">protected byte buf[];</div><div class="line">//指针id,用于指向数组的下标来实现读取数据</div><div class="line">protected int pos;</div><div class="line">//标记下表,用于任意指定位置,开始读取数据(具体的通过pos来赋值的)</div><div class="line">protected int mark = 0;</div><div class="line">//数组的长度</div><div class="line">protected int count;</div></pre></td></tr></table></figure>
+<p>API列表以及相应的解释:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">//给定一个字节数组初始化字节数组输入流</div><div class="line">public ByteArrayInputStream(byte buf[])</div><div class="line">//给定一个字节数组初始化字节数组输入流,相当于读取数组的子集</div><div class="line">public ByteArrayInputStream(byte buf[], int offset, int length)</div><div class="line">//读取一个字节,将这个字节按位与0xff后返回一个int整数</div><div class="line">public synchronized int read()</div><div class="line">//读取缓存字节数组的一个子集数组</div><div class="line">public synchronized int read(byte b[], int off, int len)</div><div class="line">//修改指针,跳过多少个字节进行读取</div><div class="line">public synchronized long skip(long n)</div><div class="line">//检测还有多少字节没有读取,也就是count - pos的值</div><div class="line">public synchronized int available()</div><div class="line">//该方法总是返回true</div><div class="line">public boolean markSupported()</div><div class="line">//该方法的参数是无用的,返回值根据的是当前指针的位置来重置mark的值</div><div class="line">public void mark(int readAheadLimit)</div><div class="line">//指针移动到上一次mark标记的地方重新读取</div><div class="line">public synchronized void reset()</div></pre></td></tr></table></figure>
+<p>例子：读取一个汉字的字节数组,重新读取展示出来.读取到的一个自己是获取到的字节对应按位与过后的值,需要改动后再转成字符串展示,代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">/*****</div><div class="line">    * ByteArrayInputStream</div><div class="line">    *</div><div class="line">    * @throws Exception</div><div class="line">    */</div><div class="line">   @Test</div><div class="line">   public void test3() throws Exception&#123;</div><div class="line">       String hanzi = &quot;一&quot;;</div><div class="line">       ByteArrayInputStream bais = new ByteArrayInputStream(hanzi.getBytes());</div><div class="line"></div><div class="line">       byte[] b = new byte[3];</div><div class="line">       int i = 0;</div><div class="line">       int data = bais.read();</div><div class="line">       while(data != -1 &amp;&amp; i &lt; 3)&#123;</div><div class="line">           int origin = data &amp; 0xff;</div><div class="line"></div><div class="line">           b[i] = (byte)origin;</div><div class="line">           data = bais.read();</div><div class="line">           i++;</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       System.out.println(new String(b));</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<h4 id="1-2-2-ByteArrayOutputStream"><a href="#1-2-2-ByteArrayOutputStream" class="headerlink" title="1.2.2 ByteArrayOutputStream"></a>1.2.2 ByteArrayOutputStream</h4><p>这里就不多说这个了,基本的操作就是向一个字节数组中写入数据,同样的可以将这个数据写入到某个输出流中,源码中的代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public synchronized void writeTo(OutputStream out) throws IOException &#123;</div><div class="line">      out.write(buf, 0, count);</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+<h3 id="1-3-StringBufferInputStream"><a href="#1-3-StringBufferInputStream" class="headerlink" title="1.3 StringBufferInputStream"></a>1.3 StringBufferInputStream</h3><p>这个类在jdk8中已经被废弃掉了。</p>
+<h3 id="1-4-ObjectInputStream-and-ObjectOutputStream"><a href="#1-4-ObjectInputStream-and-ObjectOutputStream" class="headerlink" title="1.4 ObjectInputStream and ObjectOutputStream"></a>1.4 ObjectInputStream and ObjectOutputStream</h3><h4 id="1-4-1-ObjectInputStream"><a href="#1-4-1-ObjectInputStream" class="headerlink" title="1.4.1 ObjectInputStream"></a>1.4.1 ObjectInputStream</h4><p>ObjectInputStream的构造韩式如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">public ObjectInputStream(InputStream in) throws IOException &#123;</div><div class="line">    verifySubclass();</div><div class="line">    bin = new BlockDataInputStream(in);</div><div class="line">    handles = new HandleTable(10);</div><div class="line">    vlist = new ValidationList();</div><div class="line">    enableOverride = false;</div><div class="line">    readStreamHeader();</div><div class="line">    bin.setBlockDataMode(true);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>由此可以看出其实他是封装为了一个BlockDataInputStream实例,那么这个又是什么呢?源码部分如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">BlockDataInputStream(InputStream in) &#123;</div><div class="line">    this.in = new PeekInputStream(in);</div><div class="line">    din = new DataInputStream(this);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在构造这个对象的同时,将我们一开始读取的流又封装了一下,使用的PeekInputStream,这个类主要是用来做什么的呢？</p>
+<p>先来查看一下BlockDataInputStream的read方法,基本的流操作中read是最基本也是最原始的方法,方法源代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">/* ----------------- generic input stream methods ------------------ */</div><div class="line">/*</div><div class="line">* The following methods are equivalent to their counterparts in</div><div class="line">* InputStream, except that they interpret data block boundaries and</div><div class="line">* read the requested data from within data blocks when in block data</div><div class="line">* mode.</div><div class="line">*/</div><div class="line">public int read() throws IOException &#123;</div><div class="line">   if (blkmode) &#123;</div><div class="line">      if (pos == end) &#123;</div><div class="line">          refill();</div><div class="line">       &#125;</div><div class="line">       return (end &gt;= 0) ? (buf[pos++] &amp; 0xFF) : -1;</div><div class="line">    &#125; else &#123;</div><div class="line">      return in.read();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看出其实BlockDataInputStream只是一个封装类,in是什么？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">/** underlying stream (wrapped in peekable filter stream) */</div><div class="line">private final PeekInputStream in;</div></pre></td></tr></table></figure>
+<p>因此可以总结出一个问题:<br>ObjectInputStream是一个总的对外提供的包装类,其内部的是一层一层进行封装的, PeekInputStream是最低层的实现,基本功能是读取字节的操作,源码截图如下:</p>
+<p><img src="/images/io/io-peekinpustream.png" alt=""></p>
+<p>而操作对象等操作,比如读取一个int,long,float等等操作的时候,进行了异常包装,在BlockDataInputStream中实现的,源码截图如下:</p>
+<p><img src="/images/io/io-block-object.png" alt=""></p>
+<p>如何实现读取常用类型的数据呢？由于还是读取字节的形式来进行获取相应的数据,如int类型的,因占用4个字节,也就是读取4个字节的数据,在转化为int,具体的源代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">public int readInt() throws IOException &#123;</div><div class="line">            if (!blkmode) &#123;</div><div class="line">                pos = 0;</div><div class="line">                in.readFully(buf, 0, 4);</div><div class="line">            &#125; else if (end - pos &lt; 4) &#123;</div><div class="line">                return din.readInt();</div><div class="line">            &#125;</div><div class="line">            int v = Bits.getInt(buf, pos);</div><div class="line">            pos += 4;</div><div class="line">            return v;</div><div class="line">        &#125;</div><div class="line">//din.readInt</div><div class="line">public final int readInt() throws IOException &#123;</div><div class="line">    int ch1 = in.read();</div><div class="line">    int ch2 = in.read();</div><div class="line">    int ch3 = in.read();</div><div class="line">    int ch4 = in.read();</div><div class="line">    if ((ch1 | ch2 | ch3 | ch4) &lt; 0)</div><div class="line">       throw new EOFException();</div><div class="line">    return ((ch1 &lt;&lt; 24) + (ch2 &lt;&lt; 16) + (ch3 &lt;&lt; 8) + (ch4 &lt;&lt; 0));</div><div class="line">&#125;</div><div class="line"></div><div class="line">//Bits.getInt(buf, pos)</div><div class="line">static int getInt(byte[] b, int off) &#123;</div><div class="line">        return ((b[off + 3] &amp; 0xFF)      ) +</div><div class="line">               ((b[off + 2] &amp; 0xFF) &lt;&lt;  8) +</div><div class="line">               ((b[off + 1] &amp; 0xFF) &lt;&lt; 16) +</div><div class="line">               ((b[off    ]       ) &lt;&lt; 24);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>读取int类型的数据,主要是先读取4个字节的数据,然后根据这四个字节的数据按照从高位到低位按位与后右移后相加得到相应的数据。</p>
+<p>由于BlockDataInputStream是对各个数据类型操作的封装,下面对于对象读取的话,那么一些类的相关数据,比如：类名,常量,字段等,这些操作是封装在ObjectInputStream中的。</p>
+<p>下面开始介绍简单的使用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">    * ObjectInputStream</div><div class="line">    */</div><div class="line">   @Test</div><div class="line">   public void test4() throws Exception&#123;</div><div class="line">       ReaderExample re = new ReaderExample();</div><div class="line">       //序列化输出到文件中</div><div class="line">       OutputStream os = new FileOutputStream(&quot;conf/object.txt&quot;);</div><div class="line">       ObjectOutputStream oos = new ObjectOutputStream(os);</div><div class="line">       //写一个对象</div><div class="line">       oos.writeObject(re);</div><div class="line"></div><div class="line">       oos.close();</div><div class="line">       os.close();</div><div class="line"></div><div class="line">       //读取文件中的每个字节</div><div class="line">       InputStream is = new FileInputStream(&quot;conf/object.txt&quot;);</div><div class="line"></div><div class="line">       int data = is.read();</div><div class="line">       while(data != -1)&#123;</div><div class="line">           char ch = (char)(data &amp; 0xFF);</div><div class="line">           System.out.println(ch + &quot;\t&quot; + (data &amp; 0xFF));</div><div class="line">           data = is.read();</div><div class="line">       &#125;</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<h4 id="1-4-2-ObjectOutputStream"><a href="#1-4-2-ObjectOutputStream" class="headerlink" title="1.4.2 ObjectOutputStream"></a>1.4.2 ObjectOutputStream</h4><p>通过上面ObjectInputStream的那个简单实用的例子执行的结果截图如下:</p>
+<p><img src="/images/io/io-object-execute.png" alt=""></p>
+<p>可以看出前面四个字节的数据是乱码的,第五个和第六个为s和r,从第八个自己开始就是类路径。</p>
+<p>对象写入流,写入的主要过程如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">public final void writeObject(Object obj) throws IOException &#123;</div><div class="line">    if (enableOverride) &#123;</div><div class="line">        writeObjectOverride(obj);</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line">    try &#123;</div><div class="line">        writeObject0(obj, false);</div><div class="line">    &#125; catch (IOException ex) &#123;</div><div class="line">        if (depth == 0) &#123;</div><div class="line">            writeFatalException(ex);</div><div class="line">        &#125;</div><div class="line">        throw ex;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>最终的写入数据的代码如下:</p>
+<p><img src="/images/io/io-object-writer.png" alt=""></p>
+<h3 id="1-5-PipedInputStream-and-PipedOutputStream"><a href="#1-5-PipedInputStream-and-PipedOutputStream" class="headerlink" title="1.5 PipedInputStream and PipedOutputStream"></a>1.5 PipedInputStream and PipedOutputStream</h3><p>管道输入输出流适用于线程间进行通信的,下面举个简单例子说明下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line">@Test</div><div class="line">    public void test5() throws Exception&#123;</div><div class="line">        //管道输出流</div><div class="line">        final PipedOutputStream  pos = new PipedOutputStream();</div><div class="line">        //管道输入流</div><div class="line">        final PipedInputStream pis = new PipedInputStream(pos);</div><div class="line"></div><div class="line">        Thread thread1 = new Thread(new Runnable() &#123;</div><div class="line">            @Override</div><div class="line">            public void run() &#123;</div><div class="line">                while(true)&#123;</div><div class="line">                    try&#123;</div><div class="line">                        pos.write((&quot;timesnamp -&gt; &quot; + System.currentTimeMillis() + &quot;\n&quot;).getBytes());</div><div class="line">                        pos.flush();</div><div class="line"></div><div class="line">                        Thread.sleep(1000);</div><div class="line">                    &#125;catch (Exception e)&#123;</div><div class="line">                        e.printStackTrace();</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line"></div><div class="line">        Thread thread2 = new Thread(new Runnable() &#123;</div><div class="line">            @Override</div><div class="line">            public void run() &#123;</div><div class="line">                while(true)&#123;</div><div class="line">                    try&#123;</div><div class="line">                        BufferedReader br = new BufferedReader(new InputStreamReader(pis));</div><div class="line"></div><div class="line">                        String line = null;</div><div class="line">                        while((line = br.readLine()) != null)&#123;</div><div class="line">                            System.out.println(line);</div><div class="line">                        &#125;</div><div class="line">                    &#125;catch (Exception e)&#123;</div><div class="line">                        e.printStackTrace();</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;) ;</div><div class="line"></div><div class="line">        thread1.start();</div><div class="line">        thread2.start();</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>这里用的是junit进行的代码测试,所以在线程启动后会自动停止,因此自打出了一条数据,运行结果如下:</p>
+<p><img src="/images/io/io-piped-test.png" alt=""></p>
+<h3 id="1-6-SequenceInputStream"><a href="#1-6-SequenceInputStream" class="headerlink" title="1.6 SequenceInputStream"></a>1.6 SequenceInputStream</h3><p>这个SequenceInputStream类主要是用来合并流的,如果想同时处理多个输入流的数据,可以将这些输入流合并后处理,简单例子如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">@Test</div><div class="line">   public void test8() throws Exception&#123;</div><div class="line">       //流集合</div><div class="line">       InputStream is1 = new FileInputStream(&quot;conf/file/test1.txt&quot;);</div><div class="line">       InputStream is2 = new FileInputStream(&quot;conf/file/test1.txt&quot;);</div><div class="line"></div><div class="line">       SequenceInputStream sis = new SequenceInputStream(is1,is2);</div><div class="line"></div><div class="line">       BufferedReader br = new BufferedReader(new InputStreamReader(sis));</div><div class="line">       String line = null;</div><div class="line"></div><div class="line">       while((line = br.readLine()) != null)&#123;</div><div class="line">           System.out.println(line);</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       is1.close();</div><div class="line">       is2.close();</div><div class="line"></div><div class="line">       sis.close();</div><div class="line">       br.close();</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<p>合并后那个流先读取那个流后读取还是？具体的顺序看代码:</p>
+<p><img src="/images/io/io-sequence.png" alt=""></p>
+<p>由上面说的从流中读取一个数据后,调用了一个方法nextStream();</p>
+<p><img src="/images/io/io-sequence-next.png" alt=""></p>
+<p>由此可以见到读取流是按照顺序读取的,也就是一个读取完成后读取下一个,那么那个是先开始读取的呢？构造函数如下:</p>
+<p><img src="/images/io/io-sequence-init.png" alt=""></p>
+<p>由此可以看出是按照加入集合的顺序来的,也就是它的构造函数是给定一个流集合或者是给定两个流它自己构造一个集合,按照这个集合的顺序来进行读取。</p>
+<h3 id="1-7-FilterInputStream"><a href="#1-7-FilterInputStream" class="headerlink" title="1.7 FilterInputStream"></a>1.7 FilterInputStream</h3><h4 id="1-7-1-BufferedInputStream-and-BufferedOutputStream"><a href="#1-7-1-BufferedInputStream-and-BufferedOutputStream" class="headerlink" title="1.7.1 BufferedInputStream and BufferedOutputStream"></a>1.7.1 BufferedInputStream and BufferedOutputStream</h4><p>基本的原理是一样的,内部是一个字节数组,通过字节数组来实现读取的操作,移动指针来实现读取的位置移动.具体的接口如下:</p>
+<p><img src="/images/io/io-buffered-input.png" alt=""></p>
+<p>具体的就不在赘述了。重复的操作。</p>
+<h4 id="1-7-2-PrintStream"><a href="#1-7-2-PrintStream" class="headerlink" title="1.7.2 PrintStream"></a>1.7.2 PrintStream</h4><p>该类的主要用处将一些数据打印到其他的流中,内部实现的机理是构造了两个写出流,具体的源码如下:</p>
+<p><img src="/images/io/io-print-stream.png" alt=""></p>
+<p>PrintStream的构造函数,主要是对两个参数的初始化,主要是刷新和指定编码等,具体的构造函数如下:</p>
+<p><img src="/images/io/io-print-stream-init.png" alt=""></p>
+<p>简单实用的例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">@Test</div><div class="line"> public void test10() throws Exception&#123;</div><div class="line">     OutputStream os = new FileOutputStream(&quot;conf/object.txt&quot;);</div><div class="line">     PrintStream ps = new PrintStream(os,true,&quot;UTF-8&quot;);</div><div class="line"></div><div class="line">     ps.print(&quot;测试打印功能代码...&quot;);</div><div class="line"></div><div class="line">     ps.close();</div><div class="line">     os.close();</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
+<h2 id="2-Reader-and-Writer"><a href="#2-Reader-and-Writer" class="headerlink" title="2 Reader and Writer"></a>2 Reader and Writer</h2><p>Reader和Writer其实都是对出入和输出流的封装,简单实用例子如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">@Test</div><div class="line">    public void test11() throws Exception&#123;</div><div class="line">        StringWriter sw = new StringWriter();</div><div class="line">        //写操作</div><div class="line">        BufferedWriter bw1 = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(&quot;conf/object.txt&quot;,true),&quot;UTF-8&quot;));</div><div class="line">        BufferedWriter bw2 = new BufferedWriter(new FileWriter(new File(&quot;conf/object.txt&quot;),true));</div><div class="line">        BufferedWriter bw3 = new BufferedWriter(sw);</div><div class="line">        //写数据到具体的流中</div><div class="line">        bw1.write(&quot;new BufferedWriter(new OutputStreamWriter(new FileOutputStream(\&quot;conf/object.txt\&quot;,true),\&quot;UTF-8\&quot;))&quot;);</div><div class="line">        bw1.newLine();</div><div class="line">        bw1.flush();</div><div class="line">        bw1.close();</div><div class="line"></div><div class="line">        //写数据到文件中</div><div class="line">        bw2.write(&quot;new BufferedWriter(new FileWriter(new File(\&quot;conf/object.txt\&quot;),true))&quot;);</div><div class="line">        bw2.newLine();</div><div class="line">        bw2.flush();</div><div class="line">        bw2.close();</div><div class="line"></div><div class="line">        bw3.write(&quot;new BufferedWriter(sw)&quot;);</div><div class="line">        bw3.newLine();</div><div class="line">        bw3.flush();</div><div class="line">        bw3.close();</div><div class="line"></div><div class="line">        //开始读取</div><div class="line">        BufferedReader br1 = new BufferedReader(new InputStreamReader(new FileInputStream(&quot;conf/object.txt&quot;),&quot;UTF-8&quot;));</div><div class="line">        BufferedReader br2 = new BufferedReader(new FileReader(new File(&quot;conf/object.txt&quot;)));</div><div class="line">        BufferedReader br3 = new BufferedReader(new StringReader(sw.toString()));</div><div class="line"></div><div class="line">        System.out.println(br1.readLine());</div><div class="line">        System.out.println(br2.readLine());</div><div class="line">        System.out.println(br3.readLine());</div><div class="line"></div><div class="line">        br1.close();</div><div class="line">        br2.close();</div><div class="line">        br3.close();</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<h2 id="3-RandomAccessFile"><a href="#3-RandomAccessFile" class="headerlink" title="3 RandomAccessFile"></a>3 RandomAccessFile</h2><p>这个类主要是用来随机读取文件,这个类可以支持读取正在写入的文件,支持并发下的实时读写操作,主要的构造函数有两个:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">public RandomAccessFile(String name, String mode) throws FileNotFoundException</div><div class="line">public RandomAccessFile(File file, String mode) throws FileNotFoundException</div></pre></td></tr></table></figure>
+<p>可以看到一共有两个参数,第一个就不说了,第二个是文件对应的模式。这个模式一共有四种：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">r		:只读</div><div class="line">rw		:可读可写</div><div class="line">rws		:可读可写,同时可以修改文件的内容和文件metadata。也就是元数据,比如文件的名称等</div><div class="line">rwd		:可读可写,只能修改文档内容,不能修改文件的元数据</div></pre></td></tr></table></figure>
+<p>现在这个类的主要功能是提供了对文件内容的随机读写,可以指定位置进行读取和写.具体的接口可以看到如下:</p>
+<p><img src="/images/io/io-random-seek.png" alt=""></p>
+<p>下面测试跳过3个字节的offset进行写入一个汉字,具体的代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">@Test</div><div class="line">   public void test12() throws Exception&#123;</div><div class="line">       //构建随机读写类</div><div class="line">       RandomAccessFile raf = new RandomAccessFile(new File(&quot;conf/object.txt&quot;),&quot;rwd&quot;);</div><div class="line"></div><div class="line">       //在第3个字节的位置写入一个中文字符</div><div class="line">       raf.seek(3);</div><div class="line">       raf.write(&quot;一&quot;.getBytes());</div><div class="line">       raf.close();</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<p>执行过后的结果如下:</p>
+<p><img src="/images/io/io-random-rw.png" alt=""></p>
+<p>同样的在接口中也有跳过多少个字节进行读写,接口的详细情况如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">public int skipBytes(int n) throws IOException</div></pre></td></tr></table></figure>
+<p>skipBytes是从现在的的文档坐标点开始跳过多少个开始读取。</p>
+<p>上面写入了一个汉字,那么那个offset具体是不是字节数能还是？写入一个汉字以后我跳过4个自己重新再写一个汉字具体的代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">@Test</div><div class="line">   public void test12() throws Exception&#123;</div><div class="line">       //构建随机读写类</div><div class="line">       RandomAccessFile raf = new RandomAccessFile(new File(&quot;conf/object.txt&quot;),&quot;rwd&quot;);</div><div class="line"></div><div class="line">       //在第3个字节的位置写入一个中文字符</div><div class="line">       raf.seek(4);</div><div class="line">       raf.write(&quot;个&quot;.getBytes());</div><div class="line">       raf.close();</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<p>执行结果如下:</p>
+<p><img src="/images/io/io-random-rw-2.png" alt=""></p>
+<p>原来的一被复写了,由于一个汉字在utf-8编码下一共占用3个字节,那么可以从结果看出来offset是字节数。通过上面的整理可以总结出：</p>
+<pre><code>1 seek是根据给定的字节数移动文档读取指针到指定的位置
+2 skipBytes是根据给定的跳过字节数,从现在文件读取指针所在的位置跳过多少个字节,如果超出文件长度,字节跳转到最后。
+</code></pre>
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag">#java</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/08/spider-study008/" rel="next" title="网络爬虫学习笔记(八) db插入工具的封装">
+                <i class="fa fa-chevron-left"></i> 网络爬虫学习笔记(八) db插入工具的封装
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/07/18/java-nio-study002/" rel="prev" title="JavaNIO学习笔记(二) JavaNio FileChannel">
+                JavaNIO学习笔记(二) JavaNio FileChannel <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+           <!-- 多说热评文章 start -->
+	<div class="ds-top-threads" data-range="daily" data-num-items="5"></div>
+<!-- 多说热评文章 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+
+           <section id="comments">
+   <!-- 多说评论框 start -->
+<div id="ds-thread" class="ds-thread" data-thread-key="<%= post.path %>" data-title="<%= post.title %>" data-url="<%= post.permalink %>"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+  </section>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="孙星" />
+          <p class="site-author-name" itemprop="name">孙星</p>
+          <p class="site-description motion-element" itemprop="description">sunxing's blog | mysql | java | scala | hadoop | spark | kafka | flume</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">65</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-InputStream"><span class="nav-number">1.</span> <span class="nav-text">1 InputStream</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-FileInputStream-and-FileOutputStream"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 FileInputStream and FileOutputStream</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-1-FileInputStream"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.1.1 FileInputStream</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-2-FileOutputStream"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.1.2 FileOutputStream</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-ByteArrayInputStream-and-ByteArrayOutputStream"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 ByteArrayInputStream and ByteArrayOutputStream</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-1-ByteArrayInputStream"><span class="nav-number">1.2.1.</span> <span class="nav-text">1.2.1 ByteArrayInputStream</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-2-ByteArrayOutputStream"><span class="nav-number">1.2.2.</span> <span class="nav-text">1.2.2 ByteArrayOutputStream</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-StringBufferInputStream"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 StringBufferInputStream</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-ObjectInputStream-and-ObjectOutputStream"><span class="nav-number">1.4.</span> <span class="nav-text">1.4 ObjectInputStream and ObjectOutputStream</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-4-1-ObjectInputStream"><span class="nav-number">1.4.1.</span> <span class="nav-text">1.4.1 ObjectInputStream</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-4-2-ObjectOutputStream"><span class="nav-number">1.4.2.</span> <span class="nav-text">1.4.2 ObjectOutputStream</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-5-PipedInputStream-and-PipedOutputStream"><span class="nav-number">1.5.</span> <span class="nav-text">1.5 PipedInputStream and PipedOutputStream</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-6-SequenceInputStream"><span class="nav-number">1.6.</span> <span class="nav-text">1.6 SequenceInputStream</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-7-FilterInputStream"><span class="nav-number">1.7.</span> <span class="nav-text">1.7 FilterInputStream</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-7-1-BufferedInputStream-and-BufferedOutputStream"><span class="nav-number">1.7.1.</span> <span class="nav-text">1.7.1 BufferedInputStream and BufferedOutputStream</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-7-2-PrintStream"><span class="nav-number">1.7.2.</span> <span class="nav-text">1.7.2 PrintStream</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Reader-and-Writer"><span class="nav-number">2.</span> <span class="nav-text">2 Reader and Writer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-RandomAccessFile"><span class="nav-number">3.</span> <span class="nav-text">3 RandomAccessFile</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孙星</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"sunxing"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>

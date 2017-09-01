@@ -1,0 +1,679 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="hadoop," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="MapReduce框架主要就是给定一个输入流将输入了整理成的键值对集合,对于这个集合的预处理需要开发者自己定义,同样的预处理后需要将与处理的结果汇总汇总后在进行相应的聚合处理,在整个过程中采用的是键值对的方式进行数据的处理,在将最后处理的结果输出到指定的结果数据源中正如官网上说的： Input and Output types of a MapReduce job: (input) \ -&amp;gt">
+<meta name="keywords" content="hadoop">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MapReduce程序开发(四) 开发准备和wordcount程序">
+<meta property="og:url" content="http://www.sunxing.cc/2016/05/13/hadoop-study004/index.html">
+<meta property="og:site_name" content="孙星的个人博客~">
+<meta property="og:description" content="MapReduce框架主要就是给定一个输入流将输入了整理成的键值对集合,对于这个集合的预处理需要开发者自己定义,同样的预处理后需要将与处理的结果汇总汇总后在进行相应的聚合处理,在整个过程中采用的是键值对的方式进行数据的处理,在将最后处理的结果输出到指定的结果数据源中正如官网上说的： Input and Output types of a MapReduce job: (input) \ -&amp;gt">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://www.sunxing.cc/images/hadoop/mapreduce-mavn-dependency.png">
+<meta property="og:updated_time" content="2017-04-30T03:58:25.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MapReduce程序开发(四) 开发准备和wordcount程序">
+<meta name="twitter:description" content="MapReduce框架主要就是给定一个输入流将输入了整理成的键值对集合,对于这个集合的预处理需要开发者自己定义,同样的预处理后需要将与处理的结果汇总汇总后在进行相应的聚合处理,在整个过程中采用的是键值对的方式进行数据的处理,在将最后处理的结果输出到指定的结果数据源中正如官网上说的： Input and Output types of a MapReduce job: (input) \ -&amp;gt">
+<meta name="twitter:image" content="http://www.sunxing.cc/images/hadoop/mapreduce-mavn-dependency.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+ <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258995301'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/z_stat.php%3Fid%3D1258995301' type='text/javascript'%3E%3C/script%3E"));</script>
+
+  <title> MapReduce程序开发(四) 开发准备和wordcount程序 | 孙星的个人博客~ </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">孙星的个人博客~</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">搬砖的,码农~</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                MapReduce程序开发(四) 开发准备和wordcount程序
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-05-13T14:13:55+08:00" content="2016-05-13">
+              2016-05-13
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/hadoop/" itemprop="url" rel="index">
+                    <span itemprop="name">hadoop</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/05/13/hadoop-study004/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/13/hadoop-study004/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>MapReduce框架主要就是给定一个输入流将输入了整理成<key,value>的键值对集合,对于这个集合的预处理需要开发者自己定义,同样的预处理后需要将与处理的结果汇总汇总后在进行相应的聚合处理,在整个过程中采用的是键值对的方式进行数据的处理,在将最后处理的结果输出到指定的结果数据源中<br>正如官网上说的：</key,value></p>
+<p>Input and Output types of a MapReduce job:</p>
+<p>(input) \<k1, v1=""> -&gt; map -&gt; \<k2, v2=""> -&gt; combine -&gt; \<k2, v2=""> -&gt; reduce -&gt; \<k3, v3=""> (output)</k3,></k2,></k2,></k1,></p>
+</blockquote>
+<h2 id="1-下面介绍MapReduce的部分参数及其默认设置："><a href="#1-下面介绍MapReduce的部分参数及其默认设置：" class="headerlink" title="1 下面介绍MapReduce的部分参数及其默认设置："></a>1 下面介绍MapReduce的部分参数及其默认设置：</h2><pre><code>1 InputFormat类 该类的作用是将输入的数据分割成一个个的split，并将split进一步拆分成&lt;key, value&gt;对作为map函数的输入
+
+2 Mapper类 实现map函数，根据输入的&lt;key, value&gt;对生产中间结果
+
+3 Combiner 实现combine函数，合并中间结果中具有相同key值的键值对。
+
+4 Partitioner类 实现getPartition函数，用于在Shuffle过程按照key值将中间数据分成R份，每一份由一个Reduce负责
+
+5 Reducer类 实现reduce函数，将中间结果合并，得到最终的结果
+
+6 OutputFormat类 该类负责输出最终的结果
+</code></pre><h2 id="2-MapReduce开发的准备"><a href="#2-MapReduce开发的准备" class="headerlink" title="2 MapReduce开发的准备"></a>2 MapReduce开发的准备</h2><p>   主要是引入相应的jar包,我建的是maven项目,因此需要引入相应的依赖,依赖的截图如下:<br>   <img src="/images/hadoop/mapreduce-mavn-dependency.png" alt=""></p>
+<h2 id="3-WordCount程序："><a href="#3-WordCount程序：" class="headerlink" title="3 WordCount程序："></a>3 WordCount程序：</h2> <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div></pre></td><td class="code"><pre><div class="line">import java.io.IOException;</div><div class="line">import java.util.StringTokenizer;</div><div class="line"></div><div class="line">import org.apache.hadoop.conf.Configuration;</div><div class="line">import org.apache.hadoop.fs.Path;</div><div class="line">import org.apache.hadoop.io.IntWritable;</div><div class="line">import org.apache.hadoop.io.Text;</div><div class="line">import org.apache.hadoop.mapreduce.Job;</div><div class="line">import org.apache.hadoop.mapreduce.Mapper;</div><div class="line">import org.apache.hadoop.mapreduce.Reducer;</div><div class="line">import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;</div><div class="line">import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;</div><div class="line"></div><div class="line">public class WordCount &#123;</div><div class="line"></div><div class="line">  public static class TokenizerMapper</div><div class="line">       extends Mapper&lt;Object, Text, Text, IntWritable&gt;&#123;</div><div class="line"></div><div class="line">    private final static IntWritable one = new IntWritable(1);</div><div class="line">    private Text word = new Text();</div><div class="line"></div><div class="line">    public void map(Object key, Text value, Context context</div><div class="line">                    ) throws IOException, InterruptedException &#123;</div><div class="line">      StringTokenizer itr = new StringTokenizer(value.toString());</div><div class="line">      while (itr.hasMoreTokens()) &#123;</div><div class="line">        word.set(itr.nextToken());</div><div class="line">        context.write(word, one);</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  public static class IntSumReducer</div><div class="line">       extends Reducer&lt;Text,IntWritable,Text,IntWritable&gt; &#123;</div><div class="line">    private IntWritable result = new IntWritable();</div><div class="line"></div><div class="line">    public void reduce(Text key, Iterable&lt;IntWritable&gt; values,</div><div class="line">                       Context context</div><div class="line">                       ) throws IOException, InterruptedException &#123;</div><div class="line">      int sum = 0;</div><div class="line">      for (IntWritable val : values) &#123;</div><div class="line">        sum += val.get();</div><div class="line">      &#125;</div><div class="line">      result.set(sum);</div><div class="line">      context.write(key, result);</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  public static void main(String[] args) throws Exception &#123;</div><div class="line">    Configuration conf = new Configuration();</div><div class="line">    Job job = Job.getInstance(conf, &quot;word count&quot;);</div><div class="line">    job.setJarByClass(WordCount.class);</div><div class="line">    job.setMapperClass(TokenizerMapper.class);</div><div class="line">    job.setCombinerClass(IntSumReducer.class);</div><div class="line">    job.setReducerClass(IntSumReducer.class);</div><div class="line">    job.setOutputKeyClass(Text.class);</div><div class="line">    job.setOutputValueClass(IntWritable.class);</div><div class="line">    FileInputFormat.addInputPath(job, new Path(args[0]));</div><div class="line">    FileOutputFormat.setOutputPath(job, new Path(args[1]));</div><div class="line">    System.exit(job.waitForCompletion(true) ? 0 : 1);</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>程序主要说明:</p>
+<blockquote>
+<p>MapReuce是通过将输入的数据源切割成<key,value>的形式,而数据分布式在多台机器上,因此需要先在每台机器上将数据源切割处理好后,在按照key汇总,汇总后再进行相应的处理将数据处理好以后写入到结果文件目录中,因此在编写MapReduce程序的时候,需要指定相应的输入数据源和输入数据源,指定目录的形式来进行指定。</key,value></p>
+</blockquote>
+<pre><code> //这个是配置信息主要是链接到相应的hdfs上
+ Configuration conf = new Configuration();
+ Job job = Job.getInstance(conf, &quot;word count&quot;);
+ job.setJarByClass(WordCount.class);
+
+ //对数据源进行初步的处理的map程序的类
+job.setMapperClass(TokenizerMapper.class);
+//进行汇总的操作类,主要是讲相同的key进行汇总
+job.setCombinerClass(IntSumReducer.class);
+//针对特定的key汇总后的每条数据进行如何处理
+job.setReducerClass(IntSumReducer.class);
+
+//结果数据的输出格式,也就是结果输出的类型设定
+job.setOutputKeyClass(Text.class);
+job.setOutputValueClass(IntWritable.class);
+//输入数据源
+FileInputFormat.addInputPath(job, new Path(args[0]));
+//输出数据源
+FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+//等待程序完成
+System.exit(job.waitForCompletion(true) ? 0 : 1);
+</code></pre>
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/hadoop/" rel="tag">#hadoop</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/11/java-io-3/" rel="next" title="JavaIO学习笔记(三) Java File类">
+                <i class="fa fa-chevron-left"></i> JavaIO学习笔记(三) Java File类
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/05/19/hadoop-study005/" rel="prev" title="MapReduce程序开发(五) 去重">
+                MapReduce程序开发(五) 去重 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+           <!-- 多说热评文章 start -->
+	<div class="ds-top-threads" data-range="daily" data-num-items="5"></div>
+<!-- 多说热评文章 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+
+           <section id="comments">
+   <!-- 多说评论框 start -->
+<div id="ds-thread" class="ds-thread" data-thread-key="<%= post.path %>" data-title="<%= post.title %>" data-url="<%= post.permalink %>"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+  </section>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="孙星" />
+          <p class="site-author-name" itemprop="name">孙星</p>
+          <p class="site-description motion-element" itemprop="description">sunxing's blog | mysql | java | scala | hadoop | spark | kafka | flume</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">65</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-下面介绍MapReduce的部分参数及其默认设置："><span class="nav-number">1.</span> <span class="nav-text">1 下面介绍MapReduce的部分参数及其默认设置：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-MapReduce开发的准备"><span class="nav-number">2.</span> <span class="nav-text">2 MapReduce开发的准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-WordCount程序："><span class="nav-number">3.</span> <span class="nav-text">3 WordCount程序：</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孙星</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"sunxing"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>

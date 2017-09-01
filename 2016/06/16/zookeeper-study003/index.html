@@ -1,0 +1,664 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="zookeeper," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="1 zookeeper的安装1 解压zookeeper3.4.7压缩包后修改主要配置如下修改文件夹下的配置文件conf/zoo_sample.cfg 重命名为zoo.cfg修改的主要内容如下:  对应的参数： tickTime：这个参数主要是用来针对 ZooKeeper 服务端和客户端的会话控制，包括心跳控制，一般来说，会话超时时间是该值的两倍，它的单位是毫秒，我们设置为 2000 毫秒。 dat">
+<meta name="keywords" content="zookeeper">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Zookeeper学习笔记(三) zookeeper的安装和使用">
+<meta property="og:url" content="http://www.sunxing.cc/2016/06/16/zookeeper-study003/index.html">
+<meta property="og:site_name" content="孙星的个人博客~">
+<meta property="og:description" content="1 zookeeper的安装1 解压zookeeper3.4.7压缩包后修改主要配置如下修改文件夹下的配置文件conf/zoo_sample.cfg 重命名为zoo.cfg修改的主要内容如下:  对应的参数： tickTime：这个参数主要是用来针对 ZooKeeper 服务端和客户端的会话控制，包括心跳控制，一般来说，会话超时时间是该值的两倍，它的单位是毫秒，我们设置为 2000 毫秒。 dat">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://www.sunxing.cc/images/zookeeper/zoo-cfg.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/zookeeper/zookeeper-list.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/zookeeper/zookeeper-start.png">
+<meta property="og:updated_time" content="2017-04-30T03:58:25.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Zookeeper学习笔记(三) zookeeper的安装和使用">
+<meta name="twitter:description" content="1 zookeeper的安装1 解压zookeeper3.4.7压缩包后修改主要配置如下修改文件夹下的配置文件conf/zoo_sample.cfg 重命名为zoo.cfg修改的主要内容如下:  对应的参数： tickTime：这个参数主要是用来针对 ZooKeeper 服务端和客户端的会话控制，包括心跳控制，一般来说，会话超时时间是该值的两倍，它的单位是毫秒，我们设置为 2000 毫秒。 dat">
+<meta name="twitter:image" content="http://www.sunxing.cc/images/zookeeper/zoo-cfg.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+ <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258995301'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/z_stat.php%3Fid%3D1258995301' type='text/javascript'%3E%3C/script%3E"));</script>
+
+  <title> Zookeeper学习笔记(三) zookeeper的安装和使用 | 孙星的个人博客~ </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">孙星的个人博客~</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">搬砖的,码农~</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Zookeeper学习笔记(三) zookeeper的安装和使用
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-16T15:55:55+08:00" content="2016-06-16">
+              2016-06-16
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/zookeeper/" itemprop="url" rel="index">
+                    <span itemprop="name">zookeeper</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/16/zookeeper-study003/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/16/zookeeper-study003/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="1-zookeeper的安装"><a href="#1-zookeeper的安装" class="headerlink" title="1 zookeeper的安装"></a>1 zookeeper的安装</h2><p>1 解压zookeeper3.4.7压缩包后修改主要配置如下<br>修改文件夹下的配置文件conf/zoo_sample.cfg 重命名为zoo.cfg<br>修改的主要内容如下:</p>
+<p><img src="/images/zookeeper/zoo-cfg.png" alt=""></p>
+<p>对应的参数：</p>
+<p>tickTime：这个参数主要是用来针对 ZooKeeper 服务端和客户端的会话控制，包括心跳控制，一般来说，会话超时时间是该值的两倍，它的单位是毫秒，我们设置为 2000 毫秒。</p>
+<p>dataDir：这个目录用来存放数据库的镜像和操作数据库的日志。注意，如果这个文件夹不存在，需要手动创建一个并赋予读写权限，我们设置为/data/zookeeper3.4.7/data，不用手动创建这个文件夹，系统运行后会自动创建或覆盖。</p>
+<p>clientPort：ZooKeeper 服务端监听客户端的端口，默认是 2181，这里沿用默认设置。</p>
+<p>initLimit：follower 对于 Leader 的初始化连接 timeout 时间；</p>
+<p>syncLimit：follower 对于 Leader 的同步 timeout 时间；</p>
+<p>timeout 的计算公式是 initLimit <em> tickTime，syncLimit </em> tickTime。</p>
+<p>server.A=B：C：D：其中 A 是一个数字，表示这个是第几号服务器；B 是这个服务器的 ip 地址；C 表示的是这个服务器与集群中的 Leader 服务器交换信息的端口；D 表示的是万一集群中的 Leader 服务器挂了，需要一个端口来重新进行选举，选出一个新的 Leader，而这个端口就是用来执行选举时服务器相互通信的端口。如果是伪集群的配置方式，由于 B 都是一样，所以不同的 Zookeeper 实例通信端口号不能一样，所以要给它们分配不同的端口号。</p>
+<p>2 在对应的机器中的data目录下创建相应的myid文件，该文件内容为对应的服务机器的id</p>
+<p><img src="/images/zookeeper/zookeeper-list.png" alt=""></p>
+<p>3 拷贝数据到相应的客户机上后重新建立myid文件，后配置完成</p>
+<h2 id="2-启动服务"><a href="#2-启动服务" class="headerlink" title="2 启动服务"></a>2 启动服务</h2><p>1 接下来通过 bin 目录下面的 zkServer.sh 脚本启动 ZooKeeper 服务，如果不清楚具体参数，可以直接调用脚本查看输出，ZooKeeper 采用的是 Bourne Shell</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">localhost:bin sunxing$ ./zkServer.sh start</div><div class="line">ZooKeeper JMX enabled by default</div><div class="line">Using config: /usr/local/share/zookeeper3.4.7/bin/../conf/zoo.cfg</div><div class="line">Starting zookeeper ... STARTED</div></pre></td></tr></table></figure>
+<p>2 其他对应的命令如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">localhost:bin sunxing$ ./zkServer.sh</div><div class="line">ZooKeeper JMX enabled by default</div><div class="line">Using config: /usr/local/share/zookeeper3.4.7/bin/../conf/zoo.cfg</div><div class="line">Usage: ./zkServer.sh &#123;start|start-foreground|stop|restart|status|upgrade|print-cmd&#125;</div></pre></td></tr></table></figure>
+<p>3 查看zk进程</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">localhost:bin sunxing$ jps</div><div class="line">1578 QuorumPeerMain</div><div class="line">1605 Jps</div><div class="line">localhost:bin sunxing$</div></pre></td></tr></table></figure>
+<p>这里我们看到的进程号为 1578 的进程 QuorumPeerMain 代表了 ZooKeeper 服务。我们也可以通过 ZooKeeper 启动脚本自带的参数“Status”来查看 ZooKeeper 进程状态</p>
+<p>4 查看zk的进程状态</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">localhost:zookeeper3.4.7 sunxing$ ./bin/zkCli.sh -server localhost:2181</div><div class="line">Connecting to localhost:2181</div><div class="line">2016-06-16 17:11:44,878 [myid:] - INFO  [main:Environment@100] - Client environment:zookeeper.version=3.4.7-1713338, built on 11/09/2015 04:32 GMT</div><div class="line">2016-06-16 17:11:44,883 [myid:] - INFO  [main:Environment@100] - Client environment:host.name=localhost</div><div class="line">2016-06-16 17:11:44,883 [myid:] - INFO  [main:Environment@100] - Client environment:java.version=1.7.0_71</div><div class="line">2016-06-16 17:11:44,886 [myid:] - INFO  [main:Environment@100] - Client environment:java.vendor=Oracle Corporation</div><div class="line">2016-06-16 17:11:44,886 [myid:] - INFO  [main:Environment@100] - Client environment:java.home=/Library/Java/JavaVirtualMachines/jdk1.7.0_71.jdk/Contents/Home/jre</div><div class="line">2016-06-16 17:11:44,886 [myid:] - INFO  [main:Environment@100] - Client environment:java.class.path=/usr/local/share/zookeeper3.4.7/bin/../build/classes:/usr/local/share/zookeeper3.4.7/bin/../build/lib/*.jar:/usr/local/share/zookeeper3.4.7/bin/../lib/slf4j-log4j12-1.6.1.jar:/usr/local/share/zookeeper3.4.7/bin/../lib/slf4j-api-1.6.1.jar:/usr/local/share/zookeeper3.4.7/bin/../lib/netty-3.7.0.Final.jar:/usr/local/share/zookeeper3.4.7/bin/../lib/log4j-1.2.16.jar:/usr/local/share/zookeeper3.4.7/bin/../lib/jline-0.9.94.jar:/usr/local/share/zookeeper3.4.7/bin/../zookeeper-3.4.7.jar:/usr/local/share/zookeeper3.4.7/bin/../src/java/lib/*.jar:/usr/local/share/zookeeper3.4.7/bin/../conf:.:/Library/Java/JavaVirtualMachines/jdk1.7.0_71.jdk/Contents/Home/lib/dt.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_71.jdk/Contents/Home/lib/tools.jar</div><div class="line">2016-06-16 17:11:44,886 [myid:] - INFO  [main:Environment@100] - Client environment:java.library.path=/Users/sunxing/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:.</div><div class="line">2016-06-16 17:11:44,887 [myid:] - INFO  [main:Environment@100] - Client environment:java.io.tmpdir=/var/folders/0q/vq9qm6l14qld8y3gk48hmm9w0000gn/T/</div><div class="line">2016-06-16 17:11:44,887 [myid:] - INFO  [main:Environment@100] - Client environment:java.compiler=&lt;NA&gt;</div><div class="line">2016-06-16 17:11:44,887 [myid:] - INFO  [main:Environment@100] - Client environment:os.name=Mac OS X</div><div class="line">2016-06-16 17:11:44,887 [myid:] - INFO  [main:Environment@100] - Client environment:os.arch=x86_64</div><div class="line">2016-06-16 17:11:44,887 [myid:] - INFO  [main:Environment@100] - Client environment:os.version=10.10.5</div><div class="line">2016-06-16 17:11:44,887 [myid:] - INFO  [main:Environment@100] - Client environment:user.name=sunxing</div><div class="line">2016-06-16 17:11:44,887 [myid:] - INFO  [main:Environment@100] - Client environment:user.home=/Users/sunxing</div><div class="line">2016-06-16 17:11:44,888 [myid:] - INFO  [main:Environment@100] - Client environment:user.dir=/usr/local/share/zookeeper3.4.7</div><div class="line">2016-06-16 17:11:44,889 [myid:] - INFO  [main:ZooKeeper@438] - Initiating client connection, connectString=localhost:2181 sessionTimeout=30000 watcher=org.apache.zookeeper.ZooKeeperMain$MyWatcher@2ae61f87</div><div class="line">Welcome to ZooKeeper!</div><div class="line">2016-06-16 17:11:44,946 [myid:] - INFO  [main-SendThread(localhost:2181):ClientCnxn$SendThread@1032] - Opening socket connection to server localhost/127.0.0.1:2181. Will not attempt to authenticate using SASL (unknown error)</div><div class="line">JLine support is enabled</div><div class="line">2016-06-16 17:11:44,966 [myid:] - INFO  [main-SendThread(localhost:2181):ClientCnxn$SendThread@876] - Socket connection established to localhost/127.0.0.1:2181, initiating session</div><div class="line">2016-06-16 17:11:45,020 [myid:] - INFO  [main-SendThread(localhost:2181):ClientCnxn$SendThread@1299] - Session establishment complete on server localhost/127.0.0.1:2181, sessionid = 0x155587ac2930000, negotiated timeout = 30000</div><div class="line"></div><div class="line">WATCHER::</div><div class="line"></div><div class="line">WatchedEvent state:SyncConnected type:None path:null</div><div class="line">[zk: localhost:2181(CONNECTED) 0]</div></pre></td></tr></table></figure>
+<p>执行help命令查看指导:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">[zk: localhost:2181(CONNECTED) 0] help</div><div class="line">ZooKeeper -server host:port cmd args</div><div class="line">	connect host:port</div><div class="line">	get path [watch]</div><div class="line">	ls path [watch]</div><div class="line">	set path data [version]</div><div class="line">	rmr path</div><div class="line">	delquota [-n|-b] path</div><div class="line">	quit</div><div class="line">	printwatches on|off</div><div class="line">	create [-s] [-e] path data acl</div><div class="line">	stat path [watch]</div><div class="line">	close</div><div class="line">	ls2 path [watch]</div><div class="line">	history</div><div class="line">	listquota path</div><div class="line">	setAcl path acl</div><div class="line">	getAcl path</div><div class="line">	sync path</div><div class="line">	redo cmdno</div><div class="line">	addauth scheme auth</div><div class="line">	delete path [version]</div><div class="line">	setquota -n|-b val path</div><div class="line">[zk: localhost:2181(CONNECTED) 1]</div></pre></td></tr></table></figure>
+<h2 id="3-流程及源代码解释"><a href="#3-流程及源代码解释" class="headerlink" title="3 流程及源代码解释"></a>3 流程及源代码解释</h2><p>ZooKeeper 的启动由 zkServer.sh 发起，真正的起源是 Java 类 QuorumPeerMain，然后进行了一系列配置后启动负责 ZooKeeper 服务的线程，具体调用过程如图 1 所示</p>
+<p><img src="/images/zookeeper/zookeeper-start.png" alt=""></p>
+<p>初始化ZOOMAIN的地方的shell如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">if [ &quot;x$JMXDISABLE&quot; = &quot;x&quot; ]</div><div class="line">then</div><div class="line">  echo &quot;ZooKeeper JMX enabled by default&quot; &gt;&amp;2</div><div class="line">  if [ &quot;x$JMXPORT&quot; = &quot;x&quot; ]</div><div class="line">  then</div><div class="line">    # for some reason these two options are necessary on jdk6 on Ubuntu</div><div class="line">    #   accord to the docs they are not necessary, but otw jconsole cannot</div><div class="line">    #   do a local attach</div><div class="line">    ZOOMAIN=&quot;-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=$JMXLOCALONLY org.apache.zookeeper.server.quorum.QuorumPeerMain&quot;</div><div class="line">  else</div><div class="line">    if [ &quot;x$JMXAUTH&quot; = &quot;x&quot; ]</div><div class="line">    then</div><div class="line">      JMXAUTH=false</div><div class="line">    fi</div><div class="line">    if [ &quot;x$JMXSSL&quot; = &quot;x&quot; ]</div><div class="line">    then</div><div class="line">      JMXSSL=false</div><div class="line">    fi</div><div class="line">    if [ &quot;x$JMXLOG4J&quot; = &quot;x&quot; ]</div><div class="line">    then</div><div class="line">      JMXLOG4J=true</div><div class="line">    fi</div><div class="line">    echo &quot;ZooKeeper remote JMX Port set to $JMXPORT&quot; &gt;&amp;2</div><div class="line">    echo &quot;ZooKeeper remote JMX authenticate set to $JMXAUTH&quot; &gt;&amp;2</div><div class="line">    echo &quot;ZooKeeper remote JMX ssl set to $JMXSSL&quot; &gt;&amp;2</div><div class="line">    echo &quot;ZooKeeper remote JMX log4j set to $JMXLOG4J&quot; &gt;&amp;2</div><div class="line">    ZOOMAIN=&quot;-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=$JMXPORT -Dcom.sun.management.jmxremote.authenticate=$JMXAUTH -Dcom.sun.management.jmxremote.ssl=$JMXSSL -Dzookeeper.jmx.log4j.disable=$JMXLOG4J org.apache.zookeeper.server.quorum.QuorumPeerMain&quot;</div><div class="line">  fi</div><div class="line">else</div><div class="line">    echo &quot;JMX disabled by user request&quot; &gt;&amp;2</div><div class="line">    ZOOMAIN=&quot;org.apache.zookeeper.server.quorum.QuorumPeerMain&quot;</div><div class="line">fi</div></pre></td></tr></table></figure>
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/zookeeper/" rel="tag">#zookeeper</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/15/zookeeper-study002/" rel="next" title="Zookeeper学习笔记(二) zookeeper的应用场景">
+                <i class="fa fa-chevron-left"></i> Zookeeper学习笔记(二) zookeeper的应用场景
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/06/17/zookeeper-study004/" rel="prev" title="Zookeeper学习笔记(四) zookeeper的java api">
+                Zookeeper学习笔记(四) zookeeper的java api <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+           <!-- 多说热评文章 start -->
+	<div class="ds-top-threads" data-range="daily" data-num-items="5"></div>
+<!-- 多说热评文章 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+
+           <section id="comments">
+   <!-- 多说评论框 start -->
+<div id="ds-thread" class="ds-thread" data-thread-key="<%= post.path %>" data-title="<%= post.title %>" data-url="<%= post.permalink %>"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+  </section>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="孙星" />
+          <p class="site-author-name" itemprop="name">孙星</p>
+          <p class="site-description motion-element" itemprop="description">sunxing's blog | mysql | java | scala | hadoop | spark | kafka | flume</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">65</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-zookeeper的安装"><span class="nav-number">1.</span> <span class="nav-text">1 zookeeper的安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-启动服务"><span class="nav-number">2.</span> <span class="nav-text">2 启动服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-流程及源代码解释"><span class="nav-number">3.</span> <span class="nav-text">3 流程及源代码解释</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孙星</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"sunxing"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>

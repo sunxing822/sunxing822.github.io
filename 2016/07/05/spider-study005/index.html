@@ -1,0 +1,727 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="网络爬虫," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="针对爬虫来说,当我需要抓取大量数据的同时又要求速度的情况下,通常使用分布式进行开发  爬虫的分布式主要分为两类： 1 主从分布式 2 对等分布式 主从分布式:主要是一台服务端和多台客户端的模式,也就是服务端负责任务的分发等操作,客户端做主要的解析等操作,这一类的任务分工明确。 对等分布式:主要是没有服务端的概念,每天机器都参与下载抓取等动作,每台机器都是相同的角色,每台机器去数据库中读取分配给自">
+<meta name="keywords" content="网络爬虫">
+<meta property="og:type" content="article">
+<meta property="og:title" content="网络爬虫学习笔记(五) 爬虫分布式">
+<meta property="og:url" content="http://www.sunxing.cc/2016/07/05/spider-study005/index.html">
+<meta property="og:site_name" content="孙星的个人博客~">
+<meta property="og:description" content="针对爬虫来说,当我需要抓取大量数据的同时又要求速度的情况下,通常使用分布式进行开发  爬虫的分布式主要分为两类： 1 主从分布式 2 对等分布式 主从分布式:主要是一台服务端和多台客户端的模式,也就是服务端负责任务的分发等操作,客户端做主要的解析等操作,这一类的任务分工明确。 对等分布式:主要是没有服务端的概念,每天机器都参与下载抓取等动作,每台机器都是相同的角色,每台机器去数据库中读取分配给自">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://www.sunxing.cc/images/spider/spider-ice.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/spider/spider-ice-interface.jpg">
+<meta property="og:image" content="http://www.sunxing.cc/images/spider/spider-ice-2.jpg">
+<meta property="og:image" content="http://www.sunxing.cc/images/spider/spider-ice-build.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/spider/spider-ice-source.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/spider/spider-ice-cmd.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/spider/duidegn.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/spider/spider-hash.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/spider/spider-circle.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/spider/spider-object.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/spider/spider-data-yinshe.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/spider/hashadd.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/spider/hashremove.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/spider/hashvirtual.png">
+<meta property="og:updated_time" content="2017-04-30T03:58:25.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="网络爬虫学习笔记(五) 爬虫分布式">
+<meta name="twitter:description" content="针对爬虫来说,当我需要抓取大量数据的同时又要求速度的情况下,通常使用分布式进行开发  爬虫的分布式主要分为两类： 1 主从分布式 2 对等分布式 主从分布式:主要是一台服务端和多台客户端的模式,也就是服务端负责任务的分发等操作,客户端做主要的解析等操作,这一类的任务分工明确。 对等分布式:主要是没有服务端的概念,每天机器都参与下载抓取等动作,每台机器都是相同的角色,每台机器去数据库中读取分配给自">
+<meta name="twitter:image" content="http://www.sunxing.cc/images/spider/spider-ice.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+ <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258995301'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/z_stat.php%3Fid%3D1258995301' type='text/javascript'%3E%3C/script%3E"));</script>
+
+  <title> 网络爬虫学习笔记(五) 爬虫分布式 | 孙星的个人博客~ </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">孙星的个人博客~</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">搬砖的,码农~</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                网络爬虫学习笔记(五) 爬虫分布式
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-05T11:55:55+08:00" content="2016-07-05">
+              2016-07-05
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/爬虫/" itemprop="url" rel="index">
+                    <span itemprop="name">爬虫</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/05/spider-study005/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/05/spider-study005/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>针对爬虫来说,当我需要抓取大量数据的同时又要求速度的情况下,通常使用分布式进行开发</p>
+</blockquote>
+<p>爬虫的分布式主要分为两类：</p>
+<pre><code>1 主从分布式
+2 对等分布式
+</code></pre><p>主从分布式:主要是一台服务端和多台客户端的模式,也就是服务端负责任务的分发等操作,客户端做主要的解析等操作,这一类的任务分工明确。</p>
+<p>对等分布式:主要是没有服务端的概念,每天机器都参与下载抓取等动作,每台机器都是相同的角色,每台机器去数据库中读取分配给自己的带抓取的链接地址,进行抓取和存储等操作。</p>
+<h1 id="1-主从分布式"><a href="#1-主从分布式" class="headerlink" title="1 主从分布式"></a>1 主从分布式</h1><p>主从分布式开发模式有很多,简单的socket,rpc,开源分布式框架,中间件等等都可以做,下面开始依次简单实现：</p>
+<h2 id="1-简单socket分布式"><a href="#1-简单socket分布式" class="headerlink" title="1 简单socket分布式"></a>1 简单socket分布式</h2><p>服务端：主要做3个动作,接收客户端的链接,向客户端发送数据,检测客户端是否掉线。这些操作基本就可以实现主从分布式了,服务端通过从一个缓存中读取数据,在检测该分配给那个客户端,检测好以后将这个数据发送出去。代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div></pre></td><td class="code"><pre><div class="line">public class MyServer &#123;</div><div class="line">    //服务端端口</div><div class="line">    private int port = 10010;</div><div class="line">    //服务端</div><div class="line">    private ServerSocket server = null;</div><div class="line">    //客户端链接集合</div><div class="line">    private Vector&lt;Connection&gt; clients = new Vector&lt;&gt;();</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 启动服务端</div><div class="line">     */</div><div class="line">    public MyServer start()&#123;</div><div class="line">        new Thread(new Runnable() &#123;</div><div class="line">            @Override</div><div class="line">            public void run() &#123;</div><div class="line">                try&#123;</div><div class="line">                    server = new ServerSocket(port);</div><div class="line">                    //循环遍历获取客户端链接</div><div class="line">                    while(true)&#123;</div><div class="line">                        System.out.println(&quot;服务端等待客户端链接...&quot;);</div><div class="line">                        Socket socket = server.accept();</div><div class="line"></div><div class="line">                        //封装对象存储到集合中</div><div class="line">                        Connection connection = new Connection();</div><div class="line">                        connection.setSocket(socket);</div><div class="line">                        connection.setIp(socket.getInetAddress().getHostAddress());</div><div class="line"></div><div class="line">                        clients.add(connection);</div><div class="line"></div><div class="line">                        System.out.println(&quot;客户端(&quot; + connection.getIp() + &quot;)已经链接..&quot;);</div><div class="line">                    &#125;</div><div class="line">                &#125;catch (Exception e)&#123;</div><div class="line">                    e.printStackTrace();</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;).start();</div><div class="line">        return this;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 发送数据</div><div class="line">     */</div><div class="line">    public MyServer sendData()&#123;</div><div class="line">        new Thread(new Runnable() &#123;</div><div class="line">            @Override</div><div class="line">            public void run() &#123;</div><div class="line">                while(true)&#123;</div><div class="line">                    try&#123;</div><div class="line">                        //获取数据</div><div class="line">                        String data = getData();</div><div class="line"></div><div class="line">                        for(Connection conn : clients)&#123;</div><div class="line">                            sendData(conn,data + conn.getIp());</div><div class="line">                        &#125;</div><div class="line">                        //线程休眠</div><div class="line">                        Thread.sleep(3000);</div><div class="line">                    &#125;catch (Exception e)&#123;</div><div class="line">                        e.printStackTrace();</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;).start();</div><div class="line">        return this;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 获取数据</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public String getData()&#123;</div><div class="line">        return UUID.randomUUID().toString();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 发送数据</div><div class="line">     * @param connection</div><div class="line">     * @param data</div><div class="line">     */</div><div class="line">    public void sendData(Connection connection,String data)&#123;</div><div class="line">        try&#123;</div><div class="line">            Socket socket = connection.getSocket();</div><div class="line">            BufferedWriter os = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));</div><div class="line">            os.write(data);</div><div class="line">            os.newLine();// 客户端是按行读取的,所以这里要新开一行,否则客户端认为一行没有结束,会一直等待一行数据写入完成</div><div class="line">            os.flush();</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     *</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public BufferedWriter getWriter(Socket socket) throws  Exception&#123;</div><div class="line">        return new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));</div><div class="line">    &#125;</div><div class="line">    /**</div><div class="line">     * 检测客户端是否还在线</div><div class="line">     */</div><div class="line">    public MyServer check()&#123;</div><div class="line">        new Thread(new Runnable() &#123;</div><div class="line">            @Override</div><div class="line">            public void run() &#123;</div><div class="line">                while(true)&#123;</div><div class="line">                    try&#123;</div><div class="line">                        for(Connection conn : clients)&#123;</div><div class="line">                            try&#123;</div><div class="line">                                conn.getSocket().sendUrgentData(0xff);</div><div class="line">                            &#125;catch (IOException e)&#123;</div><div class="line">                                e.printStackTrace();</div><div class="line">                                //出现异常说明客户端已经断开链接</div><div class="line">                                clients.remove(conn);</div><div class="line">                                System.out.println(&quot;客户端(&quot; + conn.getIp() + &quot;)已经断开链接...&quot;);</div><div class="line">                            &#125;</div><div class="line">                        &#125;</div><div class="line">                        //线程休眠</div><div class="line">                        Thread.sleep(3000);</div><div class="line">                    &#125;catch (Exception e)&#123;</div><div class="line">                        e.printStackTrace();</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;).start();</div><div class="line">        return this;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * server main</div><div class="line">     * @param args</div><div class="line">     */</div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">        MyServer server = new MyServer();</div><div class="line">        server.start().check().sendData();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>其中connection是对客户端连接的管理,具体的代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">public class Connection &#123;</div><div class="line">    //客户端的链接socket</div><div class="line">    private Socket socket;</div><div class="line">    private String ip;</div><div class="line"></div><div class="line">        public Socket getSocket() &#123;</div><div class="line">        return socket;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void setSocket(Socket socket) &#123;</div><div class="line">        this.socket = socket;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public String getIp() &#123;</div><div class="line">        return ip;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void setIp(String ip) &#123;</div><div class="line">        this.ip = ip;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>客户端的代码就简单了,连接上服务端,从服务端读取数据后进行展示,代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div></pre></td><td class="code"><pre><div class="line">public class MyClient &#123;</div><div class="line">    //服务端对应的地址和断开</div><div class="line">    private String ip = &quot;127.0.0.1&quot;;</div><div class="line">    private int port = 10010;</div><div class="line"></div><div class="line">    //客户端socket</div><div class="line">    private Socket socket = null;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 启动服务</div><div class="line">     */</div><div class="line">    public MyClient start()&#123;</div><div class="line">        try&#123;</div><div class="line">            socket = new Socket(ip,port);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">            System.out.println(&quot;链接服务端失败...&quot;);</div><div class="line">        &#125;</div><div class="line">        return this;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public MyClient getData()&#123;</div><div class="line">        new Thread(new Runnable() &#123;</div><div class="line">            @Override</div><div class="line">            public void run() &#123;</div><div class="line">                while(true)&#123;</div><div class="line">                    try&#123;</div><div class="line">                        BufferedReader br = getReader(socket);</div><div class="line"></div><div class="line">                        System.out.println(br.readLine());</div><div class="line"></div><div class="line">                        Thread.sleep(3000);</div><div class="line">                    &#125;catch (Exception e)&#123;</div><div class="line">                        e.printStackTrace();</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;).start();</div><div class="line">        return this;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public BufferedReader getReader(Socket socket) throws Exception&#123;</div><div class="line">        return new BufferedReader( new InputStreamReader(socket.getInputStream()));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     *</div><div class="line">     * @param args</div><div class="line">     */</div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">       new MyClient().start().getData();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="2-mina"><a href="#2-mina" class="headerlink" title="2 mina"></a>2 mina</h2><p>上面做了简单的分布式的实现,下面介绍一个基于NIO的分布式框架mina,mina的简单分布式开发。</p>
+<p>服务端的代码实现:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div></pre></td><td class="code"><pre><div class="line">public class MinaServer &#123;</div><div class="line">    // 服务端开启的端口</div><div class="line">    private int port = 10010;</div><div class="line">    //读取数据的缓冲区的大小</div><div class="line">    private int bufferSize = 4096;</div><div class="line">    //读取通道内空闲时间</div><div class="line">    private int idleTime = 10;</div><div class="line">    // 用于接收客户端的链接</div><div class="line">    private IoAcceptor acceptor = null;</div><div class="line"></div><div class="line">    //客户端队列</div><div class="line">    private ConcurrentHashMap&lt;String,MConnect&gt; maps = new ConcurrentHashMap&lt;&gt;();</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 启动服务端</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public MinaServer runServer()&#123;</div><div class="line">        try&#123;</div><div class="line">            acceptor = new NioSocketAcceptor();</div><div class="line"></div><div class="line">            // 设置过滤器</div><div class="line">            acceptor.getFilterChain().addLast(&quot;logger&quot;, new LoggingFilter());</div><div class="line">            acceptor.getFilterChain().addLast(&quot;codec&quot;, new ProtocolCodecFilter(</div><div class="line">                    new ObjectSerializationCodecFactory()));</div><div class="line">            //设置读取数据的缓冲区的大小</div><div class="line">            acceptor.getSessionConfig().setReadBufferSize(bufferSize);</div><div class="line">            //读取通道一定时间内无操作,系统就进入空闲状态</div><div class="line">            acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, idleTime);</div><div class="line">            //绑定数据处理器</div><div class="line">            acceptor.setHandler(new ServerHandler().addServer(this));</div><div class="line">            //绑定端口</div><div class="line">            acceptor.bind(new InetSocketAddress(port));</div><div class="line">            System.err.println(&quot;服务器启动成功,端口号为:&quot; + port);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        return this;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 发送数据</div><div class="line">     *</div><div class="line">     * 每隔一段时间向客户端发送一次数据</div><div class="line">     */</div><div class="line">    public void sendData()&#123;</div><div class="line">        new Thread(new Runnable() &#123;</div><div class="line">            @Override</div><div class="line">            public void run() &#123;</div><div class="line">                while(true)&#123;</div><div class="line">                    try&#123;</div><div class="line">                        for(Map.Entry&lt;String,MConnect&gt; entry : maps.entrySet())&#123;</div><div class="line">                            MConnect mc = entry.getValue();</div><div class="line">                            sendData(mc);</div><div class="line">                        &#125;</div><div class="line">                        Thread.sleep(1000);</div><div class="line">                    &#125;catch (Exception e)&#123;</div><div class="line">                        e.printStackTrace();</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;).start();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 发送数据</div><div class="line">     * @param mc</div><div class="line">     */</div><div class="line">    public void sendData(MConnect mc)&#123;</div><div class="line">        boolean flag = mc.getSession().isClosing() || !mc.getSession().isConnected();</div><div class="line">        if(!flag)&#123;</div><div class="line">            String data = UUID.randomUUID().toString();</div><div class="line"></div><div class="line">            mc.getSession().write(data);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 添加数据</div><div class="line">     * @param connect</div><div class="line">     */</div><div class="line">    public void addConnect(MConnect connect)&#123;</div><div class="line">        if(!maps.containsKey(connect.getIp()))&#123;</div><div class="line">            maps.put(connect.getIp(),connect);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 删除摸个客户端</div><div class="line">     * @param ip</div><div class="line">     */</div><div class="line">    public void remove(String ip)&#123;</div><div class="line">        if(maps.containsKey(ip))&#123;</div><div class="line">            maps.remove(ip);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 主要用于处理服务端和客户端的通信</div><div class="line">     */</div><div class="line">    private class ServerHandler extends IoHandlerAdapter&#123;</div><div class="line">        //服务端</div><div class="line">        private MinaServer server = null;</div><div class="line"></div><div class="line">        /**</div><div class="line">         * 绑定服务端</div><div class="line">         * @param server</div><div class="line">         * @return</div><div class="line">         */</div><div class="line">        public ServerHandler addServer(MinaServer server )&#123;</div><div class="line">            this.server = server;</div><div class="line">            return this;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public void sessionCreated(IoSession session) throws Exception &#123;</div><div class="line">            String ip = ((InetSocketAddress)session.getRemoteAddress()).getAddress().getHostAddress();</div><div class="line">            MConnect mc = new MConnect();</div><div class="line">            mc.setIp(ip);</div><div class="line">            mc.setSession(session);</div><div class="line"></div><div class="line">            this.server.addConnect(mc);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public void sessionOpened(IoSession session) throws Exception &#123;</div><div class="line">            super.sessionOpened(session);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public void sessionClosed(IoSession session) throws Exception &#123;</div><div class="line">            String IP = (String) session.getAttribute(&quot;IP&quot;);</div><div class="line"></div><div class="line">            //该客户端的链接已经失效了,将删除该链接</div><div class="line">            this.server.remove(IP);</div><div class="line"></div><div class="line">            System.err.println(&quot;服务端将移除客户端：&quot; + IP);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public void sessionIdle(IoSession session, IdleStatus status) throws Exception &#123;</div><div class="line">            super.sessionIdle(session, status);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public void exceptionCaught(IoSession session, Throwable cause) throws Exception &#123;</div><div class="line">            super.exceptionCaught(session, cause);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public void messageReceived(IoSession session, Object message) throws Exception &#123;</div><div class="line">            super.messageReceived(session, message);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public void messageSent(IoSession session, Object message) throws Exception &#123;</div><div class="line">            super.messageSent(session, message);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * mina server</div><div class="line">     * @param args</div><div class="line">     */</div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">        MinaServer server = new MinaServer();</div><div class="line"></div><div class="line">        server.runServer().sendData();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>客户端的代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div></pre></td><td class="code"><pre><div class="line">public class MinaClient &#123;</div><div class="line">    // 服务端对应的ip以及端口</div><div class="line">    private String sip = &quot;127.0.0.1&quot;;</div><div class="line">    private int sport = 10010;</div><div class="line">    //服务器端的配置信息</div><div class="line">    private long timeOut = 6000;</div><div class="line">    private NioSocketConnector connector = null;</div><div class="line">    //绑定当前的session</div><div class="line">    private IoSession session = null;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 启动客户端</div><div class="line">     *</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public MinaClient runClient() &#123;</div><div class="line">        try &#123;</div><div class="line">            // 创建链接对象</div><div class="line">            connector = new NioSocketConnector();</div><div class="line">            // 设置超时设置</div><div class="line">            connector.setConnectTimeoutMillis(timeOut);</div><div class="line">            // 绑定过滤器</div><div class="line">            connector.getFilterChain().addLast(&quot;codec&quot;,</div><div class="line">                    new ProtocolCodecFilter(new ObjectSerializationCodecFactory()));</div><div class="line">            connector.getSessionConfig().setSendBufferSize(4096);</div><div class="line">            connector.getSessionConfig().setReadBufferSize(4096);</div><div class="line">            //添加业务逻辑处理器类</div><div class="line">            connector.setHandler(new ClientDataHandler().addClient(this));</div><div class="line">            //链接到对象</div><div class="line">            ConnectFuture future = connector.connect(new InetSocketAddress(sip, sport));</div><div class="line">            //等待连接完成</div><div class="line">            future.awaitUninterruptibly();</div><div class="line">            session = future.getSession();</div><div class="line">        &#125; catch (Exception e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        //检测客户端链接</div><div class="line">        checkConnection();</div><div class="line"></div><div class="line">        return this;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void checkConnection()&#123;</div><div class="line">        new Thread(new Runnable() &#123;</div><div class="line">            @Override</div><div class="line">            public void run() &#123;</div><div class="line">                while(true)&#123;</div><div class="line">                    try &#123;</div><div class="line">                        if (!session.isConnected()||session.isClosing()) &#123;</div><div class="line">                            System.out.println(&quot;与服务器的连接中断，尝试重新连接......&quot;);</div><div class="line">                            try &#123;</div><div class="line">                                ConnectFuture future = connector</div><div class="line">                                        .connect(new InetSocketAddress(sip, sport));</div><div class="line">                                future.awaitUninterruptibly();</div><div class="line">                                session = future.getSession();</div><div class="line">                            &#125;</div><div class="line">                            catch (RuntimeIoException e) &#123;</div><div class="line">                                System.out.println(&quot;本次与服务器重新连接失败，等待下次连接！&quot;);</div><div class="line">                            &#125;</div><div class="line">                        &#125;</div><div class="line"></div><div class="line">                        Thread.sleep(5000);</div><div class="line">                    &#125; catch (InterruptedException e1) &#123;</div><div class="line">                        e1.printStackTrace();</div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;).start();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 处理客户端接收消息的数据</div><div class="line">     */</div><div class="line">    public class ClientDataHandler extends IoHandlerAdapter&#123;</div><div class="line">        //客户端对象</div><div class="line">        private MinaClient client = null;</div><div class="line"></div><div class="line">        /**</div><div class="line">         * 客户端的对象</div><div class="line">         * @param client</div><div class="line">         * @return</div><div class="line">         */</div><div class="line">        public ClientDataHandler addClient(MinaClient client)&#123;</div><div class="line">            this.client = client;</div><div class="line">            return this;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public void sessionCreated(IoSession session) throws Exception &#123;</div><div class="line">            super.sessionCreated(session);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public void sessionOpened(IoSession session) throws Exception &#123;</div><div class="line">            super.sessionOpened(session);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public void sessionClosed(IoSession session) throws Exception &#123;</div><div class="line">            super.sessionClosed(session);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public void sessionIdle(IoSession session, IdleStatus status) throws Exception &#123;</div><div class="line">            super.sessionIdle(session, status);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public void exceptionCaught(IoSession session, Throwable cause) throws Exception &#123;</div><div class="line">            super.exceptionCaught(session, cause);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public void messageReceived(IoSession session, Object message) throws Exception &#123;</div><div class="line">            String data = (String)message;</div><div class="line"></div><div class="line">            System.out.println(&quot;客户端接收到的服务端发来的消息如下:&quot; + data);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public void messageSent(IoSession session, Object message) throws Exception &#123;</div><div class="line">            super.messageSent(session, message);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * client main</div><div class="line">     * @param args</div><div class="line">     */</div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">        MinaClient client = new MinaClient();</div><div class="line"></div><div class="line">        client.runClient().checkConnection();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="3-rpc"><a href="#3-rpc" class="headerlink" title="3 rpc"></a>3 rpc</h2><p>普通socket的编程主要是服务端分发数据到客户端中,如果客户端只是通过调用一个借口就可以获取到数据的做法跟合适一下。具体的实现逻辑如下:</p>
+<p>服务端代码:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div></pre></td><td class="code"><pre><div class="line">public class RpcServer &#123;</div><div class="line">    //服务集合</div><div class="line">    private Map&lt;String,Service&gt; serviceMap = new HashMap&lt;&gt;();</div><div class="line">    //服务端socket</div><div class="line">    private ServerSocket server = null;</div><div class="line">    //客户端结婚</div><div class="line">    private Vector&lt;Connection&gt; clients = new Vector&lt;&gt;();</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 初始化服务集合</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public RpcServer initServiceMap() throws Exception&#123;</div><div class="line">        Service service = new Service();</div><div class="line">        service.setClazz(DataHandlerImpl.class);</div><div class="line">        service.setMethod(DataHandlerImpl.class.getMethod(&quot;getData&quot;));</div><div class="line"></div><div class="line">        this.serviceMap.put(&quot;获取带抓取url&quot;,service);</div><div class="line">        return this;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 启动服务</div><div class="line">     */</div><div class="line">    public RpcServer  runServer()&#123;</div><div class="line">        new Thread(new Runnable() &#123;</div><div class="line">            @Override</div><div class="line">            public void run() &#123;</div><div class="line">                try&#123;</div><div class="line">                    server = new ServerSocket(10010);</div><div class="line">                    while(true)&#123;</div><div class="line">                        Socket socket = server.accept();</div><div class="line"></div><div class="line">                        Connection conn = new Connection();</div><div class="line">                        conn.setIp(socket.getInetAddress().getHostAddress());</div><div class="line">                        conn.setSocket(socket);</div><div class="line"></div><div class="line">                        clients.add(conn);</div><div class="line">                    &#125;</div><div class="line">                &#125;catch (Exception e)&#123;</div><div class="line">                    e.printStackTrace();</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;).start();</div><div class="line">        return this;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 客户端获取数据</div><div class="line">     */</div><div class="line">    public RpcServer dealData()&#123;</div><div class="line">        new Thread(new Runnable() &#123;</div><div class="line">            @Override</div><div class="line">            public void run() &#123;</div><div class="line">                while(true)&#123;</div><div class="line">                    try&#123;</div><div class="line">                        for(Connection conn : clients)&#123;</div><div class="line">                            //获取客户发过来的消息</div><div class="line">                            String service = getData(conn.getSocket());</div><div class="line">                            if(service == null)continue;</div><div class="line"></div><div class="line">                            //向客户端发送执行的结果</div><div class="line">                            String result = execute(service);</div><div class="line">                            if(result == null)continue;</div><div class="line"></div><div class="line">                            //将结果发送给客户端</div><div class="line">                            sendData(conn.getSocket(),result);</div><div class="line">                        &#125;</div><div class="line"></div><div class="line">                        Thread.sleep(2000);</div><div class="line">                    &#125;catch (Exception e)&#123;</div><div class="line">                        e.printStackTrace();</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;).start();</div><div class="line">        return this;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 接收客户单发送过来的调用消息</div><div class="line">     * @param socket</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public String getData(Socket socket)&#123;</div><div class="line">        try&#123;</div><div class="line">            BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));</div><div class="line">            return br.readLine();</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 根据服务名称进行调用</div><div class="line">     * @param servcie</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public String execute(String servcie)&#123;</div><div class="line">        try&#123;</div><div class="line">            System.out.println(servcie);</div><div class="line">            Service data = serviceMap.get(servcie);</div><div class="line"></div><div class="line">            Method method = data.getMethod();</div><div class="line">            Object bean = data.getClazz().newInstance();</div><div class="line"></div><div class="line">            Object result = method.invoke(bean);</div><div class="line"></div><div class="line">            return (String)result;</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 发送结果给客户端</div><div class="line">     * @param socket</div><div class="line">     * @param result</div><div class="line">     */</div><div class="line">    public void sendData(Socket socket,String result) &#123;</div><div class="line">        try&#123;</div><div class="line">            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));</div><div class="line"></div><div class="line">            bw.write(result);</div><div class="line">            bw.newLine();</div><div class="line">            bw.flush();</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * rpc server</div><div class="line">     * @param args</div><div class="line">     */</div><div class="line">    public static void main(String[] args) throws  Exception&#123;</div><div class="line">        RpcServer server = new RpcServer();</div><div class="line"></div><div class="line">        server.initServiceMap().runServer().dealData();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>客户端代码:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div></pre></td><td class="code"><pre><div class="line">public class RpcClient &#123;</div><div class="line">    private String ip = &quot;127.0.0.1&quot;;</div><div class="line">    private int port = 10010;</div><div class="line">    private String servcie = &quot;获取带抓取url&quot;;</div><div class="line"></div><div class="line">    //客户端socket</div><div class="line">    private Socket socket = null;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 连接客户端</div><div class="line">     */</div><div class="line">    public RpcClient runClient()&#123;</div><div class="line">        try&#123;</div><div class="line">            socket = new Socket(ip,port);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        return this;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 获取数据</div><div class="line">     */</div><div class="line">    public void getData()&#123;</div><div class="line">        new Thread(new Runnable() &#123;</div><div class="line">            @Override</div><div class="line">            public void run() &#123;</div><div class="line">                while(true)&#123;</div><div class="line">                    try&#123;</div><div class="line">                        //向客户端发送调用服务请求</div><div class="line">                        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));</div><div class="line">                        bw.write(servcie);</div><div class="line">                        bw.newLine();</div><div class="line">                        bw.flush();</div><div class="line"></div><div class="line">                        //获取调用结果</div><div class="line">                        BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));</div><div class="line">                        String result = br.readLine();</div><div class="line"></div><div class="line">                        System.out.println(&quot;客户端调用的结果如下:&quot; + result);</div><div class="line"></div><div class="line">                        Thread.sleep(1000);</div><div class="line">                    &#125;catch (Exception e)&#123;</div><div class="line">                        e.printStackTrace();</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;).start();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * rpc client</div><div class="line">     * @param args</div><div class="line">     */</div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">        RpcClient client = new RpcClient();</div><div class="line">        client.runClient().getData();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="4-ice中间件"><a href="#4-ice中间件" class="headerlink" title="4 ice中间件"></a>4 ice中间件</h2><p>ice中间价其内部原理和rpc相似(我没有看过源码),从调用和配置的过程可以看出他的整个过程是配置一个接口脚本,通过一个插件或者是命令行编译的方式编译一下,生产相应的语言版本代码,生成好以后可以直接进行开发调用了。下面介绍一下在eclipse中开发基于ice中间件的分布式程序。</p>
+<p>1 在eclipse中安装插件</p>
+<p>使用eclipse的应用市场,位置在： help  -&gt; Eclipse Marketplace<br>在其中搜索ice,找到对应的版本，具体的截图日下:</p>
+<p><img src="/images/spider/spider-ice.png" alt=""></p>
+<p>选择安装就行了。</p>
+<p>2 创建项目</p>
+<p>创建一个java项目,就不赘述了。</p>
+<p>3 创建ice的接口文件</p>
+<p>在项目的根目录下创建一个slice的文件夹,在其中创建一个文件,文件类型为ice.具体的操作如下截图:</p>
+<p><img src="/images/spider/spider-ice-interface.jpg" alt=""></p>
+<p>如果我想定义一个接口,用于客户端调用,从服务端读取待抓取url.具体的格式如下:</p>
+<p><img src="/images/spider/spider-ice-2.jpg" alt=""></p>
+<p>说明:<br>module：表明是包<br>interface:接口名称<br>out: 表明是服务端输出的数据,在客户端获取这个值进行使用,如果没有out这个参数,比如remove这个方法,就是表示客户端输出这个参数的值,在服务端使用。</p>
+<p>其中基本的数据类型是没有变化的,字符串用的是string.</p>
+<p>4 编译接口文件</p>
+<p>编译的方式有两种:</p>
+<pre><code>使用插件编译
+使用命令行编译
+</code></pre><p>插件编译的截图如下:</p>
+<p><img src="/images/spider/spider-ice-build.png" alt=""></p>
+<p>使用命令行编译的话,需要在项目中新建一个source folder,文件名称为:generated,具体如下:</p>
+<p><img src="/images/spider/spider-ice-source.png" alt=""></p>
+<p>命令行代码如下：</p>
+<p><img src="/images/spider/spider-ice-cmd.png" alt=""></p>
+<p>5 编写分布式程序 服务端</p>
+<p>服务端：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line">public class IceServer &#123;</div><div class="line">	//服务端</div><div class="line">	private Ice.Communicator ic = null;</div><div class="line">	//状态码</div><div class="line">	private int status = 0;</div><div class="line">	</div><div class="line">	public void runServer()&#123;</div><div class="line">		try &#123;</div><div class="line">			ic = Ice.Util.initialize();</div><div class="line">			</div><div class="line">			Ice.ObjectAdapter adapter = ic.createObjectAdapterWithEndpoints(&quot;TaskServerAdapter&quot;, &quot;default -p 10010&quot;);</div><div class="line">			Ice.Object object = new TaskServer();</div><div class="line">			adapter.add(object, Ice.Util.stringToIdentity(&quot;TaskServer&quot;));</div><div class="line">			adapter.activate();</div><div class="line">			ic.waitForShutdown();</div><div class="line">		&#125; catch (Exception e) &#123;</div><div class="line">			e.printStackTrace();</div><div class="line">			status = 1;</div><div class="line">		&#125;finally&#123;</div><div class="line">			if(ic != null)&#123;</div><div class="line">				ic.destroy();</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		System.exit(status);</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	/**</div><div class="line">	 * ice server</div><div class="line">	 * @param args</div><div class="line">	 */</div><div class="line">	public static void main(String[] args)&#123;</div><div class="line">		IceServer server = new IceServer();</div><div class="line">		server.runServer();</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>数据处理类：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">public class TaskServer extends _TaskOperaDisp&#123;</div><div class="line">	private static final long serialVersionUID = 1L;</div><div class="line">	</div><div class="line">	/**</div><div class="line">	 * 绑定数据</div><div class="line">	 */</div><div class="line">	@Override</div><div class="line">	public void getUrl(StringHolder url, Current __current) &#123;</div><div class="line">		try&#123;</div><div class="line">			url.value = UUID.randomUUID().toString();</div><div class="line">		&#125;catch(Exception e)&#123;</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	@Override</div><div class="line">	public void remove(String md5, Current __current) &#123;</div><div class="line">		// TODO Auto-generated method stub</div><div class="line">		</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>6 编写分布式程序  客户端</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div></pre></td><td class="code"><pre><div class="line">public class IceClient &#123;</div><div class="line">	private Ice.Communicator ic = null;</div><div class="line">	private TaskOperaPrx getTask = null;</div><div class="line">	</div><div class="line">	private String ip = &quot;127.0.0.1&quot;;</div><div class="line">	private int port = 10010;</div><div class="line">	</div><div class="line">	private StringHolder url = new StringHolder();</div><div class="line">	</div><div class="line">	/**</div><div class="line">	 * 连接服务端</div><div class="line">	 * @param temp</div><div class="line">	 */</div><div class="line">	public IceClient connecteToIce(long temp) &#123;</div><div class="line">		System.out.println(&quot;准备连接server:[ip:&quot; + ip + &quot;,port:&quot; + port + &quot;]&quot;);</div><div class="line">		while (true) &#123;</div><div class="line">			try &#123;</div><div class="line">				ic = Ice.Util.initialize();</div><div class="line">				Ice.ObjectPrx base = ic.stringToProxy(&quot;TaskServer:default -h &quot; + ip + &quot; -p &quot; + port);</div><div class="line">				getTask = TaskOperaPrxHelper.checkedCast(base);</div><div class="line">				if(getTask != null)&#123;</div><div class="line">					break;</div><div class="line">				&#125;</div><div class="line">				System.out.println(&quot;连接失败,系统将休眠&quot; + temp + &quot;毫秒后继续...&quot;);</div><div class="line">				Thread.sleep(temp);</div><div class="line">			&#125; catch (Exception e) &#123;</div><div class="line">				e.printStackTrace();</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		return this;</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 获取任务数据</div><div class="line">	 */</div><div class="line">	public void getData()&#123;</div><div class="line">		new Thread(new Runnable()&#123;</div><div class="line">			@Override</div><div class="line">			public void run() &#123;</div><div class="line">				while(true)&#123;</div><div class="line">					try&#123;</div><div class="line">						try&#123;</div><div class="line">							getTask.getUrl(url);</div><div class="line">							//打印结果数据</div><div class="line">							System.out.println(url.value);</div><div class="line">						&#125;catch(Exception e)&#123;</div><div class="line">							e.printStackTrace();</div><div class="line">						&#125;</div><div class="line">						</div><div class="line">						Thread.sleep(1000);</div><div class="line">					&#125;catch(Exception e)&#123;</div><div class="line">						e.printStackTrace();</div><div class="line">					&#125;</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125;).start();</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * ice client</div><div class="line">	 * @param args</div><div class="line">	 */</div><div class="line">	public static void main(String[] args)&#123;</div><div class="line">		IceClient client = new IceClient();</div><div class="line">		client.connecteToIce(2000).getData();</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="2-对等分布式"><a href="#2-对等分布式" class="headerlink" title="2 对等分布式"></a>2 对等分布式</h1><p>对等分布式和主从分布式的区别主要是：对等分布式中各个机器节点间是平等的,不存在谁是主,谁是从,每个节点做自己需要处理的数据。</p>
+<p><img src="/images/spider/duidegn.png" alt=""></p>
+<p>上面为对等爬虫的基本工作方式,每台机器从待抓取队列中读取应该分配给自己的待抓取url.主要的分配方式为:每个url通过hash取模的方式,算出应该分配给那一台机器进行下载处理。</p>
+<p>举例：假设对于url www.baidu.com，计算器hash值H=8，m=3，则H mod m=2，因此由编号为2的服务器进行该链接的抓取。假设这时候是0号服务器拿到这个URL，那么它将该URL转给服务器2，由服务器2进行抓取。</p>
+<p>这种情况下,有一个很大的问题,如果增加一台机器或者是减少一台机器就会出现所有的待抓取url的hash值都会变动。针对这样的情况,做出了优化,通过采用一致性哈希算法的方式确认每台机器节点的分工。结构图如下：</p>
+<p><img src="/images/spider/spider-hash.png" alt=""></p>
+<h2 id="6-一致性哈希算法"><a href="#6-一致性哈希算法" class="headerlink" title="6 一致性哈希算法"></a>6 一致性哈希算法</h2><p>在分布式的过程中,如果减少或者增加一台机器,所有url根据hash计算后的分配机器就会改变。在减少一台机器的情况下,如果能让原本分配给这台机器的数据分配给下一台机器就较少了数据分配的改动。在增加一台机器的情况下,如果只是上它上一台机器分配部分数据给它,也能减少数据分配的改动。</p>
+<p>在这种想法下出现了环形hash映射方式,具体的是讲value映射到0-2^32 -1的数字空间中,我们想象为一个0到2^32-1 的一个首尾相接的环。</p>
+<p><img src="/images/spider/spider-circle.png" alt=""></p>
+<p>如果我们有3台机器,那么分别对着四台机器进行hash计算,算出一个值将这四台机器分布到这个环上4个点上。</p>
+<p><img src="/images/spider/spider-object.png" alt=""></p>
+<p>那么机器分布好了,剩下的数据应该分配给那台机器呢？针对待抓取的url按照hash函数计算到一个hash一个值,找到这个值对应的在环上的点,那么顺着这个点顺时针找到理它最近的一个机器节点,这个待抓取的url就分配给这台机器。具体的逻辑图如下：</p>
+<p><img src="/images/spider/spider-data-yinshe.png" alt=""></p>
+<p>那么问题来了：这样的分布是否满足删除一个节点或者是增加一个节点的需求呢？</p>
+<p>如果增加一台机器,这台机器在环上映射一个点,具体的映射过程如下:</p>
+<p><img src="/images/spider/hashadd.png" alt=""></p>
+<p>如果删除一台机器话,映射的过程如下:</p>
+<p><img src="/images/spider/hashremove.png" alt=""></p>
+<h3 id="6-1-思考"><a href="#6-1-思考" class="headerlink" title="6.1 思考"></a>6.1 思考</h3><p>如果基于上面的想法,做成环型hash,那么如果我的机器比较少,如果有两台机器,那么圆就会被分为2份。</p>
+<p>如果数据的hash都分布在其中的一个半圆中,那么久会导致其中一台机器负载严重超标。同样的情况,如果我是3台机器,那么也会出现这种现象,也就是一台机器覆盖严重,但是比2台的要好,对比发现机器越多,圆被划分的越细致,负载分布越均衡。</p>
+<p>但是我们又没有那么多机器,所以考虑的结果是使用虚拟节点,比如：如果有3台机器(a,b,c),我映射为300台机器。 其中a,b,c各100台。那么这些映射的机器就可以均匀的分布在这个环上。具体的如下图:</p>
+<p><img src="/images/spider/hashvirtual.png" alt=""></p>
+<p>也就是说如果一个待抓取的数据对象映射到环上一个点,找到这个点最近的下一个虚拟机器节点,找到这个虚拟机器节点对应的真实节点,使用这台机器进行操作。那么就解决问题了。</p>
+<h3 id="6-2-实现"><a href="#6-2-实现" class="headerlink" title="6.2 实现"></a>6.2 实现</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div></pre></td><td class="code"><pre><div class="line">public class ConsistentHash&lt;T&gt; &#123;</div><div class="line">    private final HashFunction hashFunction;</div><div class="line">    private final int numberOfReplicas;</div><div class="line">    private final SortedMap&lt;Long, T&gt; circle = new TreeMap&lt;&gt;();</div><div class="line"></div><div class="line">    public ConsistentHash(HashFunction hashFunction,int numberOfReplicas, Collection&lt;T&gt; nodes) &#123;</div><div class="line">        this.hashFunction = hashFunction;</div><div class="line">        this.numberOfReplicas = numberOfReplicas;</div><div class="line"></div><div class="line">        for (T node : nodes) &#123;</div><div class="line">            add(node);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void add(T node) &#123;</div><div class="line">        for (int i = 0; i &lt; numberOfReplicas; i++) &#123;</div><div class="line">            circle.put(hashFunction.hash(node.toString() + i),</div><div class="line">                    node);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void remove(T node) &#123;</div><div class="line">        for (int i = 0; i &lt; numberOfReplicas; i++) &#123;</div><div class="line">            circle.remove(hashFunction.hash(node.toString() + i));</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public T get(String key) &#123;</div><div class="line">        if (circle.isEmpty()) &#123;</div><div class="line">            return null;</div><div class="line">        &#125;</div><div class="line">        long hash = hashFunction.hash(key);</div><div class="line">        if (!circle.containsKey(hash)) &#123;</div><div class="line">            SortedMap&lt;Long, T&gt; tailMap =  circle.tailMap(hash);</div><div class="line">            hash = tailMap.isEmpty() ?</div><div class="line">                    circle.firstKey() : tailMap.firstKey();</div><div class="line">        &#125;</div><div class="line">        return circle.get(hash);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">public class Test &#123;</div><div class="line">    /**</div><div class="line">     * main函数</div><div class="line">     * @param args</div><div class="line">     */</div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">        List&lt;Node&gt; list = new ArrayList&lt;&gt;();</div><div class="line">        list.add(new Node(&quot;ip1&quot;,1));</div><div class="line">        list.add(new Node(&quot;ip2&quot;,2));</div><div class="line">        list.add(new Node(&quot;ip3&quot;,3));</div><div class="line">        list.add(new Node(&quot;ip4&quot;,4));</div><div class="line">        list.add(new Node(&quot;ip5&quot;,5));</div><div class="line">        list.add(new Node(&quot;ip6&quot;,6));</div><div class="line"></div><div class="line">        ConsistentHash&lt;Node&gt; nodes = new ConsistentHash&lt;&gt;(new HashFunction(),10,list);</div><div class="line"></div><div class="line">        /***</div><div class="line">         * 常见一个集合,用于验证可靠性</div><div class="line">         * 1 随机生成10 0000 个字符串</div><div class="line">         * 2 这些字符串分布到环山</div><div class="line">         * 3 统计每个节点分配的数据个数</div><div class="line">         * 4 展示</div><div class="line">         */</div><div class="line">        Map&lt;String,Integer&gt; test = new HashMap&lt;&gt;();</div><div class="line">        for(int i=0;i&lt; 100000;i++)&#123;</div><div class="line">            String str = UUID.randomUUID().toString() + i;</div><div class="line"></div><div class="line">            Node  node = nodes.get(str);</div><div class="line"></div><div class="line">            if(!test.containsKey(node.getIp()))&#123;</div><div class="line">                test.put(node.getIp(),0);</div><div class="line">            &#125;</div><div class="line">            test.put(node.getIp(),test.get(node.getIp()) + 1);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        for(Map.Entry&lt;String,Integer&gt; entrty : test.entrySet())&#123;</div><div class="line">            System.out.println(entrty.getKey() + &quot;\t&quot; + (1.0 * entrty.getValue() / 100000));</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div><div class="line">/**</div><div class="line"> * 节点</div><div class="line"> */</div><div class="line">class Node&#123;</div><div class="line">    private String ip;</div><div class="line">    private int port;</div><div class="line"></div><div class="line">    public Node(String ip,int port)&#123;</div><div class="line">        this.ip = ip;</div><div class="line">        this.port = port;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public String getIp() &#123;</div><div class="line">        return ip;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void setIp(String ip) &#123;</div><div class="line">        this.ip = ip;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public int getPort() &#123;</div><div class="line">        return port;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void setPort(int port) &#123;</div><div class="line">        this.port = port;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/网络爬虫/" rel="tag">#网络爬虫</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/04/spider-study004/" rel="next" title="网络爬虫学习笔记(四) 数据去重">
+                <i class="fa fa-chevron-left"></i> 网络爬虫学习笔记(四) 数据去重
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/07/06/spider-study006/" rel="prev" title="网络爬虫学习笔记(六) jsoup抽取工具简介">
+                网络爬虫学习笔记(六) jsoup抽取工具简介 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+           <!-- 多说热评文章 start -->
+	<div class="ds-top-threads" data-range="daily" data-num-items="5"></div>
+<!-- 多说热评文章 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+
+           <section id="comments">
+   <!-- 多说评论框 start -->
+<div id="ds-thread" class="ds-thread" data-thread-key="<%= post.path %>" data-title="<%= post.title %>" data-url="<%= post.permalink %>"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+  </section>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="孙星" />
+          <p class="site-author-name" itemprop="name">孙星</p>
+          <p class="site-description motion-element" itemprop="description">sunxing's blog | mysql | java | scala | hadoop | spark | kafka | flume</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">65</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-主从分布式"><span class="nav-number">1.</span> <span class="nav-text">1 主从分布式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-简单socket分布式"><span class="nav-number">1.1.</span> <span class="nav-text">1 简单socket分布式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-mina"><span class="nav-number">1.2.</span> <span class="nav-text">2 mina</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-rpc"><span class="nav-number">1.3.</span> <span class="nav-text">3 rpc</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-ice中间件"><span class="nav-number">1.4.</span> <span class="nav-text">4 ice中间件</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-对等分布式"><span class="nav-number">2.</span> <span class="nav-text">2 对等分布式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#6-一致性哈希算法"><span class="nav-number">2.1.</span> <span class="nav-text">6 一致性哈希算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1-思考"><span class="nav-number">2.1.1.</span> <span class="nav-text">6.1 思考</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2-实现"><span class="nav-number">2.1.2.</span> <span class="nav-text">6.2 实现</span></a></li></ol></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孙星</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"sunxing"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,810 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="java," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="java系统自带的标准数据流：java.lang.System  System类中标准输入,输出,异常输出流 /**  * The &amp;quot;standard&amp;quot; input stream. This stream is already  * open and ready to supply input data. Typically this stream  * corresponds">
+<meta name="keywords" content="java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaIO学习笔记(二) Java标准I&#x2F;O">
+<meta property="og:url" content="http://www.sunxing.cc/2016/05/10/java-io-2/index.html">
+<meta property="og:site_name" content="孙星的个人博客~">
+<meta property="og:description" content="java系统自带的标准数据流：java.lang.System  System类中标准输入,输出,异常输出流 /**  * The &amp;quot;standard&amp;quot; input stream. This stream is already  * open and ready to supply input data. Typically this stream  * corresponds">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://www.sunxing.cc/images/io/system.png">
+<meta property="og:image" content="http://www.sunxing.cc/images/io/system-native.png">
+<meta property="og:updated_time" content="2017-04-30T03:58:25.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JavaIO学习笔记(二) Java标准I&#x2F;O">
+<meta name="twitter:description" content="java系统自带的标准数据流：java.lang.System  System类中标准输入,输出,异常输出流 /**  * The &amp;quot;standard&amp;quot; input stream. This stream is already  * open and ready to supply input data. Typically this stream  * corresponds">
+<meta name="twitter:image" content="http://www.sunxing.cc/images/io/system.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+ <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258995301'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/z_stat.php%3Fid%3D1258995301' type='text/javascript'%3E%3C/script%3E"));</script>
+
+  <title> JavaIO学习笔记(二) Java标准I/O | 孙星的个人博客~ </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">孙星的个人博客~</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">搬砖的,码农~</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                JavaIO学习笔记(二) Java标准I/O
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-05-10T10:57:55+08:00" content="2016-05-10">
+              2016-05-10
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/05/10/java-io-2/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/10/java-io-2/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>java系统自带的标准数据流：java.lang.System</p>
+<p><img src="/images/io/system.png" alt=""></p>
+<p>System类中标准输入,输出,异常输出流</p>
+<pre><code>/**
+ * The &quot;standard&quot; input stream. This stream is already
+ * open and ready to supply input data. Typically this stream
+ * corresponds to keyboard input or another input source specified by
+ * the host environment or user.
+ */
+public final static InputStream in = null;
+
+/**
+ * The &quot;standard&quot; output stream. This stream is already
+ * open and ready to accept output data. Typically this stream
+ * corresponds to display output or another output destination
+ * specified by the host environment or user.
+ * &lt;p&gt;
+ * For simple stand-alone Java applications, a typical way to write
+ * a line of output data is:
+ * &lt;blockquote&gt;&lt;pre&gt;
+ *     System.out.println(data)
+ * &lt;/pre&gt;&lt;/blockquote&gt;
+ * &lt;p&gt;
+ * See the &lt;code&gt;println&lt;/code&gt; methods in class &lt;code&gt;PrintStream&lt;/code&gt;.
+ *
+ * @see     java.io.PrintStream#println()
+ * @see     java.io.PrintStream#println(boolean)
+ * @see     java.io.PrintStream#println(char)
+ * @see     java.io.PrintStream#println(char[])
+ * @see     java.io.PrintStream#println(double)
+ * @see     java.io.PrintStream#println(float)
+ * @see     java.io.PrintStream#println(int)
+ * @see     java.io.PrintStream#println(long)
+ * @see     java.io.PrintStream#println(java.lang.Object)
+ * @see     java.io.PrintStream#println(java.lang.String)
+ */
+public final static PrintStream out = null;
+
+/**
+ * The &quot;standard&quot; error output stream. This stream is already
+ * open and ready to accept output data.
+ * &lt;p&gt;
+ * Typically this stream corresponds to display output or another
+ * output destination specified by the host environment or user. By
+ * convention, this output stream is used to display error messages
+ * or other information that should come to the immediate attention
+ * of a user even if the principal output stream, the value of the
+ * variable &lt;code&gt;out&lt;/code&gt;, has been redirected to a file or other
+ * destination that is typically not continuously monitored.
+ */
+public final static PrintStream err = null;
+</code></pre><p>  标准输入输出的初始化过程主要是在java.lang.System中有静态块,静态块中调用了一个native方法,也就是调用了一个非java代码接口,源码截图如下:</p>
+<p>  <img src="/images/io/system-native.png" alt=""></p>
+<p>  可以看到注释中发射调用了initializeSystemClass这个方法,这个方法的源代码如下：</p>
+<pre><code>  /**
+ * Initialize the system class.  Called after thread initialization.
+ */
+private static void initializeSystemClass() {
+    // VM might invoke JNU_NewStringPlatform() to set those encoding
+    // sensitive properties (user.home, user.name, boot.class.path, etc.)
+    // during &quot;props&quot; initialization, in which it may need access, via
+    // System.getProperty(), to the related system encoding property that
+    // have been initialized (put into &quot;props&quot;) at early stage of the
+    // initialization. So make sure the &quot;props&quot; is available at the
+    // very beginning of the initialization and all system properties to
+    // be put into it directly.
+    props = new Properties();
+    initProperties(props);  // initialized by the VM
+
+    // There are certain system configurations that may be controlled by
+    // VM options such as the maximum amount of direct memory and
+    // Integer cache size used to support the object identity semantics
+    // of autoboxing.  Typically, the library will obtain these values
+    // from the properties set by the VM.  If the properties are for
+    // internal implementation use only, these properties should be
+    // removed from the system properties.
+    //
+    // See java.lang.Integer.IntegerCache and the
+    // sun.misc.VM.saveAndRemoveProperties method for example.
+    //
+    // Save a private copy of the system properties object that
+    // can only be accessed by the internal implementation.  Remove
+    // certain system properties that are not intended for public access.
+    sun.misc.VM.saveAndRemoveProperties(props);
+
+
+    lineSeparator = props.getProperty(&quot;line.separator&quot;);
+    sun.misc.Version.init();
+
+    FileInputStream fdIn = new FileInputStream(FileDescriptor.in);
+    FileOutputStream fdOut = new FileOutputStream(FileDescriptor.out);
+    FileOutputStream fdErr = new FileOutputStream(FileDescriptor.err);
+    setIn0(new BufferedInputStream(fdIn));
+    setOut0(new PrintStream(new BufferedOutputStream(fdOut, 128), true));
+    setErr0(new PrintStream(new BufferedOutputStream(fdErr, 128), true));
+    // Load the zip library now in order to keep java.util.zip.ZipFile
+    // from trying to use itself to load this library later.
+    loadLibrary(&quot;zip&quot;);
+
+    // Setup Java signal handlers for HUP, TERM, and INT (where available).
+    Terminator.setup();
+
+    // Initialize any miscellenous operating system settings that need to be
+    // set for the class libraries. Currently this is no-op everywhere except
+    // for Windows where the process-wide error mode is set before the java.io
+    // classes are used.
+    sun.misc.VM.initializeOSEnvironment();
+
+    // The main thread is not added to its thread group in the same
+    // way as other threads; we must do it ourselves here.
+    Thread current = Thread.currentThread();
+    current.getThreadGroup().add(current);
+
+    // register shared secrets
+    setJavaLangAccess();
+
+    // Subsystems that are invoked during initialization can invoke
+    // sun.misc.VM.isBooted() in order to avoid doing things that should
+    // wait until the application class loader has been set up.
+    // IMPORTANT: Ensure that this remains the last initialization action!
+    sun.misc.VM.booted();
+}
+</code></pre><p>  System可以看到主要的工作是进行系统配置的初始化,标准输入输出以及异常错误输出的操作。由上面的源码看出初始化的动作是在：</p>
+<pre><code>  FileInputStream fdIn = new FileInputStream(FileDescriptor.in);
+FileOutputStream fdOut = new FileOutputStream(FileDescriptor.out);
+FileOutputStream fdErr = new FileOutputStream(FileDescriptor.err);
+setIn0(new BufferedInputStream(fdIn));
+setOut0(new PrintStream(new BufferedOutputStream(fdOut, 128), true));
+setErr0(new PrintStream(new BufferedOutputStream(fdErr, 128), true));
+
+private static native void setIn0(InputStream in);
+private static native void setOut0(PrintStream out);
+private static native void setErr0(PrintStream err);
+
+   /**
+ * Reassigns the &quot;standard&quot; error output stream.
+ *
+ * &lt;p&gt;First, if there is a security manager, its &lt;code&gt;checkPermission&lt;/code&gt;
+ * method is called with a &lt;code&gt;RuntimePermission(&quot;setIO&quot;)&lt;/code&gt; permission
+ *  to see if it&apos;s ok to reassign the &quot;standard&quot; error output stream.
+ *
+ * @param err the new standard error output stream.
+ *
+ * @throws SecurityException
+ *        if a security manager exists and its
+ *        &lt;code&gt;checkPermission&lt;/code&gt; method doesn&apos;t allow
+ *        reassigning of the standard error output stream.
+ *
+ * @see SecurityManager#checkPermission
+ * @see java.lang.RuntimePermission
+ *
+ * @since   JDK1.1
+ */
+public static void setErr(PrintStream err) {
+    checkIO();
+    setErr0(err);
+}
+</code></pre><p> 也就是在初始化System的同时,调用非java接口初始化相应的标准输出流,同样的,从上面的源码代码可以看到：标准输出对象实质上就是FileDescriptor对象,而FileDescriptor没有输出接口,所以创建out对应的“输出流对象”，然后通过“输出流”的write()等输出接口就可以将信息输出到屏幕上。</p>
+<p>FileDescriptor.java中，相关源码如下：</p>
+<pre><code>public final class FileDescriptor {  
+private int fd;  
+public static final FileDescriptor out = new FileDescriptor(1);  
+    private FileDescriptor(int fd) {  
+        this.fd = fd;  
+        useCount = new AtomicInteger();  
+    }  
+    ...
+ }
+</code></pre><p>从中，可以看出</p>
+<ul>
+<li>out就是一个FileDescriptor对象。它是通过构造函数FileDescriptor(int fd)创建的。</li>
+<li>FileDescriptor(int fd)的操作：就是给fd对象(int类型)赋值，并新建一个使用计数变量useCount。<br>fd对象是非常重要的一个变量，“fd=1”就代表了“标准输出”，“fd=0”就代表了“标准输入”，“fd=2”就代表了“标准错误输出”。</li>
+</ul>
+<p>FileOutputStream out = new FileOutputStream(FileDescriptor.out); 就是利用构造函数FileOutputStream(FileDescriptor fdObj)来创建“Filed.out对应的FileOutputStream对象”</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag">#java</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/10/java-io-1/" rel="next" title="JavaIO学习笔记(一) JavaIO概述">
+                <i class="fa fa-chevron-left"></i> JavaIO学习笔记(一) JavaIO概述
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/05/11/java-io-3/" rel="prev" title="JavaIO学习笔记(三) Java File类">
+                JavaIO学习笔记(三) Java File类 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+           <!-- 多说热评文章 start -->
+	<div class="ds-top-threads" data-range="daily" data-num-items="5"></div>
+<!-- 多说热评文章 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+
+           <section id="comments">
+   <!-- 多说评论框 start -->
+<div id="ds-thread" class="ds-thread" data-thread-key="<%= post.path %>" data-title="<%= post.title %>" data-url="<%= post.permalink %>"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+  </section>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="孙星" />
+          <p class="site-author-name" itemprop="name">孙星</p>
+          <p class="site-description motion-element" itemprop="description">sunxing's blog | mysql | java | scala | hadoop | spark | kafka | flume</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">65</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <p class="post-toc-empty">此文章未包含目录</p>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孙星</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"sunxing"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>

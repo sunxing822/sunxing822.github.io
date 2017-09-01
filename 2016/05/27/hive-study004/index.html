@@ -1,0 +1,759 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="hive," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="Hive 参数hive.exec.max.created.files •说明：所有hive运行的map与reduce任务可以产生的文件的和 •默认值:100000  hive.exec.dynamic.partition •说明：是否为自动分区 •默认值：false hive.mapred.reduce.tasks.speculative.execution •说明：是否打开推测执行 •默认值：t">
+<meta name="keywords" content="hive">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hive学习笔记(四) Hive参数">
+<meta property="og:url" content="http://www.sunxing.cc/2016/05/27/hive-study004/index.html">
+<meta property="og:site_name" content="孙星的个人博客~">
+<meta property="og:description" content="Hive 参数hive.exec.max.created.files •说明：所有hive运行的map与reduce任务可以产生的文件的和 •默认值:100000  hive.exec.dynamic.partition •说明：是否为自动分区 •默认值：false hive.mapred.reduce.tasks.speculative.execution •说明：是否打开推测执行 •默认值：t">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-04-30T03:58:25.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hive学习笔记(四) Hive参数">
+<meta name="twitter:description" content="Hive 参数hive.exec.max.created.files •说明：所有hive运行的map与reduce任务可以产生的文件的和 •默认值:100000  hive.exec.dynamic.partition •说明：是否为自动分区 •默认值：false hive.mapred.reduce.tasks.speculative.execution •说明：是否打开推测执行 •默认值：t">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+ <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258995301'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/z_stat.php%3Fid%3D1258995301' type='text/javascript'%3E%3C/script%3E"));</script>
+
+  <title> Hive学习笔记(四) Hive参数 | 孙星的个人博客~ </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">孙星的个人博客~</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">搬砖的,码农~</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Hive学习笔记(四) Hive参数
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-05-27T16:31:55+08:00" content="2016-05-27">
+              2016-05-27
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/hive/" itemprop="url" rel="index">
+                    <span itemprop="name">hive</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/05/27/hive-study004/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/27/hive-study004/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Hive-参数"><a href="#Hive-参数" class="headerlink" title="Hive 参数"></a>Hive 参数</h2><p>hive.exec.max.created.files</p>
+<pre><code>•说明：所有hive运行的map与reduce任务可以产生的文件的和
+•默认值:100000 
+</code></pre><p>hive.exec.dynamic.partition</p>
+<pre><code>•说明：是否为自动分区
+•默认值：false
+</code></pre><p>hive.mapred.reduce.tasks.speculative.execution</p>
+<pre><code>•说明：是否打开推测执行
+•默认值：true
+</code></pre><p>hive.input.format</p>
+<pre><code>•说明：Hive默认的input format
+•默认值： org.apache.hadoop.hive.ql.io.CombineHiveInputFormat
+•如果有问题可以使用org.apache.hadoop.hive.ql.io.HiveInputFormat
+</code></pre><p>hive.exec.counters.pull.interval</p>
+<pre><code>•说明：Hive与JobTracker拉取counter信息的时间
+•默认值：1000ms 
+</code></pre><p>hive.script.recordreader</p>
+<pre><code>•说明：使用脚本时默认的读取类
+•默认值： org.apache.hadoop.hive.ql.exec.TextRecordReader
+</code></pre><p>hive.script.recordwriter</p>
+<pre><code>•说明：使用脚本时默认的数据写入类
+•默认值： org.apache.hadoop.hive.ql.exec.TextRecordWriter
+</code></pre><p>hive.mapjoin.check.memory.rows</p>
+<pre><code>•说明： 内存里可以存储数据的行数
+•默认值： 100000
+</code></pre><p>hive.mapjoin.smalltable.filesize</p>
+<pre><code>•说明：输入小表的文件大小的阀值，如果小于该值，就采用普通的join
+•默认值： 25000000
+</code></pre><p>hive.auto.convert.join</p>
+<pre><code>•说明：是不是依据输入文件的大小，将Join转成普通的Map Join
+•默认值： false
+</code></pre><p>hive.mapjoin.followby.gby.localtask.max.memory.usage</p>
+<pre><code>•说明：map join做group by 操作时，可以使用多大的内存来存储数据，如果数据太大，则不会保存在内存里
+•默认值：0.55
+</code></pre><p>hive.mapjoin.localtask.max.memory.usage</p>
+<pre><code>•说明：本地任务可以使用内存的百分比
+•默认值： 0.90
+</code></pre><p>hive.heartbeat.interval</p>
+<pre><code>•说明：在进行MapJoin与过滤操作时，发送心跳的时间
+•默认值1000
+</code></pre><p>hive.merge.size.per.task</p>
+<pre><code>•说明： 合并后文件的大小
+•默认值： 256000000
+</code></pre><p>hive.mergejob.maponly</p>
+<pre><code>•说明： 在只有Map任务的时候 合并输出结果
+•默认值： true
+</code></pre><p>hive.merge.mapredfiles</p>
+<pre><code>•默认值： 在作业结束的时候是否合并小文件
+•说明： false
+</code></pre><p>hive.merge.mapfiles</p>
+<pre><code>•说明：Map-Only Job是否合并小文件
+•默认值：true
+</code></pre><p>hive.hwi.listen.host</p>
+<pre><code>•说明：Hive UI 默认的host
+•默认值：0.0.0.0
+</code></pre><p>hive.hwi.listen.port</p>
+<pre><code>•说明：Ui监听端口
+•默认值：9999
+</code></pre><p>hive.exec.parallel.thread.number</p>
+<pre><code>•说明：hive可以并行处理Job的线程数
+•默认值：8
+</code></pre><p>hive.exec.parallel</p>
+<pre><code>•说明：是否并行提交任务
+•默认值：false
+</code></pre><p>hive.exec.compress.output</p>
+<pre><code>•说明：输出使用压缩
+•默认值： false
+</code></pre><p>hive.mapred.mode</p>
+<pre><code>•说明： MapReduce的操作的限制模式，操作的运行在该模式下没有什么限制
+•默认值： nonstrict
+</code></pre><p>hive.join.cache.size</p>
+<pre><code>•说明： join操作时，可以存在内存里的条数
+•默认值： 25000
+</code></pre><p>hive.mapjoin.cache.numrows</p>
+<pre><code>•说明： mapjoin 存在内存里的数据量
+•默认值：25000
+</code></pre><p>hive.join.emit.interval</p>
+<pre><code>•说明： 有连接时Hive在输出前，缓存的时间
+•默认值： 1000
+</code></pre><p>hive.optimize.groupby</p>
+<pre><code>•说明：在做分组统计时，是否使用bucket table
+•默认值： true
+</code></pre><p>hive.fileformat.check</p>
+<pre><code>•说明：是否检测文件输入格式
+•默认值：true
+</code></pre><p>hive.metastore.client.connect.retry.delay</p>
+<pre><code>•说明： client 连接失败时,retry的时间间隔
+•默认值：1秒
+</code></pre><p>hive.metastore.client.socket.timeout</p>
+<pre><code>•说明:  Client socket 的超时时间
+•默认值：20秒
+</code></pre><p>mapred.reduce.tasks</p>
+<pre><code>•默认值：-1
+•说明：每个任务reduce的默认值
+     -1 代表自动根据作业的情况来设置reduce的值 
+</code></pre><p>hive.exec.reducers.bytes.per.reducer</p>
+<pre><code>•默认值： 1000000000 （1G）
+•说明：每个reduce的接受的数据量
+        如果送到reduce的数据为10G,那么将生成10个reduce任务 
+</code></pre><p>hive.exec.reducers.max</p>
+<pre><code>•默认值：999
+•说明： reduce的最大个数      
+</code></pre><p>hive.exec.reducers.max</p>
+<pre><code>•默认值：999
+•说明： reduce的最大个数
+</code></pre><p>hive.metastore.warehouse.dir</p>
+<pre><code>•默认值：/user/hive/warehouse
+•说明： 默认的数据库存放位置
+</code></pre><p>hive.default.fileformat</p>
+<pre><code>•默认值：TextFile
+•说明： 默认的fileformat
+</code></pre><p>hive.map.aggr</p>
+<pre><code>•默认值：true
+•说明： Map端聚合，相当于combiner
+</code></pre><p>hive.exec.max.dynamic.partitions.pernode</p>
+<pre><code>•默认值：100
+•说明：每个任务节点可以产生的最大的分区数
+</code></pre><p>hive.exec.max.dynamic.partitions</p>
+<pre><code>•默认值：1000
+•说明： 默认的可以创建的分区数
+</code></pre><p>hive.metastore.server.max.threads</p>
+<pre><code>•默认值：100000
+•说明： metastore默认的最大的处理线程数
+</code></pre><p>hive.metastore.server.min.threads</p>
+<pre><code>•默认值：200
+•说明： metastore默认的最小的处理线程数
+</code></pre>
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/hive/" rel="tag">#hive</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/27/hive-study003/" rel="next" title="Hive学习笔记(三) Hive的JDB开发">
+                <i class="fa fa-chevron-left"></i> Hive学习笔记(三) Hive的JDB开发
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/05/27/hive-study005/" rel="prev" title="Hive学习笔记(五) Hive自定义函数开发">
+                Hive学习笔记(五) Hive自定义函数开发 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+           <!-- 多说热评文章 start -->
+	<div class="ds-top-threads" data-range="daily" data-num-items="5"></div>
+<!-- 多说热评文章 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+
+           <section id="comments">
+   <!-- 多说评论框 start -->
+<div id="ds-thread" class="ds-thread" data-thread-key="<%= post.path %>" data-title="<%= post.title %>" data-url="<%= post.permalink %>"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+  </section>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="孙星" />
+          <p class="site-author-name" itemprop="name">孙星</p>
+          <p class="site-description motion-element" itemprop="description">sunxing's blog | mysql | java | scala | hadoop | spark | kafka | flume</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">65</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Hive-参数"><span class="nav-number">1.</span> <span class="nav-text">Hive 参数</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孙星</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"sunxing"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>
