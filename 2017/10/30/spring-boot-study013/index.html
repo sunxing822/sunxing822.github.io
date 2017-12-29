@@ -80,20 +80,20 @@
 
 
 
-<meta name="description" content="Spring Boot CacheSpring定义了CacheManager和Cache接口来统一不同的缓存技术。其中CacheManager是spring提供的各种缓存技术抽象接口,Cache接口包含了缓存的各种操作(增加,删除,获取缓存),一般情况下不会直接和这个接口打交道. Srping支持的CacheManager的列表如下：|CacheManager|描述||:–:|:—:||Simpl">
+<meta name="description" content="Spring Boot CacheSpring定义了CacheManager和Cache接口来统一不同的缓存技术。其中CacheManager是spring提供的各种缓存技术抽象接口,Cache接口包含了缓存的各种操作(增加,删除,获取缓存),一般情况下不会直接和这个接口打交道. Srping支持的CacheManager的列表如下：    CacheManager 描述     SimpleCa">
 <meta name="keywords" content="spring,spring boot">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Spring Boot基础学习(十三) 数据缓存">
 <meta property="og:url" content="http://www.sunxing.cc/2017/10/30/spring-boot-study013/index.html">
 <meta property="og:site_name" content="孙星的个人博客~">
-<meta property="og:description" content="Spring Boot CacheSpring定义了CacheManager和Cache接口来统一不同的缓存技术。其中CacheManager是spring提供的各种缓存技术抽象接口,Cache接口包含了缓存的各种操作(增加,删除,获取缓存),一般情况下不会直接和这个接口打交道. Srping支持的CacheManager的列表如下：|CacheManager|描述||:–:|:—:||Simpl">
+<meta property="og:description" content="Spring Boot CacheSpring定义了CacheManager和Cache接口来统一不同的缓存技术。其中CacheManager是spring提供的各种缓存技术抽象接口,Cache接口包含了缓存的各种操作(增加,删除,获取缓存),一般情况下不会直接和这个接口打交道. Srping支持的CacheManager的列表如下：    CacheManager 描述     SimpleCa">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://www.sunxing.cc/2017/10/30/spring-boot-study013/images/spring-boot/cache-1.png">
 <meta property="og:image" content="http://www.sunxing.cc/2017/10/30/spring-boot-study013/images/spring-boot/cache-2.png">
-<meta property="og:updated_time" content="2017-12-25T07:28:05.000Z">
+<meta property="og:updated_time" content="2017-12-29T03:15:48.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spring Boot基础学习(十三) 数据缓存">
-<meta name="twitter:description" content="Spring Boot CacheSpring定义了CacheManager和Cache接口来统一不同的缓存技术。其中CacheManager是spring提供的各种缓存技术抽象接口,Cache接口包含了缓存的各种操作(增加,删除,获取缓存),一般情况下不会直接和这个接口打交道. Srping支持的CacheManager的列表如下：|CacheManager|描述||:–:|:—:||Simpl">
+<meta name="twitter:description" content="Spring Boot CacheSpring定义了CacheManager和Cache接口来统一不同的缓存技术。其中CacheManager是spring提供的各种缓存技术抽象接口,Cache接口包含了缓存的各种操作(增加,删除,获取缓存),一般情况下不会直接和这个接口打交道. Srping支持的CacheManager的列表如下：    CacheManager 描述     SimpleCa">
 <meta name="twitter:image" content="http://www.sunxing.cc/2017/10/30/spring-boot-study013/images/spring-boot/cache-1.png">
 
 
@@ -300,7 +300,49 @@
 
       
         <h1 id="Spring-Boot-Cache"><a href="#Spring-Boot-Cache" class="headerlink" title="Spring Boot Cache"></a>Spring Boot Cache</h1><p>Spring定义了CacheManager和Cache接口来统一不同的缓存技术。其中CacheManager是spring提供的各种缓存技术抽象接口,Cache接口包含了缓存的各种操作(增加,删除,获取缓存),一般情况下不会直接和这个接口打交道.</p>
-<p>Srping支持的CacheManager的列表如下：<br>|CacheManager|描述|<br>|:–:|:—:|<br>|SimpleCacheManager|使用简单的Collection来存储数据,主要用于测试用途|<br>|ConcurrentMapCacheManager|使用ConcurrentMap来存储缓存数据|<br>|NoOpCacheManager|仅用于测试,不会实际存储数据|<br>|EhCacheCacheManager|使用EhCache作为缓存技术|<br>|GuavaCacheManager|使用Google Guava作为缓存技术|<br>|HazelcastCacheManager|使用Hazelcast作为缓存技术|<br>|JCacheCacheManager|支持JCache的标准的实现作为缓存技术|<br>|RedisCacheManager|使用Redis作为缓存技术|</p>
+<p>Srping支持的CacheManager的列表如下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">CacheManager</th>
+<th style="text-align:center">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">SimpleCacheManager</td>
+<td style="text-align:center">使用简单的Collection来存储数据,主要用于测试用途</td>
+</tr>
+<tr>
+<td style="text-align:center">ConcurrentMapCacheManager</td>
+<td style="text-align:center">使用ConcurrentMap来存储缓存数据</td>
+</tr>
+<tr>
+<td style="text-align:center">NoOpCacheManager</td>
+<td style="text-align:center">仅用于测试,不会实际存储数据</td>
+</tr>
+<tr>
+<td style="text-align:center">EhCacheCacheManager</td>
+<td style="text-align:center">使用EhCache作为缓存技术</td>
+</tr>
+<tr>
+<td style="text-align:center">GuavaCacheManager</td>
+<td style="text-align:center">使用Google Guava作为缓存技术</td>
+</tr>
+<tr>
+<td style="text-align:center">HazelcastCacheManager</td>
+<td style="text-align:center">使用Hazelcast作为缓存技术</td>
+</tr>
+<tr>
+<td style="text-align:center">JCacheCacheManager</td>
+<td style="text-align:center">支持JCache的标准的实现作为缓存技术</td>
+</tr>
+<tr>
+<td style="text-align:center">RedisCacheManager</td>
+<td style="text-align:center">使用Redis作为缓存技术</td>
+</tr>
+</tbody>
+</table>
 <h3 id="声明式缓存注解"><a href="#声明式缓存注解" class="headerlink" title="声明式缓存注解"></a>声明式缓存注解</h3><p>Spring提供了4个注解来声明缓存规则,声明式注解如下:</p>
 <table>
 <thead>
@@ -376,8 +418,8 @@ spring.cache.cache-names=person
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/10/27/spring-boot-study012/" rel="next" title="Spring Boot基础学习(十二) 声明式事务">
-                <i class="fa fa-chevron-left"></i> Spring Boot基础学习(十二) 声明式事务
+              <a href="/2017/10/27/spring-boot-study011/" rel="next" title="Spring Boot基础学习(十一) 相关配置">
+                <i class="fa fa-chevron-left"></i> Spring Boot基础学习(十一) 相关配置
               </a>
             
           </div>
