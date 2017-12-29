@@ -231,8 +231,8 @@
             
               
                 
-                <a class="post-title-link" href="/2016/05/27/hive-study003/" itemprop="url">
-                  Hive学习笔记(三) Hive的JDB开发
+                <a class="post-title-link" href="/2016/06/16/zookeeper-study003/" itemprop="url">
+                  Zookeeper学习笔记(三) zookeeper的安装和使用
                 </a>
               
             
@@ -245,8 +245,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-05-27T12:55:55+08:00" content="2016-05-27">
-              2016-05-27
+            <time itemprop="dateCreated" datetime="2016-06-16T15:55:55+08:00" content="2016-06-16">
+              2016-06-16
             </time>
           </span>
 
@@ -259,8 +259,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/hive/" itemprop="url" rel="index">
-                    <span itemprop="name">hive</span>
+                  <a href="/categories/zookeeper/" itemprop="url" rel="index">
+                    <span itemprop="name">zookeeper</span>
                   </a>
                 </span>
 
@@ -275,8 +275,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/05/27/hive-study003/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/27/hive-study003/" itemprop="commentsCount"></span>
+                <a href="/2016/06/16/zookeeper-study003/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/16/zookeeper-study003/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -301,12 +301,186 @@
       
         
           
-            <h2 id="1-hive-JDBC"><a href="#1-hive-JDBC" class="headerlink" title="1 hive JDBC"></a>1 hive JDBC</h2><p>使用jdbc进行hive的操作是需要将hiveserver2启动,启动hiveserver2的命令如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hive --service hiveserver2</div></pre></td></tr></table></figure>
-<p>创建数据库和查询代码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HIveUtils</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span>  String driverName = <span class="string">"org.apache.hive.jdbc.HiveDriver"</span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">createDB</span><span class="params">()</span> <span class="keyword">throws</span> Exception</span>&#123;</div><div class="line">        Connection conn = getConnect();</div><div class="line"></div><div class="line">        Statement stmt = conn.createStatement();</div><div class="line"></div><div class="line">        stmt.executeQuery(<span class="string">"create database test_db"</span>);</div><div class="line"></div><div class="line">        System.out.println(<span class="string">"create database success"</span>);</div><div class="line"></div><div class="line">        conn.close();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">select</span><span class="params">()</span> <span class="keyword">throws</span> Exception</span>&#123;</div><div class="line">        Connection conn = getConnect();</div><div class="line"></div><div class="line">        Statement stmt = conn.createStatement();</div><div class="line">        ResultSet rs = stmt.executeQuery(<span class="string">"select * from ym.test"</span>);</div><div class="line"></div><div class="line">        <span class="keyword">while</span>(rs.next())&#123;</div><div class="line">            <span class="keyword">int</span> i = rs.getInt(<span class="number">1</span>);</div><div class="line"></div><div class="line">            System.out.println(i);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Connection <span class="title">getConnect</span><span class="params">()</span> <span class="keyword">throws</span>  Exception</span>&#123;</div><div class="line">        Class.forName(driverName);</div><div class="line">        <span class="keyword">return</span> DriverManager.getConnection(<span class="string">"jdbc:hive2://localhost:10000"</span>,<span class="string">""</span>,<span class="string">""</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</div><div class="line">        <span class="keyword">new</span> HIveUtils().select();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>执行查询的结果如下:</p>
-<p><img src="/images/hive/hive-jdbc.png" alt=""></p>
+            <h2 id="1-zookeeper的安装"><a href="#1-zookeeper的安装" class="headerlink" title="1 zookeeper的安装"></a>1 zookeeper的安装</h2><p>1 解压zookeeper3.4.7压缩包后修改主要配置如下<br>修改文件夹下的配置文件conf/zoo_sample.cfg 重命名为zoo.cfg<br>修改的主要内容如下:</p>
+<p><img src="/images/zookeeper/zoo-cfg.png" alt=""></p>
+<p>对应的参数：</p>
+<p>tickTime：这个参数主要是用来针对 ZooKeeper 服务端和客户端的会话控制，包括心跳控制，一般来说，会话超时时间是该值的两倍，它的单位是毫秒，我们设置为 2000 毫秒。</p>
+<p>dataDir：这个目录用来存放数据库的镜像和操作数据库的日志。注意，如果这个文件夹不存在，需要手动创建一个并赋予读写权限，我们设置为/data/zookeeper3.4.7/data，不用手动创建这个文件夹，系统运行后会自动创建或覆盖。</p>
+<p>clientPort：ZooKeeper 服务端监听客户端的端口，默认是 2181，这里沿用默认设置。</p>
+<p>initLimit：follower 对于 Leader 的初始化连接 timeout 时间；</p>
+<p>syncLimit：follower 对于 Leader 的同步 timeout 时间；</p>
+<p>timeout 的计算公式是 initLimit <em> tickTime，syncLimit </em> tickTime。</p>
+<p>server.A=B：C：D：其中 A 是一个数字，表示这个是第几号服务器；B 是这个服务器的 ip 地址；C 表示的是这个服务器与集群中的 Leader 服务器交换信息的端口；D 表示的是万一集群中的 Leader 服务器挂了，需要一个端口来重新进行选举，选出一个新的 Leader，而这个端口就是用来执行选举时服务器相互通信的端口。如果是伪集群的配置方式，由于 B 都是一样，所以不同的 Zookeeper 实例通信端口号不能一样，所以要给它们分配不同的端口号。</p>
+<p>2 在对应的机器中的data目录下创建相应的myid文件，该文件内容为对应的服务机器的id</p>
+<p><img src="/images/zookeeper/zookeeper-list.png" alt=""></p>
+<p>3 拷贝数据到相应的客户机上后重新建立myid文件，后配置完成</p>
+<h2 id="2-启动服务"><a href="#2-启动服务" class="headerlink" title="2 启动服务"></a>2 启动服务</h2><p>1 接下来通过 bin 目录下面的 zkServer.sh 脚本启动 ZooKeeper 服务，如果不清楚具体参数，可以直接调用脚本查看输出，ZooKeeper 采用的是 Bourne Shell</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">localhost:bin sunxing$ ./zkServer.sh start</div><div class="line">ZooKeeper JMX enabled by default</div><div class="line">Using config: /usr/local/share/zookeeper3.4.7/bin/../conf/zoo.cfg</div><div class="line">Starting zookeeper ... STARTED</div></pre></td></tr></table></figure>
+<p>2 其他对应的命令如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">localhost:bin sunxing$ ./zkServer.sh</div><div class="line">ZooKeeper JMX enabled by default</div><div class="line">Using config: /usr/local/share/zookeeper3.4.7/bin/../conf/zoo.cfg</div><div class="line">Usage: ./zkServer.sh &#123;start|start-foreground|stop|restart|status|upgrade|print-cmd&#125;</div></pre></td></tr></table></figure>
+<p>3 查看zk进程</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">localhost:bin sunxing$ jps</div><div class="line">1578 QuorumPeerMain</div><div class="line">1605 Jps</div><div class="line">localhost:bin sunxing$</div></pre></td></tr></table></figure>
+<p>这里我们看到的进程号为 1578 的进程 QuorumPeerMain 代表了 ZooKeeper 服务。我们也可以通过 ZooKeeper 启动脚本自带的参数“Status”来查看 ZooKeeper 进程状态</p>
+<p>4 查看zk的进程状态</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">localhost:zookeeper3.4.7 sunxing$ ./bin/zkCli.sh -server localhost:2181</div><div class="line">Connecting to localhost:2181</div><div class="line">2016-06-16 17:11:44,878 [myid:] - INFO  [main:Environment@100] - Client environment:zookeeper.version=3.4.7-1713338, built on 11/09/2015 04:32 GMT</div><div class="line">2016-06-16 17:11:44,883 [myid:] - INFO  [main:Environment@100] - Client environment:host.name=localhost</div><div class="line">2016-06-16 17:11:44,883 [myid:] - INFO  [main:Environment@100] - Client environment:java.version=1.7.0_71</div><div class="line">2016-06-16 17:11:44,886 [myid:] - INFO  [main:Environment@100] - Client environment:java.vendor=Oracle Corporation</div><div class="line">2016-06-16 17:11:44,886 [myid:] - INFO  [main:Environment@100] - Client environment:java.home=/Library/Java/JavaVirtualMachines/jdk1.7.0_71.jdk/Contents/Home/jre</div><div class="line">2016-06-16 17:11:44,886 [myid:] - INFO  [main:Environment@100] - Client environment:java.class.path=/usr/local/share/zookeeper3.4.7/bin/../build/classes:/usr/local/share/zookeeper3.4.7/bin/../build/lib/*.jar:/usr/local/share/zookeeper3.4.7/bin/../lib/slf4j-log4j12-1.6.1.jar:/usr/local/share/zookeeper3.4.7/bin/../lib/slf4j-api-1.6.1.jar:/usr/local/share/zookeeper3.4.7/bin/../lib/netty-3.7.0.Final.jar:/usr/local/share/zookeeper3.4.7/bin/../lib/log4j-1.2.16.jar:/usr/local/share/zookeeper3.4.7/bin/../lib/jline-0.9.94.jar:/usr/local/share/zookeeper3.4.7/bin/../zookeeper-3.4.7.jar:/usr/local/share/zookeeper3.4.7/bin/../src/java/lib/*.jar:/usr/local/share/zookeeper3.4.7/bin/../conf:.:/Library/Java/JavaVirtualMachines/jdk1.7.0_71.jdk/Contents/Home/lib/dt.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_71.jdk/Contents/Home/lib/tools.jar</div><div class="line">2016-06-16 17:11:44,886 [myid:] - INFO  [main:Environment@100] - Client environment:java.library.path=/Users/sunxing/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:.</div><div class="line">2016-06-16 17:11:44,887 [myid:] - INFO  [main:Environment@100] - Client environment:java.io.tmpdir=/var/folders/0q/vq9qm6l14qld8y3gk48hmm9w0000gn/T/</div><div class="line">2016-06-16 17:11:44,887 [myid:] - INFO  [main:Environment@100] - Client environment:java.compiler=&lt;NA&gt;</div><div class="line">2016-06-16 17:11:44,887 [myid:] - INFO  [main:Environment@100] - Client environment:os.name=Mac OS X</div><div class="line">2016-06-16 17:11:44,887 [myid:] - INFO  [main:Environment@100] - Client environment:os.arch=x86_64</div><div class="line">2016-06-16 17:11:44,887 [myid:] - INFO  [main:Environment@100] - Client environment:os.version=10.10.5</div><div class="line">2016-06-16 17:11:44,887 [myid:] - INFO  [main:Environment@100] - Client environment:user.name=sunxing</div><div class="line">2016-06-16 17:11:44,887 [myid:] - INFO  [main:Environment@100] - Client environment:user.home=/Users/sunxing</div><div class="line">2016-06-16 17:11:44,888 [myid:] - INFO  [main:Environment@100] - Client environment:user.dir=/usr/local/share/zookeeper3.4.7</div><div class="line">2016-06-16 17:11:44,889 [myid:] - INFO  [main:ZooKeeper@438] - Initiating client connection, connectString=localhost:2181 sessionTimeout=30000 watcher=org.apache.zookeeper.ZooKeeperMain$MyWatcher@2ae61f87</div><div class="line">Welcome to ZooKeeper!</div><div class="line">2016-06-16 17:11:44,946 [myid:] - INFO  [main-SendThread(localhost:2181):ClientCnxn$SendThread@1032] - Opening socket connection to server localhost/127.0.0.1:2181. Will not attempt to authenticate using SASL (unknown error)</div><div class="line">JLine support is enabled</div><div class="line">2016-06-16 17:11:44,966 [myid:] - INFO  [main-SendThread(localhost:2181):ClientCnxn$SendThread@876] - Socket connection established to localhost/127.0.0.1:2181, initiating session</div><div class="line">2016-06-16 17:11:45,020 [myid:] - INFO  [main-SendThread(localhost:2181):ClientCnxn$SendThread@1299] - Session establishment complete on server localhost/127.0.0.1:2181, sessionid = 0x155587ac2930000, negotiated timeout = 30000</div><div class="line"></div><div class="line">WATCHER::</div><div class="line"></div><div class="line">WatchedEvent state:SyncConnected type:None path:null</div><div class="line">[zk: localhost:2181(CONNECTED) 0]</div></pre></td></tr></table></figure>
+<p>执行help命令查看指导:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">[zk: localhost:2181(CONNECTED) 0] help</div><div class="line">ZooKeeper -server host:port cmd args</div><div class="line">	connect host:port</div><div class="line">	get path [watch]</div><div class="line">	ls path [watch]</div><div class="line">	set path data [version]</div><div class="line">	rmr path</div><div class="line">	delquota [-n|-b] path</div><div class="line">	quit</div><div class="line">	printwatches on|off</div><div class="line">	create [-s] [-e] path data acl</div><div class="line">	stat path [watch]</div><div class="line">	close</div><div class="line">	ls2 path [watch]</div><div class="line">	history</div><div class="line">	listquota path</div><div class="line">	setAcl path acl</div><div class="line">	getAcl path</div><div class="line">	sync path</div><div class="line">	redo cmdno</div><div class="line">	addauth scheme auth</div><div class="line">	delete path [version]</div><div class="line">	setquota -n|-b val path</div><div class="line">[zk: localhost:2181(CONNECTED) 1]</div></pre></td></tr></table></figure>
+<h2 id="3-流程及源代码解释"><a href="#3-流程及源代码解释" class="headerlink" title="3 流程及源代码解释"></a>3 流程及源代码解释</h2><p>ZooKeeper 的启动由 zkServer.sh 发起，真正的起源是 Java 类 QuorumPeerMain，然后进行了一系列配置后启动负责 ZooKeeper 服务的线程，具体调用过程如图 1 所示</p>
+<p><img src="/images/zookeeper/zookeeper-start.png" alt=""></p>
+<p>初始化ZOOMAIN的地方的shell如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">if [ &quot;x$JMXDISABLE&quot; = &quot;x&quot; ]</div><div class="line">then</div><div class="line">  echo &quot;ZooKeeper JMX enabled by default&quot; &gt;&amp;2</div><div class="line">  if [ &quot;x$JMXPORT&quot; = &quot;x&quot; ]</div><div class="line">  then</div><div class="line">    # for some reason these two options are necessary on jdk6 on Ubuntu</div><div class="line">    #   accord to the docs they are not necessary, but otw jconsole cannot</div><div class="line">    #   do a local attach</div><div class="line">    ZOOMAIN=&quot;-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=$JMXLOCALONLY org.apache.zookeeper.server.quorum.QuorumPeerMain&quot;</div><div class="line">  else</div><div class="line">    if [ &quot;x$JMXAUTH&quot; = &quot;x&quot; ]</div><div class="line">    then</div><div class="line">      JMXAUTH=false</div><div class="line">    fi</div><div class="line">    if [ &quot;x$JMXSSL&quot; = &quot;x&quot; ]</div><div class="line">    then</div><div class="line">      JMXSSL=false</div><div class="line">    fi</div><div class="line">    if [ &quot;x$JMXLOG4J&quot; = &quot;x&quot; ]</div><div class="line">    then</div><div class="line">      JMXLOG4J=true</div><div class="line">    fi</div><div class="line">    echo &quot;ZooKeeper remote JMX Port set to $JMXPORT&quot; &gt;&amp;2</div><div class="line">    echo &quot;ZooKeeper remote JMX authenticate set to $JMXAUTH&quot; &gt;&amp;2</div><div class="line">    echo &quot;ZooKeeper remote JMX ssl set to $JMXSSL&quot; &gt;&amp;2</div><div class="line">    echo &quot;ZooKeeper remote JMX log4j set to $JMXLOG4J&quot; &gt;&amp;2</div><div class="line">    ZOOMAIN=&quot;-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=$JMXPORT -Dcom.sun.management.jmxremote.authenticate=$JMXAUTH -Dcom.sun.management.jmxremote.ssl=$JMXSSL -Dzookeeper.jmx.log4j.disable=$JMXLOG4J org.apache.zookeeper.server.quorum.QuorumPeerMain&quot;</div><div class="line">  fi</div><div class="line">else</div><div class="line">    echo &quot;JMX disabled by user request&quot; &gt;&amp;2</div><div class="line">    ZOOMAIN=&quot;org.apache.zookeeper.server.quorum.QuorumPeerMain&quot;</div><div class="line">fi</div></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/06/15/zookeeper-study002/" itemprop="url">
+                  Zookeeper学习笔记(二) zookeeper的应用场景
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-15T11:55:55+08:00" content="2016-06-15">
+              2016-06-15
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/zookeeper/" itemprop="url" rel="index">
+                    <span itemprop="name">zookeeper</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/15/zookeeper-study002/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/15/zookeeper-study002/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="1-zookeeper的统一命名服务"><a href="#1-zookeeper的统一命名服务" class="headerlink" title="1 zookeeper的统一命名服务"></a>1 zookeeper的统一命名服务</h2><p>在分布式环境下,经常需要对应用/服务进行统一命名,便于识别不同的服务.</p>
+<pre><code>1) 类似于域名与ip之间的关系
+2) 通过名称来获取资源或服务的地址等信息
+</code></pre><p>按照城市结果组织服务/应用名称</p>
+<pre><code>1) 可以将服务名称和地址信息写到zookeeper中,客户端通过zookeeper获取服务的列表信息
+</code></pre><p>具体的结构图如下：</p>
+<p><img src="/images/zookeeper/zookeeper-tongyimingming.jpg" alt=""></p>
+<p>如：在路径下/app/p_1  表示服务p_1,可以进服务对应的数据存在这个目录下.</p>
+<h2 id="2-配置管理"><a href="#2-配置管理" class="headerlink" title="2 配置管理"></a>2 配置管理</h2><p>在分布式环境下,进程需要配置文件管理和同步</p>
+<pre><code>1) 一个集群中,所有节点的配置信息应该一致
+2) 我们队配置文件修改后,希望能够快速同步到各个节点上
+</code></pre><p>配置管理可以交给zookeeper实现:</p>
+<pre><code>1) 可以将配置信息写入到zookeeper中的一个znode节点上
+2) 各个节点监听这个znode
+3) 一旦znode中的数据被修改了,zookeeper将通知各个节点
+</code></pre><p>具体的管理构造图如下:</p>
+<p><img src="/images/zookeeper/zookeeper-conf-manager.jpg" alt=""></p>
+<h2 id="3-zookeeper的集群管理"><a href="#3-zookeeper的集群管理" class="headerlink" title="3 zookeeper的集群管理"></a>3 zookeeper的集群管理</h2><p>分布式管理中我们需要实时掌握每个节点的状态,可根据节点实时状态做出一些调整</p>
+<p>可交由zookeeper进行实现:</p>
+<pre><code>1) 可将节点信息写入到zookeeper上的一个znode钟
+2) 监听这个znode可获取他的实时状态变化
+</code></pre><p>典型的应用：HBase中master状态监控和选举</p>
+<p>1 hbase regionserver 向zookeeper注册，提供hbase regionserver状态信息（是否在线）</p>
+<p>2 HMaster主要作用在于，通过HMaster维护系统表-ROOT-,.META.，记录regionserver所对应region变化信息。此外还负责监控处理当前hbase cluster中regionserver状态变化信息。</p>
+<pre><code>hbase regionserver则用于多个/单个维护region。
+region则对应为hbase数据表的表分区数据维护。
+</code></pre><h2 id="4-分布式通知与协调"><a href="#4-分布式通知与协调" class="headerlink" title="4 分布式通知与协调"></a>4 分布式通知与协调</h2><p>分布式环境下,经常存在一个服务需要知道它所管理的子服务的状态.</p>
+<pre><code>1) NameNode所需要知道哥哥DateNode的状态
+2) ResourceManager需要知道各个NodeManager的状态
+</code></pre><p>zookeeper可以实现心跳检测机制,信息推送,它相当于一个发布和订阅系统</p>
+<h2 id="5-分布式队列"><a href="#5-分布式队列" class="headerlink" title="5 分布式队列"></a>5 分布式队列</h2><p>当一个队列的成员都聚齐时,这个队列才可用,否则一直等待所有的成员到达,这种是同步队列</p>
+<pre><code>1) 一个job由多个task组成,只有所有的任务完成后,job才运行完成
+2) 可为jbo创建一个/job目录,然后在该目录下,为每一个完成的task创建一个临时的znode,一旦临时节点数达到task总数,则表示job完成
+</code></pre><p>队列按照FIFO方式进行入队和出队列操作,例如实现生产者和消费者模型。</p>
 
           
         
@@ -356,8 +530,8 @@
             
               
                 
-                <a class="post-title-link" href="/2016/05/27/hive-study002/" itemprop="url">
-                  Hive学习笔记(二) Hive的数据类型和操作
+                <a class="post-title-link" href="/2016/06/14/zookeeper-study001/" itemprop="url">
+                  Zookeeper学习笔记(一) zookeeper的基本原理
                 </a>
               
             
@@ -370,8 +544,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-05-27T11:55:55+08:00" content="2016-05-27">
-              2016-05-27
+            <time itemprop="dateCreated" datetime="2016-06-14T11:55:55+08:00" content="2016-06-14">
+              2016-06-14
             </time>
           </span>
 
@@ -384,8 +558,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/hive/" itemprop="url" rel="index">
-                    <span itemprop="name">hive</span>
+                  <a href="/categories/zookeeper/" itemprop="url" rel="index">
+                    <span itemprop="name">zookeeper</span>
                   </a>
                 </span>
 
@@ -400,8 +574,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/05/27/hive-study002/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/27/hive-study002/" itemprop="commentsCount"></span>
+                <a href="/2016/06/14/zookeeper-study001/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/14/zookeeper-study001/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -426,100 +600,111 @@
       
         
           
-            <h2 id="1-整型"><a href="#1-整型" class="headerlink" title="1 整型"></a>1 整型</h2><p>整型数据可以指定使用整型数据类型，INT。当数据范围超过INT的范围，需要使用BIGINT，如果数据范围比INT小，使用SMALLINT。 TINYINT比SMALLINT小。</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">类型</th>
-<th style="text-align:right">后缀</th>
-<th style="text-align:center">示例</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left">TINYINT</td>
-<td style="text-align:right">Y</td>
-<td style="text-align:center">10Y</td>
-</tr>
-<tr>
-<td style="text-align:left">SMALLINT</td>
-<td style="text-align:right">S</td>
-<td style="text-align:center">10S</td>
-</tr>
-<tr>
-<td style="text-align:left">INT</td>
-<td style="text-align:right">-</td>
-<td style="text-align:center">10</td>
-</tr>
-<tr>
-<td style="text-align:left">BIGINT</td>
-<td style="text-align:right">L</td>
-<td style="text-align:center">10L</td>
-</tr>
-</tbody>
-</table>
-<h2 id="2-字符串"><a href="#2-字符串" class="headerlink" title="2 字符串"></a>2 字符串</h2><p>字符串的类型可以使用单引号或者是双引号来指定,字符串类型的数据有两种:VARCHAR和CHAR. HIVE遵守C类型的转义字符。</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">类型</th>
-<th style="text-align:right">长度</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left">VARCHAR</td>
-<td style="text-align:right">1 to 65535</td>
-</tr>
-<tr>
-<td style="text-align:left">CHAR</td>
-<td style="text-align:right">256</td>
-</tr>
-</tbody>
-</table>
-<h2 id="3-时间戳"><a href="#3-时间戳" class="headerlink" title="3 时间戳"></a>3 时间戳</h2><p>它支持传统的UNIX时间戳可选纳秒的精度。它支持的java.sql.Timestamp格式“YYYY-MM-DD HH:MM:SS.fffffffff”和格式“YYYY-MM-DD HH:MM:ss.ffffffffff”。</p>
-<h2 id="4-日期"><a href="#4-日期" class="headerlink" title="4 日期"></a>4 日期</h2><p>DATE值在年/月/日的格式形式描述 NaN.</p>
-<h2 id="5-浮点数"><a href="#5-浮点数" class="headerlink" title="5 浮点数"></a>5 浮点数</h2><p>可以使用DECIMAL(进度,保留小数位)</p>
-<h2 id="6-数据库操作"><a href="#6-数据库操作" class="headerlink" title="6 数据库操作"></a>6 数据库操作</h2><p>1 创建数据库</p>
-<pre><code>CREATE DATABASE|SCHEMA [IF NOT EXISTS] &lt;database name&gt;
-</code></pre><p>2 删除数据库</p>
-<pre><code>DROP DATABASE StatementDROP (DATABASE|SCHEMA) [IF EXISTS] database_name [RESTRICT|CASCADE];
-</code></pre><p>  删除非空数据库时需要加上参数：cascade</p>
-<h2 id="7-表操作"><a href="#7-表操作" class="headerlink" title="7 表操作"></a>7 表操作</h2><p>1 创建表</p>
-<pre><code>CREATE [TEMPORARY] [EXTERNAL] TABLE [IF NOT EXISTS] [db_name.] table_name
-[(col_name data_type [COMMENT col_comment], ...)]
-[COMMENT table_comment]
-[ROW FORMAT row_format]
-[STORED AS file_format]
-</code></pre><p>例如：创建一个用户表,有姓名和年龄两个字段,建表语句如下:</p>
-<pre><code>create table person(
-    name string,
-    age int
-)
-filelds terminated by &apos;\t&apos;
-lines terminated by &apos;\n&apos;
-stored in text file
+            <p>1 zookeeper 的定义</p>
+<p>zookeeper是一个针对大型分布式系统的可靠协调系统</p>
+<p>1) 它提供的功能有：配置维护,名字服务,分布式同步,组服务<br>2) 目标是封装好复杂易出错的关键服务,将简单易用的接口和性能高效,功能稳定的系统提供给用户</p>
+<p>2 zookeeper 的特点</p>
+<pre><code>1) 最终一致性:为客户端展示同一个试图,不同的客户端访问不同的服务端
+2) 可靠性:如果一条消息被一台服务器接受,那么将被所有的服务器接受
+3）    实时性：zookeeper不能保证两个客户端同时得到刚刚更新的数据,如果需要最新数据,应该在读取数据之前调用sync()接口
+4) 等待无关性: 慢的或者无效的client链接不干预快速的client的请求
+5) 原子性: 更新操作要么成功要么失败,无中间状态
+6) 顺序性: 对于所有的server,统一消息发布顺序一致,全局有序是指如果在一台服务器上消息a在消息b前发布，则在所有Server上消息a都将在消息b前被发布；偏序是指如果一个消息b在消息a后被同一个发送者发布，a必将排在b前面
+</code></pre><p>3 zookeeper 的角色</p>
+<p>zookeeper的角色主要分为以下几种:</p>
+<p><img src="/images/zookeeper/zookeeper-juse.jpg" alt=""></p>
+<p>4 zookeeper 的基本架构流程图</p>
+<p><img src="/images/zookeeper/zookeeper-jiagou.png" alt=""></p>
+<p>zookeeper的核心是原子广播,这个机制保证了各个server之间的同步,实现这个机制的协议叫做zab协议。zab协议有两种模式: </p>
+<pre><code>1) 恢复模式(选举)
+2) 广播模式(同步)
+</code></pre><p>当服务启动或者是领导者崩溃后,zab就进入恢复模式,当领导者被选举出来后,并且和大多数的server完成数据的同步后,恢复模式结束。状态同步是为了使leader和其他的server也就是follower具有相同的状态。</p>
+<p>为了保证事务的顺序一致性,采用了递增的zxid来表示事务,所有的提起(proposal)都在被提出的时候加上zxid,在代码中zxid是一个64位的数子,它搞32为是用来表示属于哪一个leader,也就是leader的表示,每一个leader被选举出来都会有一个新的epoch,zxid的高32位就是这个值,低32位时用来做递增计数的。</p>
+<p>server的状态:</p>
+<pre><code>1) LOOKING         当前server不着调leader是谁,正在搜索
+2) LEADING         当前server就是被选举出来的leader
+3) FOLLOWING        leader已经选举出来了,当前server与之同步
+</code></pre><p>5 zookeeper 的选举流程</p>
+<p>系统启动或者是当前leader崩溃或者是当前leader丢失大多数的follower,zk进入恢复模式,恢复模式需要重新选举出一个新的leader,让所有的server都恢复到正常的状态</p>
+<p>zookeeper的选举采用了Paxos协议,Paxos的核心实现是当多数的server写成功,则任务数据写成功。</p>
+<pre><code>1）如果有3个server,则需要两个写成功即表示任务数据写成功
+2）如果server为4或者是5个,则需要三个写成功即表示任务数据写成功
+</code></pre><p>server数目一般为奇数个,例如:3,5,7个等</p>
+<pre><code>1) 如果3个server,则最多允许1个server挂掉
+2) 如果4个server,则同样最多允许一个server挂掉
+3) 通过上面的可以看出来,奇数个和偶数个server的可靠性是一样的,最多允许一个server挂掉,因此最好选用奇数个server
+</code></pre><p>server的流程如下:    </p>
+<pre><code>1) 选举有当前server发起选举线程担任,主要是对投票结果进行统计,并选出推荐的server
+2）选举线程首先向所有的server发起一次询问(包括自己)
+3) 选举线程收到回复后,验证是否是自己发起的询问(验证zxid是否一致),然后获取对方的id(id),并存储到当前询问的对象列表中.
+4) 最后获取对方提议的leader相关信息(id,zxid),并将这些信息存储到当次选举的投票记录中
+5) 收到所有的server的回复以后,计算出zxid最大的那个server,并将这个Server相关信息设置成下一次要投票的Server
+6) 线程将当前zxid最大的server设置为当前server要推荐的leader,如果此时获胜的server获取n/2 + 1的server票数,设置当前推荐的leader为获胜的server。将根据获胜的leader设置为自己的状态,否则,继续这个过程,知道leader被选举出来
+</code></pre><p>通过流程分析可以看出:leader要获取大多数的server的支持,则server的总数必须是奇数2n+1,存活下来的server的数目不少于n + 1</p>
+<p>每个server启动后都会重复以上流程,在恢复模式下,如果刚从崩溃状态恢复或者是刚启动的server还会从磁盘中读取数据的快照和会话信息,zk会记录事务的日志进行快照,方便在恢复时进行恢复.</p>
+<p>选举具体的流程图如下:</p>
+<p><img src="/images/zookeeper/zookeeper-leader.jpg" alt=""></p>
+<p>fast paxos流程是在选举过程中,某server首先向所有的server提议自己要成为leader,当其他的server收到提议以后,解决epoch和zxid的冲突,并接受对方的提议,向对方发送接受提议并完成的消息,重复这个流程,直到最终选举出leader。流程图如下:</p>
+<p><img src="/images/zookeeper/zookeeper-fast-paxos.jpg" alt=""></p>
+<p>举一个简单的例子:</p>
+<p>假设有五台服务器组成的zookeeper集群,它们的id从1-5,同时它们都是最新启动的,也就是没有历史数据,在存放数据量这一点上,都是一样的.假设这些服务器依序启动,来看看会发生什么.</p>
+<pre><code>1) 服务器1启动,此时只有它一台服务器启动了,它发出去的报没有任何响应,所以它的选举状态一直是LOOKING状态
+2) 服务器2启动,它与最开始启动的服务器1进行通信,互相交换自己的选举结果,由于两者都没有历史数据,所以id值较大的服务器2胜出,但是由于没有达到超过半数以上的服务器都同意选举它(这个例子中的半数以上是3),所以服务器1,2还是继续保持LOOKING状态.
+3) 服务器3启动,根据前面的理论分析,服务器3成为服务器1,2,3中的老大,而与上面不同的是,此时有三台服务器选举了它,所以它成为了这次选举的leader.
+4) 服务器4启动,根据前面的分析,理论上服务器4应该是服务器1,2,3,4中最大的,但是由于前面已经有半数以上的服务器选举了服务器3,所以它只能接收当小弟的命了.
+5) 服务器5启动,同4一样,当小弟.
+</code></pre><p>以上就是fastleader算法的简要分析,还有一些异常情况的处理,比如某台服务器宕机之后的处理,当leader宕机之后的处理等等</p>
+<p>6 zookeeper 的同步流程</p>
+<p>选举完leader后,zk进入同步的状态过程</p>
+<pre><code>1) leader等待server的链接
+2) follower链接leader,并将最大的zxid发送给leader
+3) leader根据follower的zxid确定同步点
+4) 完成同步以后通知follower,已经成为uptodate状态
+5) follower收到uptodate消息后,又可以重新接收客户端的链接进行服务了
+</code></pre><p>具体的流程图如下:</p>
+<p><img src="/images/zookeeper/zookeeper-tongbu.jpg" alt=""></p>
+<p>7 zookeeper 的工作流程图</p>
+<p>Leader的工作流程:</p>
+<pre><code>1) 恢复数据
+2) 维持leader与learner的心跳,接收learner的请求并判定lerner的请求消息类型
+3) learner的消息类型主要有ping消息,Request消息,ack消息,revalidate消息,根据不同的消息类型进行不同的处理。
 
-这个建表语句主要是制定了字段键分隔符和列之间分隔符以及存储的类型.
-hive中默认的字段间分隔符为\001,行之间分隔符为\n.
-</code></pre><p>2 删除表</p>
-<pre><code>drop table if exits person;
-</code></pre><p>3 表分区</p>
-<p>分区在文件存储的方式上主要呈现的就是讲数据按照不同的目录结构进行存储,比如在hive中按照天来进行分区,表存储目录结构为：</p>
-<pre><code>/user/hive/warehouse/test.db/test/dt=2016-05-21
-</code></pre><p>每天的数据会在test下新建一个目录进行存储。</p>
-<p>4 修改分区</p>
-<pre><code>ALTER TABLE table_name ADD [IF NOT EXISTS] PARTITION partition_spec
-[LOCATION &apos;location1&apos;] partition_spec [LOCATION &apos;location2&apos;] ...;
-partition_spec:
-: (p_column = p_col_value, p_column = p_col_value, ...)
-</code></pre><p>5 重命名分区</p>
-<pre><code>ALTER TABLE table_name PARTITION partition_spec RENAME TO PARTITION partition_spec;
-</code></pre><p>6 删除分区</p>
-<pre><code>ALTER TABLE table_name DROP [IF EXISTS] PARTITION partition_spec, PARTITION partition_spec,...;
-</code></pre><p>7 添加和删除字段</p>
-<pre><code>ALTER TABLE table_name ADD|REPLACE COLUMNS (col_name data_type[COMMENT col_comment], ...)
-</code></pre>
+PING消息是指Learner的心跳信息；
+REQUEST消息是Follower发送的提议信息，包括写请求及同步请求；
+ACK消息是Follower的对提议的回复，超过半数的Follower通过，则commit该提议；
+REVALIDATE消息是用来延长SESSION有效时间
+</code></pre><p>learner的大致工作流程图如下:</p>
+<p><img src="/images/zookeeper/zookeeper-leader-worker.jpg" alt=""></p>
+<p>Follower的工作流程:</p>
+<pre><code>1) 向Leader发送请求信息(ping消息,request消息,ack消息,revalidate消息)
+2) 接收leader消息进行处理
+3) 接收client请求信息,如果为写请求,发送给Leader进行投票
+4) 返回client的结果
+</code></pre><p>Follower的消息循环处理如下几种来自leader的消息:</p>
+<pre><code>1 .PING消息： 心跳消息；
+2 .PROPOSAL消息：Leader发起的提案，要求Follower投票；
+3 .COMMIT消息：服务器端最新一次提案的信息；
+4 .UPTODATE消息：表明同步完成；
+5 .REVALIDATE消息：根据Leader的REVALIDATE结果，关闭待revalidate的session还是允许其接受消息；
+6 .SYNC消息：返回SYNC结果到客户端，这个消息最初由客户端发起，用来强制得到最新的更新。
+</code></pre><p>Follower的工作流程大致如下:</p>
+<p><img src="/images/zookeeper/zookeeper-follower-liucheng.jpg" alt=""></p>
+<p>8 zookeeper的写操作</p>
+<p><img src="/images/zookeeper/zookeeper-writer.png" alt=""></p>
+<p>9 zookeeper的数据模型</p>
+<p>1) zookeeper提供了一个层次化的目录结构,命名符合常规文件系统规范,每个节点在zookeeper中叫做znode,并且它有一个唯一的路径标识</p>
+<p>2)znode有两种类型:短暂的(ephemeral) 和 持久化的(persistent),节点znode可以包含数据和子节点</p>
+<p>3) znode中的数据可以有多个版本</p>
+<p>4) 客户端引用，可以在节点上设置监视器(Vwatcher)</p>
+<p>5) 节点的znode不支持部分读写,而是一次性完整的读写吧</p>
+<p>6)znode的类型在创建时确定,并且之后不能再进行修改</p>
+<p>7) znode有四种形式的目录节点.Persistent,Persistent_sequential,Ephemeral,Ephemeral_sequential</p>
+<p>数据结构目录如下:</p>
+<p><img src="/images/zookeeper/zookeeper-file-list.png" alt=""></p>
+<p>zookeeper目录中的每一个节点对应着一个znode，每个znode维护着一个属性结构，它包含数据的版本号、时间戳、等信息。Zookeeper就是通过这些属性来实现它特定的功能。每当znode的数据改变时，相应的版本号会增加，每当客户端查询、更新和删除数据时，也必须提供要被操作的znode版本号，如果所提供的数据版本号与实际的不匹配，那么将会操作失败</p>
+<p>节点属性如下:</p>
+<p><img src="/images/zookeeper/zookeeper-znode-list.jpg" alt=""></p>
+
           
         
       
@@ -568,8 +753,8 @@ partition_spec:
             
               
                 
-                <a class="post-title-link" href="/2016/05/27/hadoop-study010/" itemprop="url">
-                  Hadoop源码学习(十) RPC远程调用
+                <a class="post-title-link" href="/2016/06/12/hbase-study008/" itemprop="url">
+                  HBase学习笔记(八) Phoenix的JDBC操作
                 </a>
               
             
@@ -582,8 +767,8 @@ partition_spec:
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-05-27T10:24:55+08:00" content="2016-05-27">
-              2016-05-27
+            <time itemprop="dateCreated" datetime="2016-06-12T15:55:55+08:00" content="2016-06-12">
+              2016-06-12
             </time>
           </span>
 
@@ -596,8 +781,8 @@ partition_spec:
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/hadoop/" itemprop="url" rel="index">
-                    <span itemprop="name">hadoop</span>
+                  <a href="/categories/hbase/" itemprop="url" rel="index">
+                    <span itemprop="name">hbase</span>
                   </a>
                 </span>
 
@@ -612,8 +797,8 @@ partition_spec:
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/05/27/hadoop-study010/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/27/hadoop-study010/" itemprop="commentsCount"></span>
+                <a href="/2016/06/12/hbase-study008/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/12/hbase-study008/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -638,36 +823,14 @@ partition_spec:
       
         
           
-            <h2 id="1-什么是RPC"><a href="#1-什么是RPC" class="headerlink" title="1 什么是RPC"></a>1 什么是RPC</h2><p>RPC是指远程过程调用，也就是说两台服务器A，B，一个应用部署在A服务器上，想要调用B服务器上应用提供的函数/方法，由于不在一个内存空间，不能直接调用，需要通过网络来表达调用的语义和传达调用的数据。</p>
-<p>1) 要解决通讯的问题，主要是通过在客户端和服务器之间建立TCP连接，远程过程调用的所有交换的数据都在这个连接里传输。连接可以是按需连接，调用结束后就断掉，也可以是长连接，多个远程过程调用共享同一个连接。</p>
-<p>2) 要解决寻址的问题，也就是说，A服务器上的应用怎么告诉底层的RPC框架，如何连接到B服务器（如主机或IP地址）以及特定的端口，方法的名称名称是什么，这样才能完成调用。比如基于Web服务协议栈的RPC，就要提供一个endpoint URI，或者是从UDDI服务上查找。如果是RMI调用的话，还需要一个RMI Registry来注册服务的地址。</p>
-<p>3) 当A服务器上的应用发起远程过程调用时，方法的参数需要通过底层的网络协议如TCP传递到B服务器，由于网络协议是基于二进制的，内存中的参数的值要序列化成二进制的形式，也就是序列化（Serialize）或编组（marshal），通过寻址和传输将序列化的二进制发送给B服务器。</p>
-<p>4) B服务器收到请求后，需要对参数进行反序列化（序列化的逆操作），恢复为内存中的表达方式，然后找到对应的方法（寻址的一部分）进行本地调用，然后得到返回值。</p>
-<p>5) 返回值还要发送回服务器A上的应用，也要经过序列化的方式发送，服务器A接到后，再反序列化，恢复为内存中的表达方式，交给A服务器上的应用</p>
-<p><img src="/images/hadoop/rpc-lc.jpg" alt=""></p>
-<p>RPC的协议有很多，比如最早的CORBA，Java RMI，Web Service的RPC风格，Hessian，Thrift，甚至Rest API。</p>
-<h2 id="2-Java-RMI"><a href="#2-Java-RMI" class="headerlink" title="2 Java RMI"></a>2 Java RMI</h2><p>Java远程方法调用，即Java RMI（Java Remote Method Invocation）是Java编程语言里，一种用于实现远程过程调用的应用程序编程接口。它使客户机上运行的程序可以调用远程服务器上的对象。远程方法调用特性使Java编程人员能够在网络环境中分布操作。RMI全部的宗旨就是尽可能简化远程接口对象的使用。</p>
-<p>Java RMI极大地依赖于接口。在需要创建一个远程对象的时候，程序员通过传递一个接口来隐藏底层的实现细节。客户端得到的远程对象句柄正好与本地的根代码连接，由后者负责透过网络通信。这样一来，程序员只需关心如何通过自己的接口句柄发送消息。</p>
-<p>接口的两种常见实现方式是：最初使用JRMP（Java Remote Message Protocol，Java远程消息交换协议）实现；此外还可以用与CORBA兼容的方法实现。RMI一般指的是编程接口，也有时候同时包括JRMP和API（应用程序编程接口），而RMI-IIOP则一般指RMI接口接管绝大部分的功能，以支持CORBA的实现。</p>
-<p>最初的RMI API设计为通用地支持不同形式的接口实现。后来，CORBA增加了传值（pass by value）功能，以实现RMI接口。然而RMI-IIOP和JRMP实现的接口并不完全一致。</p>
-<p>所使用Java包的名字是java.rmi</p>
-<p>java rmi在开发的时候需要先指定一个对外开放的接口,而在服务器之间进行传递的对象需要继承和实现相应的接口和类,接口创建如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">import java.io.Serializable;</div><div class="line">import java.rmi.Remote;</div><div class="line">import java.rmi.RemoteException;</div><div class="line"></div><div class="line"></div><div class="line">public interface Hello extends Serializable,Remote &#123;</div><div class="line">    public String sayHello() throws RemoteException;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>接口的实现,需要继承UnicastRemoteObject类,接口实现类如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">import java.rmi.RemoteException;</div><div class="line">import java.rmi.server.UnicastRemoteObject;</div><div class="line"></div><div class="line">public class HelloService extends UnicastRemoteObject implements Hello &#123;</div><div class="line"></div><div class="line">    /**</div><div class="line">     *</div><div class="line">     * @throws RemoteException</div><div class="line">     */</div><div class="line">    public HelloService() throws RemoteException&#123;&#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     *</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public String sayHello() &#123;</div><div class="line">        return &quot;Hello world ...&quot;;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>对外服务的接口已经写好了,只需要服务端对外提供这个接口,客户端在访问到这个接口就可以进行调用,服务端如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">import java.rmi.Naming;</div><div class="line">import java.rmi.registry.LocateRegistry;</div><div class="line"></div><div class="line">public class Server &#123;</div><div class="line">    /**</div><div class="line">     *</div><div class="line">     * @param args</div><div class="line">     */</div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">        try&#123;</div><div class="line">            //创建服务端接口对象,用于客户端进行调用</div><div class="line">            Hello hello = new HelloService();</div><div class="line"></div><div class="line">            //注册端口和服务端地址</div><div class="line">            LocateRegistry.createRegistry(20020);</div><div class="line">            Naming.rebind(&quot;rmi://127.0.0.1:20020/Hello&quot;,hello);</div><div class="line"></div><div class="line">            System.out.println(&quot;server ready ...&quot;);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>客户端访问执行服务的地址,查看相应的服务地址,获取相应的服务接口服务对象,并执行调用相应的方式实现远程调用,客户端代码如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">import java.rmi.Naming;</div><div class="line"></div><div class="line">public class Client &#123;</div><div class="line">    /**</div><div class="line">     *</div><div class="line">     * @param args</div><div class="line">     */</div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">        try&#123;</div><div class="line">            //访问服务</div><div class="line">            Hello hello = (Hello) Naming.lookup(&quot;rmi://127.0.0.1:20020/Hello&quot;);</div><div class="line"></div><div class="line">            System.out.println(hello.sayHello());</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="3-RPC学习简单例子"><a href="#3-RPC学习简单例子" class="headerlink" title="3 RPC学习简单例子"></a>3 RPC学习简单例子</h2><p>定义一个对外暴露的接口</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public interface HelloWorldService &#123;</div><div class="line">    public String sayHello(String msg);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>接口的具体实现细节：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">public class HelloWorldServiceImpl implements HelloWorldService &#123;</div><div class="line">    /**</div><div class="line">     *</div><div class="line">     * @param msg</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public String sayHello(String msg) &#123;</div><div class="line">        return &quot;Hello World &quot; + msg;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>服务端启动监听服务,并将客户端传递过来需要调用的接口和方法并将方法对应的参数传递过来,服务端根据接口的类型调用相应接口的实现,将结果返回给客户端</p>
-<p>服务端代码如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div></pre></td><td class="code"><pre><div class="line">public class Provider &#123;</div><div class="line"></div><div class="line">    public static void provider()&#123;</div><div class="line">        try&#123;</div><div class="line">            ServerSocket serverSocket = new ServerSocket(20020);</div><div class="line"></div><div class="line">            while(true)&#123;</div><div class="line">                Socket socket = serverSocket.accept();</div><div class="line"></div><div class="line">                //读取服务信息</div><div class="line">                ObjectInputStream is = new ObjectInputStream(socket.getInputStream());</div><div class="line"></div><div class="line">                //获取接口名称和方法名称</div><div class="line">                String interfaceName = is.readUTF();</div><div class="line">                String methodName = is.readUTF();</div><div class="line"></div><div class="line">                //参数类型和对象</div><div class="line">                Class&lt;?&gt;[] types = (Class[])is.readObject();</div><div class="line">                Object[] params = (Object[])is.readObject();</div><div class="line"></div><div class="line">                //反射获取Class实例</div><div class="line">                Class serviceInterfaceClass = Class.forName(interfaceName);</div><div class="line">//                Object service = services.get(interfaceName)</div><div class="line"></div><div class="line">                //直接进行实例化对象</div><div class="line">                HelloWorldService service = new HelloWorldServiceImpl();</div><div class="line"></div><div class="line"></div><div class="line">                System.out.println(interfaceName + &quot;\t&quot; + methodName);</div><div class="line">                //获取需要调用的方法</div><div class="line">                Method method = serviceInterfaceClass.getMethod(methodName,types);</div><div class="line">                System.out.println(method.getName());</div><div class="line"></div><div class="line">                //反射调用获取执行过后的结果</div><div class="line">                Object result = method.invoke(service,params);</div><div class="line"></div><div class="line">                //将结果发送给客户端</div><div class="line">                ObjectOutputStream os = new ObjectOutputStream(socket.getOutputStream());</div><div class="line">                os.writeObject(result);</div><div class="line"></div><div class="line">                System.out.println(&quot;param -&gt; &quot; + params);</div><div class="line">            &#125;</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;finally &#123;</div><div class="line"></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">        provider();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>同样的客户端的代码如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line">public class Consumer &#123;</div><div class="line"></div><div class="line">    public static void consumer()&#123;</div><div class="line">        //接口名称</div><div class="line">        String interfaceName = HelloWorldService.class.getName();</div><div class="line">        try&#123;</div><div class="line">            //需要远程执行的方法</div><div class="line">            Method method = HelloWorldService.class.getMethod(&quot;sayHello&quot;,java.lang.String.class);</div><div class="line"></div><div class="line">            //需要传递到远程的参数</div><div class="line">            Object[] args = &#123;&quot;sunxing&quot;&#125;;</div><div class="line">            Socket socket = new Socket(&quot;127.0.0.1&quot;,20020);</div><div class="line"></div><div class="line">            //将方法名称和参数传递到远端</div><div class="line">            ObjectOutputStream os = new ObjectOutputStream(socket.getOutputStream());</div><div class="line">            os.writeUTF(interfaceName);//接口名称</div><div class="line">            os.writeUTF(method.getName());//方法名称</div><div class="line">            os.writeObject(method.getParameterTypes());</div><div class="line">            os.writeObject(args);</div><div class="line"></div><div class="line">            os.flush();</div><div class="line"></div><div class="line">            //从远端读取方法的执行结果</div><div class="line">            ObjectInputStream is = new ObjectInputStream(socket.getInputStream());</div><div class="line">            Object result = is.readObject();</div><div class="line"></div><div class="line">            System.out.println(&quot;consumer -&gt; &quot; + result);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;finally&#123;</div><div class="line">            //关闭资源</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     *</div><div class="line">     * @param args</div><div class="line">     */</div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">        consumer();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+            <h2 id="1-Phoenix的增删改查jdbc操作"><a href="#1-Phoenix的增删改查jdbc操作" class="headerlink" title="1 Phoenix的增删改查jdbc操作"></a>1 Phoenix的增删改查jdbc操作</h2><p>代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div></pre></td><td class="code"><pre><div class="line">import java.sql.Connection;</div><div class="line">import java.sql.DriverManager;</div><div class="line">import java.sql.PreparedStatement;</div><div class="line">import java.sql.ResultSet;</div><div class="line"></div><div class="line">public class PhoenixManager &#123;</div><div class="line"></div><div class="line">    /**</div><div class="line">     *</div><div class="line">     * @param args</div><div class="line">     */</div><div class="line">    public static void main(String[] args) throws Exception&#123;</div><div class="line">        test_connect();</div><div class="line"></div><div class="line">        test();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 获取连接对象</div><div class="line">     * @return</div><div class="line">     * @throws Exception</div><div class="line">     */</div><div class="line">    public static Connection connect() throws Exception&#123;</div><div class="line">        Class.forName(&quot;org.apache.phoenix.jdbc.PhoenixDriver&quot;);</div><div class="line"></div><div class="line">        //jdbc的url类似为:jdbc:phoenix[:&lt;zookeeper quorum&gt;[:&lt;port number&gt;][:&lt;root node&gt;]]</div><div class="line">        //需要引用这三个参数,hbase.zookeeper.quorum,hbase.zookeeper.property.clientPort,zookeeper.znode.parent</div><div class="line">        //这些数据可以缺省不填,而在hbase-site.xml中定义</div><div class="line">        return DriverManager.getConnection(&quot;jdbc:phoenix:127.0.0.1:8070&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 创建表</div><div class="line">     */</div><div class="line">    public static void create() throws Exception&#123;</div><div class="line">        Connection conn = connect();</div><div class="line"></div><div class="line">        String create_sql = &quot;create table if not exists test(id integer primary key,age integer,name varchar(50))&quot;;</div><div class="line"></div><div class="line">        PreparedStatement pstmt = conn.prepareStatement(create_sql);</div><div class="line">        pstmt.execute();</div><div class="line"></div><div class="line">        pstmt.close();</div><div class="line">        conn.close();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 插入数据</div><div class="line">     * @throws Exception</div><div class="line">     */</div><div class="line">    public static void insert() throws  Exception&#123;</div><div class="line">        Connection conn = connect();</div><div class="line"></div><div class="line">        String insert_sql = &quot;upsert into test values(1,1,&apos;sunxing&apos;)&quot;;</div><div class="line"></div><div class="line">        PreparedStatement pstmt = conn.prepareStatement(insert_sql);</div><div class="line">        int cnt = pstmt.executeUpdate();</div><div class="line"></div><div class="line">        if(cnt &lt;= 0)&#123;</div><div class="line">            System.out.println(&quot;插入数据失败...&quot;);</div><div class="line">        &#125;else&#123;</div><div class="line">            System.out.println(&quot;插入数据成功...&quot;);</div><div class="line">        &#125;</div><div class="line">        conn.commit();</div><div class="line">        pstmt.close();</div><div class="line">        conn.close();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 查询数据</div><div class="line">     * @throws Exception</div><div class="line">     */</div><div class="line">    public static void select() throws  Exception&#123;</div><div class="line">        Connection conn = connect();</div><div class="line"></div><div class="line">        String select_sql = &quot;select * from test&quot;;</div><div class="line"></div><div class="line">        PreparedStatement pstmt = conn.prepareStatement(select_sql);</div><div class="line">        ResultSet rs = pstmt.executeQuery();</div><div class="line"></div><div class="line">        while(rs.next())&#123;</div><div class="line">            int id = rs.getInt(1);</div><div class="line">            int age = rs.getInt(2);</div><div class="line">            String name = rs.getString(3);</div><div class="line"></div><div class="line">            System.out.println(id + &quot;\t&quot; + age + &quot;\t&quot; + name);</div><div class="line">        &#125;</div><div class="line">        rs.close();</div><div class="line">        pstmt.close();</div><div class="line">        conn.close();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static void test_connect() throws Exception &#123;</div><div class="line">        Connection conn = connect();</div><div class="line"></div><div class="line">        System.out.println(conn.isClosed() + &quot;\t&quot; + conn);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static void test() throws Exception&#123;</div><div class="line">        //先建表</div><div class="line">        create();</div><div class="line"></div><div class="line">        //插入数据</div><div class="line">        insert();</div><div class="line"></div><div class="line">        //将数据查询出来并展示</div><div class="line">        select();</div><div class="line"></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>查看建表语句是否成功:</p>
+<p><img src="/images/phoenix/phoenix-jdbc-create.png" alt=""></p>
+<p>执行代码后的打印语句截图如下:<br><img src="/images/phoenix/phoenix-jdbc-exectue.png" alt=""></p>
+<p>通过上面的代码操作可以看出基本没有改变什么,需要注意的一下几点:<br>1 插入数据后需要提交一次,也就是connect.commit()<br>2 插入和更新的操作使用upsert</p>
+<p>其他的和数据库的链接操作一样~</p>
+
           
         
       
@@ -716,8 +879,8 @@ partition_spec:
             
               
                 
-                <a class="post-title-link" href="/2016/05/24/hadoop-study009/" itemprop="url">
-                  MapReduce程序开发(九) 多MapReduce任务执行
+                <a class="post-title-link" href="/2016/06/12/hbase-study007/" itemprop="url">
+                  HBase学习笔记(七) Phoenix的CURD操作
                 </a>
               
             
@@ -730,8 +893,8 @@ partition_spec:
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-05-24T11:25:55+08:00" content="2016-05-24">
-              2016-05-24
+            <time itemprop="dateCreated" datetime="2016-06-12T11:55:55+08:00" content="2016-06-12">
+              2016-06-12
             </time>
           </span>
 
@@ -744,8 +907,8 @@ partition_spec:
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/hadoop/" itemprop="url" rel="index">
-                    <span itemprop="name">hadoop</span>
+                  <a href="/categories/hbase/" itemprop="url" rel="index">
+                    <span itemprop="name">hbase</span>
                   </a>
                 </span>
 
@@ -760,8 +923,8 @@ partition_spec:
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/05/24/hadoop-study009/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/24/hadoop-study009/" itemprop="commentsCount"></span>
+                <a href="/2016/06/12/hbase-study007/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/12/hbase-study007/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -786,142 +949,19 @@ partition_spec:
       
         
           
-            <p>很多时候mapreduce作业中一个需求可能通过一个job无法完成,因此需要多个job共同合作进行完成,主要有两种方式：</p>
-<pre><code>1 依次调用
-2 job依赖
-</code></pre><p>1 依次调用<br>MapReduce迭代方式，通常是前一个MapReduce的输出作为下一个MapReduce的输入，最终可只保留最终结果，中间数据可以删除或保留，根据业务需要自己决定</p>
-<p>代码如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div></pre></td><td class="code"><pre><div class="line">import io.netty.util.internal.ConcurrentSet;</div><div class="line">import org.apache.hadoop.conf.Configuration;</div><div class="line">import org.apache.hadoop.fs.Path;</div><div class="line">import org.apache.hadoop.io.IntWritable;</div><div class="line">import org.apache.hadoop.io.LongWritable;</div><div class="line">import org.apache.hadoop.io.Text;</div><div class="line">import org.apache.hadoop.mapred.JobClient;</div><div class="line">import org.apache.hadoop.mapreduce.Job;</div><div class="line">import org.apache.hadoop.mapreduce.JobContext;</div><div class="line">import org.apache.hadoop.mapreduce.Mapper;</div><div class="line">import org.apache.hadoop.mapreduce.Reducer;</div><div class="line">import org.apache.hadoop.mapreduce.lib.chain.ChainMapper;</div><div class="line">import org.apache.hadoop.mapreduce.lib.chain.ChainReducer;</div><div class="line">import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;</div><div class="line">import org.apache.hadoop.mapreduce.lib.jobcontrol.ControlledJob;</div><div class="line">import org.apache.hadoop.mapreduce.lib.jobcontrol.JobControl;</div><div class="line">import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;</div><div class="line"></div><div class="line">import java.io.IOException;</div><div class="line">import java.util.Arrays;</div><div class="line"></div><div class="line">/**</div><div class="line"> * 1 先将数据开发,按照大小来进行分区</div><div class="line"> * 2 将每个部分的数据进行汇总加和在输出到目录中</div><div class="line"> */</div><div class="line">public class MultJob &#123;</div><div class="line"></div><div class="line">    class SplitMap extends Mapper&lt;LongWritable,Text,Text,Text&gt; &#123;</div><div class="line">        @Override</div><div class="line">        protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException &#123;</div><div class="line">            context.write(value,new Text());</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    //第一个job的reduce</div><div class="line">    class SplitReduce extends Reducer&lt;Text,Text,Text,Text&gt;&#123;</div><div class="line">        @Override</div><div class="line">        protected void reduce(Text  key, Iterable&lt;Text&gt; values, Context context) throws IOException, InterruptedException &#123;</div><div class="line">            int k = Integer.parseInt(key.toString());</div><div class="line"></div><div class="line">            if(k &lt;= 5)&#123;</div><div class="line">                context.write(new Text(&quot;&lt;=5&quot;),key);</div><div class="line">            &#125;else&#123;</div><div class="line">                context.write(new Text(&quot;&gt;=5&quot;),key);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    //第二个job的Map</div><div class="line">    class SecMap extends Mapper&lt;LongWritable,Text,Text,Text&gt;&#123;</div><div class="line">        @Override</div><div class="line">        protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException &#123;</div><div class="line">            String line = value.toString();</div><div class="line"></div><div class="line"></div><div class="line">            String v = line.substring(line.indexOf(&quot;=5&quot;) + 2);</div><div class="line">            String k = null;</div><div class="line"></div><div class="line">            if(line.contains(&quot;&lt;=5&quot;))&#123;</div><div class="line">                k = &quot;&lt;=5&quot;;</div><div class="line">            &#125;else&#123;</div><div class="line">                k = &quot;&gt;=5&quot;;</div><div class="line">            &#125;</div><div class="line">            context.write(new Text(k),new Text(v.trim().replaceAll(&quot;[^0-9]&quot;,&quot;&quot;)));</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    //第二个job的reduce</div><div class="line">    class SecReduce extends Reducer&lt;Text,Text,Text,IntWritable&gt;&#123;</div><div class="line">        @Override</div><div class="line">        protected void reduce(Text key, Iterable&lt;Text&gt; values, Context context) throws IOException, InterruptedException &#123;</div><div class="line">            int sum = 0;</div><div class="line"></div><div class="line">            for(Text text : values)&#123;</div><div class="line">                int v = Integer.parseInt(text.toString().trim());</div><div class="line"></div><div class="line">                sum += v;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            context.write(key,new IntWritable(sum));</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static void main(String[] args) throws  Exception&#123;</div><div class="line">        Configuration conf = new Configuration();</div><div class="line"></div><div class="line">        Job job1 = Job.getInstance(conf,&quot;split&quot;);</div><div class="line">        job1.setJarByClass(MultJob.class);</div><div class="line"></div><div class="line">        job1.setMapperClass(SplitMap.class);</div><div class="line">        job1.setReducerClass(SplitReduce.class);</div><div class="line">        job1.setMapOutputKeyClass(Text.class);</div><div class="line">        job1.setMapOutputValueClass(Text.class);</div><div class="line">        job1.setOutputKeyClass(Text.class);</div><div class="line">        job1.setOutputValueClass(Text.class);</div><div class="line"></div><div class="line">        //文件输出</div><div class="line">        FileInputFormat.addInputPath(job1,new Path(&quot;/user/hive/warehouse/ym.db/test&quot;));</div><div class="line">        FileOutputFormat.setOutputPath(job1,new Path(&quot;/output/mult-job/tmp&quot;));</div><div class="line"></div><div class="line">        //添加控制job</div><div class="line">        job1.waitForCompletion(true);</div><div class="line"></div><div class="line">        Configuration conf2 = new Configuration();</div><div class="line">        //配置第二个job</div><div class="line">        Job job2 = Job.getInstance(conf2,&quot;sum&quot;);</div><div class="line">        job2.setJarByClass(MultJob.class);</div><div class="line"></div><div class="line">        job2.setMapperClass(SecMap.class);</div><div class="line">        job2.setReducerClass(SecReduce.class);</div><div class="line"></div><div class="line">        job2.setMapOutputKeyClass(Text.class);</div><div class="line">        job2.setMapOutputValueClass(Text.class);</div><div class="line">        job2.setOutputKeyClass(Text.class);</div><div class="line">        job2.setOutputValueClass(IntWritable.class);</div><div class="line"></div><div class="line">        //job2的输入数据是job1的输出目录</div><div class="line">        FileInputFormat.addInputPath(job2,new Path(&quot;/output/mult-job/tmp&quot;));</div><div class="line">        FileOutputFormat.setOutputPath(job2,new Path(&quot;/output/mult-job/mjob&quot;));</div><div class="line"></div><div class="line">        //</div><div class="line">        job2.waitForCompletion(true);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>2 job依赖</p>
-<p>依赖关系主要是由JobControl来实现，JobControl由两个类组成：Job和JobControl,ControlledJob。其中ControlledJob主要是对job的作业的一些封装,同时增加了一个依赖job的设定。</p>
-<p>JobControl包含了一个线程用于周期性的监控和更新各个作业的运行状态，调度依赖作业运行完成的作业，提交处于READY状态的作业等，同事，还提供了一些API用于挂起、回复和暂停该线程。</p>
-<p>代码如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div></pre></td><td class="code"><pre><div class="line">import io.netty.util.internal.ConcurrentSet;</div><div class="line">import org.apache.hadoop.conf.Configuration;</div><div class="line">import org.apache.hadoop.fs.Path;</div><div class="line">import org.apache.hadoop.io.IntWritable;</div><div class="line">import org.apache.hadoop.io.LongWritable;</div><div class="line">import org.apache.hadoop.io.Text;</div><div class="line">import org.apache.hadoop.mapred.JobClient;</div><div class="line">import org.apache.hadoop.mapreduce.Job;</div><div class="line">import org.apache.hadoop.mapreduce.JobContext;</div><div class="line">import org.apache.hadoop.mapreduce.Mapper;</div><div class="line">import org.apache.hadoop.mapreduce.Reducer;</div><div class="line">import org.apache.hadoop.mapreduce.lib.chain.ChainMapper;</div><div class="line">import org.apache.hadoop.mapreduce.lib.chain.ChainReducer;</div><div class="line">import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;</div><div class="line">import org.apache.hadoop.mapreduce.lib.jobcontrol.ControlledJob;</div><div class="line">import org.apache.hadoop.mapreduce.lib.jobcontrol.JobControl;</div><div class="line">import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;</div><div class="line"></div><div class="line">import java.io.IOException;</div><div class="line">import java.util.Arrays;</div><div class="line"></div><div class="line">/**</div><div class="line"> * 1 先将数据开发,按照大小来进行分区</div><div class="line"> * 2 将每个部分的数据进行汇总加和在输出到目录中</div><div class="line"> */</div><div class="line">public class MultJob &#123;</div><div class="line"></div><div class="line">    class SplitMap extends Mapper&lt;LongWritable,Text,Text,Text&gt; &#123;</div><div class="line">        @Override</div><div class="line">        protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException &#123;</div><div class="line">            context.write(value,new Text());</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    //第一个job的reduce</div><div class="line">    class SplitReduce extends Reducer&lt;Text,Text,Text,Text&gt;&#123;</div><div class="line">        @Override</div><div class="line">        protected void reduce(Text  key, Iterable&lt;Text&gt; values, Context context) throws IOException, InterruptedException &#123;</div><div class="line">            int k = Integer.parseInt(key.toString());</div><div class="line"></div><div class="line">            if(k &lt;= 5)&#123;</div><div class="line">                context.write(new Text(&quot;&lt;=5&quot;),key);</div><div class="line">            &#125;else&#123;</div><div class="line">                context.write(new Text(&quot;&gt;=5&quot;),key);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    //第二个job的Map</div><div class="line">    class SecMap extends Mapper&lt;LongWritable,Text,Text,Text&gt;&#123;</div><div class="line">        @Override</div><div class="line">        protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException &#123;</div><div class="line">            String line = value.toString();</div><div class="line"></div><div class="line"></div><div class="line">            String v = line.substring(line.indexOf(&quot;=5&quot;) + 2);</div><div class="line">            String k = null;</div><div class="line"></div><div class="line">            if(line.contains(&quot;&lt;=5&quot;))&#123;</div><div class="line">                k = &quot;&lt;=5&quot;;</div><div class="line">            &#125;else&#123;</div><div class="line">                k = &quot;&gt;=5&quot;;</div><div class="line">            &#125;</div><div class="line">            context.write(new Text(k),new Text(v.trim().replaceAll(&quot;[^0-9]&quot;,&quot;&quot;)));</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    //第二个job的reduce</div><div class="line">    class SecReduce extends Reducer&lt;Text,Text,Text,IntWritable&gt;&#123;</div><div class="line">        @Override</div><div class="line">        protected void reduce(Text key, Iterable&lt;Text&gt; values, Context context) throws IOException, InterruptedException &#123;</div><div class="line">            int sum = 0;</div><div class="line"></div><div class="line">            for(Text text : values)&#123;</div><div class="line">                int v = Integer.parseInt(text.toString().trim());</div><div class="line"></div><div class="line">                sum += v;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            context.write(key,new IntWritable(sum));</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static void main(String[] args) throws  Exception&#123;</div><div class="line">        Configuration conf = new Configuration();</div><div class="line"></div><div class="line">        Job job1 = Job.getInstance(conf,&quot;split&quot;);</div><div class="line">        job1.setJarByClass(MultJob.class);</div><div class="line"></div><div class="line">        job1.setMapperClass(SplitMap.class);</div><div class="line">        job1.setReducerClass(SplitReduce.class);</div><div class="line">        job1.setMapOutputKeyClass(Text.class);</div><div class="line">        job1.setMapOutputValueClass(Text.class);</div><div class="line">        job1.setOutputKeyClass(Text.class);</div><div class="line">        job1.setOutputValueClass(Text.class);</div><div class="line"></div><div class="line">        //文件输出</div><div class="line">        FileInputFormat.addInputPath(job1,new Path(&quot;/user/hive/warehouse/ym.db/test&quot;));</div><div class="line">        FileOutputFormat.setOutputPath(job1,new Path(&quot;/output/mult-job/tmp&quot;));</div><div class="line"></div><div class="line">        //添加控制job</div><div class="line">        ControlledJob cj1 = new ControlledJob(conf);</div><div class="line">        cj1.setJob(job1);</div><div class="line"></div><div class="line">        Configuration conf2 = new Configuration();</div><div class="line">        //配置第二个job</div><div class="line">        Job job2 = Job.getInstance(conf2,&quot;sum&quot;);</div><div class="line">        job2.setJarByClass(MultJob.class);</div><div class="line"></div><div class="line">        job2.setMapperClass(SecMap.class);</div><div class="line">        job2.setReducerClass(SecReduce.class);</div><div class="line"></div><div class="line">        job2.setMapOutputKeyClass(Text.class);</div><div class="line">        job2.setMapOutputValueClass(Text.class);</div><div class="line">        job2.setOutputKeyClass(Text.class);</div><div class="line">        job2.setOutputValueClass(IntWritable.class);</div><div class="line"></div><div class="line">        //</div><div class="line">        ControlledJob cj2 = new ControlledJob(conf2);</div><div class="line">        cj2.setJob(job2);</div><div class="line">        cj2.addDependingJob(cj1);</div><div class="line"></div><div class="line">        //job2的输入数据是job1的输出目录</div><div class="line">        FileInputFormat.addInputPath(job2,new Path(&quot;/output/mult-job/tmp&quot;));</div><div class="line">        FileOutputFormat.setOutputPath(job2,new Path(&quot;/output/mult-job/mjob&quot;));</div><div class="line"></div><div class="line">        //添加job依赖任务</div><div class="line">        JobControl jc = new JobControl(&quot;mult-job&quot;);</div><div class="line">        jc.addJob(cj1);</div><div class="line">        jc.addJob(cj2);</div><div class="line"></div><div class="line">        Thread t = new Thread(jc);</div><div class="line">        t.start();</div><div class="line"></div><div class="line">        while(true)&#123;</div><div class="line">            if(jc.allFinished())&#123;</div><div class="line">                System.out.println(jc.getSuccessfulJobList());</div><div class="line">                jc.stop();</div><div class="line"></div><div class="line">                break;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/05/20/hadoop-study008/" itemprop="url">
-                  MapReduce程序开发(八) 内连接,左连接和右连接,全连接和反连接
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-05-20T13:53:55+08:00" content="2016-05-20">
-              2016-05-20
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/hadoop/" itemprop="url" rel="index">
-                    <span itemprop="name">hadoop</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/05/20/hadoop-study008/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/20/hadoop-study008/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="1-原理"><a href="#1-原理" class="headerlink" title="1 原理"></a>1 原理</h2><p>进行join操作,主要是将相应的字段作为key,其他字段作为value进行数据的传输,也就是map端进行数据的整理和打标签<br>在reduce端根据key,也就是join的条件字段。根据这个key值,将对应的value数据在进行相应的整合区分就行了。</p>
-<p>测试数据如下:</p>
-<p><img src="/images/hadoop/source-data.png" alt=""></p>
-<p>代码如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div></pre></td><td class="code"><pre><div class="line">import org.apache.hadoop.conf.Configuration;</div><div class="line">import org.apache.hadoop.fs.FileSystem;</div><div class="line">import org.apache.hadoop.fs.Path;</div><div class="line">import org.apache.hadoop.io.LongWritable;</div><div class="line">import org.apache.hadoop.io.Text;</div><div class="line">import org.apache.hadoop.mapreduce.Job;</div><div class="line">import org.apache.hadoop.mapreduce.Mapper;</div><div class="line">import org.apache.hadoop.mapreduce.Reducer;</div><div class="line">import org.apache.hadoop.mapreduce.lib.input.MultipleInputs;</div><div class="line">import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;</div><div class="line">import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;</div><div class="line"></div><div class="line">import java.io.IOException;</div><div class="line">import java.net.URI;</div><div class="line">import java.util.ArrayList;</div><div class="line">import java.util.List;</div><div class="line"></div><div class="line">/**</div><div class="line"> * 表A:</div><div class="line"> * 1 a</div><div class="line"> * 2 b</div><div class="line"> * 3 c</div><div class="line"> *</div><div class="line"> * 表B:</div><div class="line"> * a a1</div><div class="line"> * a a2</div><div class="line"> * b b1</div><div class="line"> * b b2</div><div class="line"> * b b3</div><div class="line"> * c c1</div><div class="line"> * d d1</div><div class="line"> */</div><div class="line">public class MultJoin &#123;</div><div class="line">    /**</div><div class="line">     * a表</div><div class="line">     */</div><div class="line">    public static class TabAMap extends Mapper&lt;LongWritable,Text,Text,Text&gt;&#123;</div><div class="line">        @Override</div><div class="line">        protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException &#123;</div><div class="line">            String line = value.toString();</div><div class="line"></div><div class="line">            String[] data = line.split(&quot; &quot;);</div><div class="line"></div><div class="line">            context.write(new Text(data[1]),new Text(&quot;l_&quot; + data[0]));</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * b表</div><div class="line">     */</div><div class="line">    public static class TabBMap extends Mapper&lt;LongWritable,Text,Text,Text&gt;&#123;</div><div class="line">        @Override</div><div class="line">        protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException &#123;</div><div class="line">            String line = value.toString();</div><div class="line">            String[] data = line.split(&quot; &quot;);</div><div class="line"></div><div class="line">            context.write(new Text(data[0]),new Text(&quot;r_&quot; + data[1]));</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * reduce端进行数据汇总</div><div class="line">     */</div><div class="line">    public static class JoinReduce extends Reducer&lt;Text,Text,Text,Text&gt;&#123;</div><div class="line">        private List&lt;String&gt; a = new ArrayList&lt;String&gt;();</div><div class="line">        private List&lt;String&gt; b = new ArrayList&lt;String&gt;();</div><div class="line"></div><div class="line">        private String type;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        protected void setup(Context context) throws IOException, InterruptedException &#123;</div><div class="line">            super.setup(context);</div><div class="line"></div><div class="line">            type = context.getConfiguration().get(&quot;type&quot;);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        protected void reduce(Text key, Iterable&lt;Text&gt; values, Context context) throws IOException, InterruptedException &#123;</div><div class="line">            a.clear();</div><div class="line">            b.clear();</div><div class="line"></div><div class="line">            //遍历数据进行处理,切割数据位一个一个的字段进行处理</div><div class="line">            for(Text text : values)&#123;</div><div class="line">               if(text.toString().startsWith(&quot;r_&quot;))&#123;</div><div class="line">                   a.add(text.toString().replaceAll(&quot;r_&quot;,&quot;&quot;));</div><div class="line">               &#125;else&#123;</div><div class="line">                   b.add(text.toString().replaceAll(&quot;l_&quot;,&quot;&quot;));</div><div class="line">               &#125;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            //inner join</div><div class="line">            //同一个key:两张表都要有数据</div><div class="line">            if(&quot;inner-join&quot;.equals(type))&#123;</div><div class="line">                if(a.size() &gt; 0 &amp;&amp; b.size() &gt; 0)&#123;</div><div class="line">                    for(String aline : a)&#123;</div><div class="line">                        for(String bline : b)&#123;</div><div class="line">                            context.write(new Text(aline),new Text(bline));</div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            //left join</div><div class="line">            //左表必须有数据,右表可以有,可以无</div><div class="line">            else if(&quot;left-join&quot;.equals(type))&#123;</div><div class="line">                for(String aline : a)&#123;</div><div class="line">                    if(b.size() &gt; 0)&#123;</div><div class="line">                        for(String bline : b)&#123;</div><div class="line">                            context.write(key,new Text(aline + &quot;\t&quot; + bline));</div><div class="line">                        &#125;</div><div class="line">                    &#125;else&#123;</div><div class="line">                        context.write(new Text(aline),new Text(&quot;NULL&quot;));</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            //right join</div><div class="line">            //左表必须有数据,右表可以有,可以无</div><div class="line">            else if(&quot;right-join&quot;.equals(type))&#123;</div><div class="line">                for(String bline : b)&#123;</div><div class="line">                    if(a.size() &gt; 0)&#123;</div><div class="line">                        for(String aline : a)&#123;</div><div class="line">                            context.write(new Text(aline),new Text(bline));</div><div class="line">                        &#125;</div><div class="line">                    &#125;else&#123;</div><div class="line">                        context.write(new Text(&quot;NULL&quot;),new Text(bline));</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            //all join</div><div class="line">            else if(&quot;all-join&quot;.equals(type))&#123;</div><div class="line">                if(a.size() &gt; 0)&#123;</div><div class="line">                    for(String aline : a)&#123;</div><div class="line">                        if(b.size() &gt; 0 )&#123;</div><div class="line">                            for(String bline : b)&#123;</div><div class="line">                                context.write(new Text(aline),new Text(bline));</div><div class="line">                            &#125;</div><div class="line">                        &#125;else&#123;</div><div class="line">                            context.write(new Text(aline),new Text(&quot;NULL&quot;));</div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line">                &#125;else&#123;</div><div class="line">                    for(String bline : b)&#123;</div><div class="line">                        if(a.size() &gt; 0)&#123;</div><div class="line">                            for(String aline : a)&#123;</div><div class="line">                                context.write(new Text(aline),new Text(bline));</div><div class="line">                            &#125;</div><div class="line">                        &#125;else&#123;</div><div class="line">                            context.write(new Text(&quot;NULL&quot;),new Text(bline));</div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            //Anti join</div><div class="line">            else if(&quot;anti-join&quot;.equals(type))&#123;</div><div class="line">                if(a.size() == 0 ^ b.size() == 0)&#123;</div><div class="line">                    for(String aline : a)&#123;</div><div class="line">                        context.write(new Text(aline),new Text(&quot;NULL&quot;));</div><div class="line">                    &#125;</div><div class="line">                    for(String bline : b)&#123;</div><div class="line">                        context.write(new Text(&quot;NULL&quot;),new Text(bline));</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     *</div><div class="line">     * @param args</div><div class="line">     */</div><div class="line">    public static void main(String[] args) throws Exception&#123;</div><div class="line">        Configuration conf = new Configuration();</div><div class="line"></div><div class="line">        FileSystem fs = FileSystem.get(new URI(&quot;hdfs://hadoopmaster:9000&quot;),conf);</div><div class="line"></div><div class="line">        Job job = Job.getInstance(conf,&quot;sort&quot;);</div><div class="line"></div><div class="line">        job.setJarByClass(MultJoin.class);</div><div class="line">        job.getConfiguration().set(&quot;type&quot;,&quot;left-join&quot;);</div><div class="line"></div><div class="line">        MultipleInputs.addInputPath(job,new Path(&quot;/input/mult/a&quot;), TextInputFormat.class,TabAMap.class);</div><div class="line">        MultipleInputs.addInputPath(job,new Path(&quot;/input/mult/b&quot;),TextInputFormat.class,TabBMap.class);</div><div class="line"></div><div class="line">        job.setMapOutputKeyClass(Text.class);</div><div class="line">        job.setMapOutputValueClass(Text.class);</div><div class="line"></div><div class="line">        job.setReducerClass(JoinReduce.class);</div><div class="line">        job.setOutputKeyClass(Text.class);</div><div class="line">        job.setOutputValueClass(Text.class);</div><div class="line"></div><div class="line">        Path out = new Path(&quot;/output/mult&quot;);</div><div class="line">        if(fs.exists(out))&#123;</div><div class="line">            fs.delete(out,true);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        TextOutputFormat.setOutputPath(job,out);</div><div class="line">        job.setOutputFormatClass(TextOutputFormat.class);</div><div class="line"></div><div class="line">        //程序等待job完成,job已经提交给了dataNode,需要等待</div><div class="line">        System.exit(job.waitForCompletion(true)? 0:1);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>执行结果如下:</p>
-<p><img src="/images/hadoop/mult-data.png" alt=""></p>
+            <h2 id="1-查询"><a href="#1-查询" class="headerlink" title="1 查询"></a>1 查询</h2><p><img src="/images/phoenix/phoenix-gm-select.png" alt=""></p>
+<p><img src="/images/phoenix/phoenix-test-select.png" alt=""></p>
+<h2 id="2-插入数据"><a href="#2-插入数据" class="headerlink" title="2 插入数据"></a>2 插入数据</h2><p>1 普通插入数据</p>
+<p><img src="/images/phoenix/phoenix-gm-upsert.png" alt=""></p>
+<p><img src="/images/phoenix/phoenix-gm-upsert-demo.png" alt=""></p>
+<p>2 组合插入数据</p>
+<p><img src="/images/phoenix/phoenix-gm-upselect.png" alt=""></p>
+<p><img src="/images/phoenix/phoenix-gm-upselect-rs.png" alt=""></p>
+<h2 id="3-删除数据"><a href="#3-删除数据" class="headerlink" title="3 删除数据"></a>3 删除数据</h2><p><img src="/images/phoenix/phoenix-gm-delete.png" alt=""></p>
+<p><img src="/images/phoenix/phoenix-gm-delte-rs.png" alt=""></p>
+<h2 id="4-创建表"><a href="#4-创建表" class="headerlink" title="4 创建表"></a>4 创建表</h2><p><img src="/images/phoenix/phoenix-gm-create.png" alt=""></p>
+<p><img src="/images/phoenix/phoenix-gm-drop-table.png" alt=""></p>
+<h2 id="5-修改表"><a href="#5-修改表" class="headerlink" title="5 修改表"></a>5 修改表</h2><p><img src="/images/phoenix/phoenix-gm-alter.png" alt=""></p>
 
           
         
@@ -954,7 +994,7 @@ partition_spec:
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/9/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/page/11/">11</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/11/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/9/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/page/11/">11</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><a class="extend next" rel="next" href="/page/11/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1027,7 +1067,7 @@ var duoshuoQuery = {short_name:"sunxing"};
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">65</span>
+              <span class="site-state-item-count">78</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -1035,7 +1075,7 @@ var duoshuoQuery = {short_name:"sunxing"};
           
             <div class="site-state-item site-state-categories">
               
-                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-count">13</span>
                 <span class="site-state-item-name">分类</span>
               
             </div>
@@ -1044,7 +1084,7 @@ var duoshuoQuery = {short_name:"sunxing"};
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

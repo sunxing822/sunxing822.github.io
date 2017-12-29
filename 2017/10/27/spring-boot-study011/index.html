@@ -1,0 +1,819 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="spring,spring boot," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="Web相关配置自动配置ViewResolver在控制器中一个方法返回一个字符串(视图名称)会根据BeanNameViewResolver去查找Bean的名称为返回字符串的View来渲染视图。如： @Bean public BeanNameViewResolver beanNameViewResolver(){     BeanNameViewResolver resolver = new Bean">
+<meta name="keywords" content="spring,spring boot">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring Boot基础学习(十一) 相关配置">
+<meta property="og:url" content="http://www.sunxing.cc/2017/10/27/spring-boot-study011/index.html">
+<meta property="og:site_name" content="孙星的个人博客~">
+<meta property="og:description" content="Web相关配置自动配置ViewResolver在控制器中一个方法返回一个字符串(视图名称)会根据BeanNameViewResolver去查找Bean的名称为返回字符串的View来渲染视图。如： @Bean public BeanNameViewResolver beanNameViewResolver(){     BeanNameViewResolver resolver = new Bean">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://www.sunxing.cc/2017/10/27/spring-boot-study011/images/spring-boot/config-web-1.png">
+<meta property="og:image" content="http://www.sunxing.cc/2017/10/27/spring-boot-study011/images/spring-boot/config-web-2.png">
+<meta property="og:image" content="http://www.sunxing.cc/2017/10/27/spring-boot-study011/images/spring-boot/config-message-1.png">
+<meta property="og:image" content="http://www.sunxing.cc/2017/10/27/spring-boot-study011/images/spring-boot/config-converter-1.png">
+<meta property="og:image" content="http://www.sunxing.cc/2017/10/27/spring-boot-study011/images/spring-boot/config-converter-2.png">
+<meta property="og:image" content="http://www.sunxing.cc/2017/10/27/spring-boot-study011/images/spring-boot/config-converter-3.png">
+<meta property="og:image" content="http://www.sunxing.cc/2017/10/27/spring-boot-study011/images/spring-boot/config-converter-4.png">
+<meta property="og:image" content="http://www.sunxing.cc/2017/10/27/spring-boot-study011/images/spring-boot/config-servlet-1.png">
+<meta property="og:image" content="http://www.sunxing.cc/2017/10/27/spring-boot-study011/images/spring-boot/config-ssl-1.png">
+<meta property="og:image" content="http://www.sunxing.cc/2017/10/27/spring-boot-study011/images/spring-boot/config-ssl-2.png">
+<meta property="og:image" content="http://www.sunxing.cc/2017/10/27/spring-boot-study011/images/spring-boot/config-ssl-3.png">
+<meta property="og:updated_time" content="2017-11-28T04:00:46.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spring Boot基础学习(十一) 相关配置">
+<meta name="twitter:description" content="Web相关配置自动配置ViewResolver在控制器中一个方法返回一个字符串(视图名称)会根据BeanNameViewResolver去查找Bean的名称为返回字符串的View来渲染视图。如： @Bean public BeanNameViewResolver beanNameViewResolver(){     BeanNameViewResolver resolver = new Bean">
+<meta name="twitter:image" content="http://www.sunxing.cc/2017/10/27/spring-boot-study011/images/spring-boot/config-web-1.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+ <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258995301'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/z_stat.php%3Fid%3D1258995301' type='text/javascript'%3E%3C/script%3E"));</script>
+
+  <title> Spring Boot基础学习(十一) 相关配置 | 孙星的个人博客~ </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">孙星的个人博客~</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">搬砖的,码农~</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Spring Boot基础学习(十一) 相关配置
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2017-10-27T17:22:46+08:00" content="2017-10-27">
+              2017-10-27
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/spring-boot/" itemprop="url" rel="index">
+                    <span itemprop="name">spring boot</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2017/10/27/spring-boot-study011/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/10/27/spring-boot-study011/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Web相关配置"><a href="#Web相关配置" class="headerlink" title="Web相关配置"></a>Web相关配置</h2><h4 id="自动配置ViewResolver"><a href="#自动配置ViewResolver" class="headerlink" title="自动配置ViewResolver"></a>自动配置ViewResolver</h4><p>在控制器中一个方法返回一个字符串(视图名称)会根据BeanNameViewResolver去查找Bean的名称为返回字符串的View来渲染视图。如：</p>
+<pre><code>@Bean
+public BeanNameViewResolver beanNameViewResolver(){
+    BeanNameViewResolver resolver = new BeanNameViewResolver();
+    return resolver;
+}
+</code></pre><p>定义一个View的Beanm名称为jsonView:</p>
+<pre><code>@Bean
+public MappingJackson2JsonView jsonView(){
+    MappingJackson2JsonView jsonView = new MappingJackson2JsonView();
+    jsonView.setExtractValueFromSingleKeyModel(true);
+    jsonView.addStaticAttribute(&quot;msg&quot;,&quot;hello world&quot;);
+    return jsonView;
+}
+</code></pre><p>这个时候,如果我在对应的请求中,返回字符串:jsonView,就会使用上面定义的这个MappingJackson2JsonView这个对象,来渲染视图,说白了就是使用这个对象来处理视图,将其中的内容填充到视图对应的网页中.这个我们来看下具体的请求接口:</p>
+<pre><code>@RequestMapping(
+        value = &quot;/test/json&quot;,
+        method = RequestMethod.GET,
+        produces = {MediaType.APPLICATION_JSON_VALUE}
+)
+public String testJosn(Model model){
+    User user = new User();
+    user.setName(&quot;sunx&quot;);
+
+    model.addAttribute(&quot;user&quot;,user);
+
+    return &quot;jsonView&quot;;
+}
+</code></pre><p>页面调用当前这个接口的结果为:<br><img src="images/spring-boot/config-web-1.png" alt=""></p>
+<p>可以通过这种形式,在视图的或则是接口的调用中增加一些版本信息,或则是额外的数据内容.</p>
+<h4 id="自动配置静态资源"><a href="#自动配置静态资源" class="headerlink" title="自动配置静态资源"></a>自动配置静态资源</h4><p>静态资源的配置,系统默认的配置路径地址为/static或是/public.具体的可以通过自动配置类中增加相应的配置,如:</p>
+<pre><code>@Configuration
+public class DemoWebMvcAutoConfiguration extends WebMvcConfigurerAdapter {
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler(&quot;/css/{filename:\\w+\\.css}&quot;);
+        registry.addResourceHandler(&quot;/css/**&quot;);
+    }
+}
+</code></pre><p>上面的列子中可以配置自定义的目录地址到系统中~或则是使用系统默认的路径地址~</p>
+<h4 id="自动配置Formatter"><a href="#自动配置Formatter" class="headerlink" title="自动配置Formatter"></a>自动配置Formatter</h4><p>自定义的格式化工具,首先需要基层Formatter接口,具体的如下,下面为在字符串前面增加内容:</p>
+<pre><code>public class StringFormatter implements Formatter&lt;String&gt; {
+        @Override
+    public String parse(String s, Locale locale) throws ParseException {
+        return &quot;__&quot; + s;
+    }
+
+    @Override
+    public String print(String s, Locale locale) {
+        return s;
+    }
+}
+</code></pre><p>自定义的格式化类定义好以后,下面需要将定义好的格式化类增加到spring-boot的系统中:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">@Configuration</div><div class="line">public class DemoWebMvcAutoConfiguration extends WebMvcConfigurerAdapter &#123;</div><div class="line">    @Override</div><div class="line">    public void addFormatters(FormatterRegistry registry) &#123;</div><div class="line">        registry.addFormatter(new StringFormatter());</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>将自定的formatter注册到系统中以后,通过浏览器调用接口,传递一个字符串过来,然后在包装一下返回回去,查看下是否已经经过了格式化,将字符串前面增加了两个下划线:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">@RequestMapping(</div><div class="line">			value = &quot;/test/json&quot;,</div><div class="line">			method = RequestMethod.GET,</div><div class="line">			produces = &#123;MediaType.APPLICATION_JSON_VALUE&#125;</div><div class="line">	)</div><div class="line">	public String testJosn(Model model)&#123;</div><div class="line">		User user = new User();</div><div class="line">		user.setName(&quot;sunx&quot;);</div><div class="line"></div><div class="line">		model.addAttribute(&quot;user&quot;,user);</div><div class="line"></div><div class="line">		return &quot;jsonView&quot;;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<p>执行截图为:<br><img src="images/spring-boot/config-web-2.png" alt=""></p>
+<p>这里由于定义格式化类Formatter时指定了类型,因此在调用接口的时候,就会去将参数的类型获取出来,然后找到对应的类型进行格式化。现在这个格式化的类时全局的,也就是所有的接口中涉及到的字符串都会进行格式化操作。</p>
+<h4 id="自动配置Converter"><a href="#自动配置Converter" class="headerlink" title="自动配置Converter"></a>自动配置Converter</h4><p>自动配置Converter,这个的具体的业务和Formatter相比来说功能类似,具体的如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">@Component</div><div class="line">public class String2UserConverter implements Converter&lt;String,User&gt; &#123;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public User convert(String s) &#123;</div><div class="line">        User user = new User();</div><div class="line">        user.setName(s);</div><div class="line"></div><div class="line">        return user;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里自定义的Conterver我增加了注解@Component,这样才会自动注入到spring mvc中。在上下的使用过程中和普通的注入类形式,只需要引用就可,具体如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">@Autowired</div><div class="line">	private String2UserConverter converter;</div><div class="line">	</div><div class="line">@RequestMapping(</div><div class="line">			value = &quot;/test/converter&quot;,</div><div class="line">			method = RequestMethod.GET,</div><div class="line">			produces = &#123;MediaType.APPLICATION_JSON_VALUE&#125;</div><div class="line">	)</div><div class="line">	public String testConverter(Model model,@RequestParam String test,@RequestParam String age)&#123;</div><div class="line">		User user = converter.convert(test);</div><div class="line">		model.addAttribute(&quot;user&quot;,user);</div><div class="line">		System.out.println(age);</div><div class="line">		return &quot;jsonView&quot;;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<h4 id="HttpMessageConverters配置"><a href="#HttpMessageConverters配置" class="headerlink" title="HttpMessageConverters配置"></a>HttpMessageConverters配置</h4><p>HttpMessageConverters这个是用来进行数据转化的,将接受到的请求报文转化为对应的java对象,同时将java对象转化为对应的相应报文内容,具体的流程为:<br><img src="images/spring-boot/config-message-1.png" alt=""></p>
+<p>有的消息转换器只支持多个数据类型，有的只支持多个输出格式，还有的两者兼备。例如：MappingJackson2HttpMessageConverter可以将Java对象转换为application/json，而ProtobufHttpMessageConverter仅支持com.google.protobuf.Message类型的输入，但是可以输出application/json、application/xml、text/plain和application/x-protobuf这么多格式。</p>
+<p>具体的下面介绍一个例子,通过postman调用接口传递参数过来,然后通过转换将消息的内容增加点内容,在写回前端.具体的如下:</p>
+<p>消息转换器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">public class DemoStringHttpMessageConverters implements HttpMessageConverter&lt;String&gt; &#123;</div><div class="line">    @Override</div><div class="line">    public boolean canRead(Class&lt;?&gt; aClass, MediaType mediaType) &#123;</div><div class="line">        return true;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public boolean canWrite(Class&lt;?&gt; aClass, MediaType mediaType) &#123;</div><div class="line">        return true;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public List&lt;MediaType&gt; getSupportedMediaTypes() &#123;</div><div class="line">        return Arrays.asList(MediaType.ALL);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public String read(Class&lt;? extends String&gt; aClass, HttpInputMessage httpInputMessage) throws IOException, HttpMessageNotReadableException &#123;</div><div class="line">        InputStream is = httpInputMessage.getBody();</div><div class="line">        BufferedInputStream bis = new BufferedInputStream(is);</div><div class="line">        byte[] bytes = new byte[4096];</div><div class="line">        bis.read(bytes);</div><div class="line"></div><div class="line">        //将字节内容转化为字符串内容</div><div class="line">        String param = new String(bytes).trim();</div><div class="line"></div><div class="line">        return &quot;reader data from web,data = &quot; + param;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void write(String s, MediaType mediaType, HttpOutputMessage httpOutputMessage) throws IOException, HttpMessageNotWritableException &#123;</div><div class="line">        PrintWriter pw = new PrintWriter(httpOutputMessage.getBody());</div><div class="line">        pw.write(&quot;writer data to web,data = &quot; + s);</div><div class="line">        pw.flush();</div><div class="line">        pw.close();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面的消息转换器定义好以后,将转换器添加到集合中,具体的为:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">@Configuration</div><div class="line">public class DemoWebMvcAutoConfiguration extends WebMvcConfigurerAdapter &#123;</div><div class="line">    @Override</div><div class="line">    public void configureMessageConverters(List&lt;HttpMessageConverter&lt;?&gt;&gt; converters) &#123;</div><div class="line">        converters.clear();</div><div class="line">        converters.add(new DemoStringHttpMessageConverters());</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>下面定义接口用来进行测试,具体的定义了3个测试接口:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">@RequestMapping(value = &quot;/rest/test&quot;)</div><div class="line">    public User test(@RequestBody User test)&#123;</div><div class="line">        test.setName(&quot;/rest/test -&gt; &quot; + test.getName());</div><div class="line">        return test;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @RequestMapping(value = &quot;/rest/test/1&quot;)</div><div class="line">    public String test1(@RequestBody String test)&#123;</div><div class="line">        return &quot;/rest/test -&gt; &quot; + test;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    @RequestMapping(value = &quot;/rest/test/2&quot;,method = RequestMethod.GET)</div><div class="line">    public String test2(@RequestParam String test)&#123;</div><div class="line">        return &quot;/rest/test -&gt; &quot; + test;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>针对每个测试接口进行测试,给出相应的结果:<br><img src="images/spring-boot/config-converter-1.png" alt=""></p>
+<p><img src="images/spring-boot/config-converter-2.png" alt=""></p>
+<p><img src="images/spring-boot/config-converter-3.png" alt=""></p>
+<p>由上面的操作可以总结出：</p>
+<pre><code>1 spring-boot消息转化器是组合操作,根据方法的参数类型来定,上面的代码中将集合中的消息转换器清空了(清空了集合)后添加了一个字符串的转化方式,调用测试接口传递一个对象过来时就无法转化抛异常
+2 调用测试接口3时,使用的注解是@RequestParam来读取采纳数的,这个时候没有做消息转换器,使用@RequestBody来注解参数时,会走消息转换器转化,可见除了需要指定SupportedMediaType(在消息转换器中有getSupportedMediaTypes()这个方法)外,不同的注解消息转换器的方式不一样,消息转换器不支持@RequestParam.
+3 @RequestParam只适用于处理基础类型的数据以及字符串类型的数据,同时常用与Get请求中的基础参数的获取或则是表单提交时的基础类型的参数取值。@RequestBody则用于请求体的处理,基本将整个请求的内容当成一个整体进行处理。
+</code></pre><p><img src="images/spring-boot/config-converter-4.png" alt=""></p>
+<h4 id="注册servlet"><a href="#注册servlet" class="headerlink" title="注册servlet"></a>注册servlet</h4><p>自定义servlet主要有两个方式,使用注解的方式来实现,或则是标记后增加到servlet集合中.具体的为：</p>
+<pre><code>第一种情况:
+    @Bean
+public ServletRegistrationBean servletRegistrationBean() {
+    return new ServletRegistrationBean(new TestServlet(), &quot;/sx/*&quot;);
+}
+
+第二种情况:
+    @WebServlet(urlPatterns = &quot;/sx/*&quot;)
+    public class TestServlet extends HttpServlet{
+        ....
+    }
+
+    @ServletComponentScan
+    public class SpringBootWebApplication {
+        ...
+    }
+</code></pre><p>具体的执行结果如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">@WebServlet(urlPatterns = &quot;/sx/*&quot;)</div><div class="line">public class TestServlet extends HttpServlet&#123;</div><div class="line">    @Override</div><div class="line">    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException &#123;</div><div class="line">        resp.setContentType(&quot;text/html&quot;);</div><div class="line">        PrintWriter out = resp.getWriter();</div><div class="line">        out.write(&quot;test content&quot;);</div><div class="line">        out.flush();</div><div class="line">        out.close();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException &#123;</div><div class="line">        doPost(req,resp);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><img src="images/spring-boot/config-servlet-1.png" alt=""></p>
+<h4 id="注册Filter"><a href="#注册Filter" class="headerlink" title="注册Filter"></a>注册Filter</h4><p>注册Filter的例子如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">public class TestFilter implements Filter &#123;</div><div class="line">    @Override</div><div class="line">    public void init(FilterConfig filterConfig) throws ServletException &#123;</div><div class="line">        System.out.println(&quot;init&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException &#123;</div><div class="line">        System.out.println(&quot;do&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void destroy() &#123;</div><div class="line">        System.out.println(&quot;destroy&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>需要将这个过滤器添加到spring boot中,添加的代码如下:</p>
+<pre><code>@Bean
+public FilterRegistrationBean filterRegistrationBean(){
+    FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
+    filterRegistrationBean.setFilter(new TestFilter());
+    filterRegistrationBean.addUrlPatterns(&quot;/*&quot;);
+    filterRegistrationBean.setOrder(1);
+    return filterRegistrationBean;
+}
+</code></pre><h4 id="注册Listener"><a href="#注册Listener" class="headerlink" title="注册Listener"></a>注册Listener</h4><p>自定义的Listener的内容为:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">public class TestListener implements ApplicationListener&lt;ContextRefreshedEvent&gt; &#123;</div><div class="line">    @Override</div><div class="line">    public void onApplicationEvent(ContextRefreshedEvent event) &#123;</div><div class="line">        System.out.println(&quot;加载中...&quot;);</div><div class="line">        if(event.getApplicationContext().getParent() == null)&#123;</div><div class="line">            //服务加载完成以后,会初始化执行的方法</div><div class="line">            System.out.println(&quot;服务加载完成...&quot;);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>定义好监听器以后,将该监听器绑定到系统中,操作为:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">public static void main(String[] args) &#123;</div><div class="line">		SpringApplication application = new SpringApplication(SpringBootWebApplication.class);</div><div class="line"></div><div class="line">		//添加监听器</div><div class="line">		application.addListeners(new TestListener());</div><div class="line"></div><div class="line">		application.run(args);</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<h2 id="Tomcat相关配置"><a href="#Tomcat相关配置" class="headerlink" title="Tomcat相关配置"></a>Tomcat相关配置</h2><p>toomcat常用的配置内容:</p>
+<pre><code>server.port= # 服务监听的端口
+server.session-timeout= # 用户的默认回话超时时间
+server.context-path= # 配置访问路径,默认的为 /
+server.tomcat.uri-encoding= # 配置tomcat的编码格式,默认为UTF-8
+server.tomcat.compression= # tomcat是否开启压缩,默认为关闭状态
+</code></pre><p>使用代码来控制相应的配置内容:</p>
+<pre><code>public class SpringBootWebApplication implements EmbeddedServletContainerCustomizer{
+    @Override
+    public void customize(ConfigurableEmbeddedServletContainer container) {
+        //设置端口
+        container.setPort(9090);
+        //设置session的过期时间
+        container.setSessionTimeout(1000 * 60 * 60);
+    }
+}
+</code></pre><p>替换tomcat为jetty:</p>
+<pre><code>&lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+        &lt;exclusions&gt;
+            &lt;exclusion&gt;
+                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-boot-starter-tomcat&lt;/artifactId&gt;
+            &lt;/exclusion&gt;
+        &lt;/exclusions&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-jetty&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+</code></pre><p>SSL配置:<br>使用java自带的工具生产相应的ssl证书,具体的过程为:<br><img src="images/spring-boot/config-ssl-1.png" alt=""></p>
+<p>具体的参数意义为:</p>
+<pre><code>-alias test(别名) 
+-keypass ***(别名密码) 
+-keyalg RSA(算法) 
+-keysize 1024(密钥长度) 
+-validity 365(有效期，天单位) 
+-keystore /data/study/key/test.keystore(指定生成证书的位置和证书名称) 
+-storepass(获取keystore信息的密码)    
+</code></pre><p>使用openssl来生成认证证书</p>
+<pre><code>openssl genrsa -des3 -passout pass:x -out server.pass.key 2048
+openssl rsa -passin pass:x -in server.pass.key -out server.key
+rm server.pass.key
+openssl req -new -key server.key -out server.csr
+openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
+</code></pre><p>这里采用openssl生成的证书,这个证书是中间证书,需要转化为java中可以识别的证书格式,具体转化过程为:</p>
+<pre><code>openssl pkcs12 -export -name server -in server.crt -inkey private.key -out keystore.p12
+keytool -importkeystore -destkeystore keystore.jks -srckeystore keystore.p12 -srcstoretype pkcs12 -alias server
+</code></pre><p>spring boot配置ssl:</p>
+<pre><code># 配置ssl
+server.port = 9443
+server.ssl.enabled = true
+server.ssl.key-store = classpath:key/keystore.jks
+server.ssl.key-store-password = sunxing
+server.ssl.key-store-type = JKS
+</code></pre><p>启动服务,调用接口地址,查看结果：<br><img src="images/spring-boot/config-ssl-2.png" alt=""><br><img src="images/spring-boot/config-ssl-3.png" alt=""></p>
+<p>这个结果使用了上面介绍的自定义的servlet,所以返回的结果内容为test content。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/spring/" rel="tag">#spring</a>
+          
+            <a href="/tags/spring-boot/" rel="tag">#spring boot</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/10/25/spring-boot-study010/" rel="next" title="Spring Boot基础学习(十) 安全">
+                <i class="fa fa-chevron-left"></i> Spring Boot基础学习(十) 安全
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/10/27/spring-boot-study012/" rel="prev" title="Spring Boot基础学习(十二) 声明式事务">
+                Spring Boot基础学习(十二) 声明式事务 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+           <!-- 多说热评文章 start -->
+	<div class="ds-top-threads" data-range="daily" data-num-items="5"></div>
+<!-- 多说热评文章 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+
+           <section id="comments">
+   <!-- 多说评论框 start -->
+<div id="ds-thread" class="ds-thread" data-thread-key="<%= post.path %>" data-title="<%= post.title %>" data-url="<%= post.permalink %>"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+  </section>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="孙星" />
+          <p class="site-author-name" itemprop="name">孙星</p>
+          <p class="site-description motion-element" itemprop="description">sunxing's blog | mysql | java | scala | hadoop | spark | kafka | flume</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">78</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Web相关配置"><span class="nav-number">1.</span> <span class="nav-text">Web相关配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#自动配置ViewResolver"><span class="nav-number">1.0.1.</span> <span class="nav-text">自动配置ViewResolver</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#自动配置静态资源"><span class="nav-number">1.0.2.</span> <span class="nav-text">自动配置静态资源</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#自动配置Formatter"><span class="nav-number">1.0.3.</span> <span class="nav-text">自动配置Formatter</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#自动配置Converter"><span class="nav-number">1.0.4.</span> <span class="nav-text">自动配置Converter</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HttpMessageConverters配置"><span class="nav-number">1.0.5.</span> <span class="nav-text">HttpMessageConverters配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#注册servlet"><span class="nav-number">1.0.6.</span> <span class="nav-text">注册servlet</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#注册Filter"><span class="nav-number">1.0.7.</span> <span class="nav-text">注册Filter</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#注册Listener"><span class="nav-number">1.0.8.</span> <span class="nav-text">注册Listener</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Tomcat相关配置"><span class="nav-number">2.</span> <span class="nav-text">Tomcat相关配置</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孙星</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"sunxing"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,679 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="spring,spring boot," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="Spring Boot CacheSpring定义了CacheManager和Cache接口来统一不同的缓存技术。其中CacheManager是spring提供的各种缓存技术抽象接口,Cache接口包含了缓存的各种操作(增加,删除,获取缓存),一般情况下不会直接和这个接口打交道. Srping支持的CacheManager的列表如下：|CacheManager|描述||:–:|:—:||Simpl">
+<meta name="keywords" content="spring,spring boot">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring Boot基础学习(十三) 数据缓存">
+<meta property="og:url" content="http://www.sunxing.cc/2017/10/30/spring-boot-study013/index.html">
+<meta property="og:site_name" content="孙星的个人博客~">
+<meta property="og:description" content="Spring Boot CacheSpring定义了CacheManager和Cache接口来统一不同的缓存技术。其中CacheManager是spring提供的各种缓存技术抽象接口,Cache接口包含了缓存的各种操作(增加,删除,获取缓存),一般情况下不会直接和这个接口打交道. Srping支持的CacheManager的列表如下：|CacheManager|描述||:–:|:—:||Simpl">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://www.sunxing.cc/2017/10/30/spring-boot-study013/images/spring-boot/cache-1.png">
+<meta property="og:image" content="http://www.sunxing.cc/2017/10/30/spring-boot-study013/images/spring-boot/cache-2.png">
+<meta property="og:updated_time" content="2017-12-25T07:28:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spring Boot基础学习(十三) 数据缓存">
+<meta name="twitter:description" content="Spring Boot CacheSpring定义了CacheManager和Cache接口来统一不同的缓存技术。其中CacheManager是spring提供的各种缓存技术抽象接口,Cache接口包含了缓存的各种操作(增加,删除,获取缓存),一般情况下不会直接和这个接口打交道. Srping支持的CacheManager的列表如下：|CacheManager|描述||:–:|:—:||Simpl">
+<meta name="twitter:image" content="http://www.sunxing.cc/2017/10/30/spring-boot-study013/images/spring-boot/cache-1.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+ <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258995301'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/z_stat.php%3Fid%3D1258995301' type='text/javascript'%3E%3C/script%3E"));</script>
+
+  <title> Spring Boot基础学习(十三) 数据缓存 | 孙星的个人博客~ </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">孙星的个人博客~</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">搬砖的,码农~</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Spring Boot基础学习(十三) 数据缓存
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2017-10-30T17:22:46+08:00" content="2017-10-30">
+              2017-10-30
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/spring-boot/" itemprop="url" rel="index">
+                    <span itemprop="name">spring boot</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2017/10/30/spring-boot-study013/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/10/30/spring-boot-study013/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Spring-Boot-Cache"><a href="#Spring-Boot-Cache" class="headerlink" title="Spring Boot Cache"></a>Spring Boot Cache</h1><p>Spring定义了CacheManager和Cache接口来统一不同的缓存技术。其中CacheManager是spring提供的各种缓存技术抽象接口,Cache接口包含了缓存的各种操作(增加,删除,获取缓存),一般情况下不会直接和这个接口打交道.</p>
+<p>Srping支持的CacheManager的列表如下：<br>|CacheManager|描述|<br>|:–:|:—:|<br>|SimpleCacheManager|使用简单的Collection来存储数据,主要用于测试用途|<br>|ConcurrentMapCacheManager|使用ConcurrentMap来存储缓存数据|<br>|NoOpCacheManager|仅用于测试,不会实际存储数据|<br>|EhCacheCacheManager|使用EhCache作为缓存技术|<br>|GuavaCacheManager|使用Google Guava作为缓存技术|<br>|HazelcastCacheManager|使用Hazelcast作为缓存技术|<br>|JCacheCacheManager|支持JCache的标准的实现作为缓存技术|<br>|RedisCacheManager|使用Redis作为缓存技术|</p>
+<h3 id="声明式缓存注解"><a href="#声明式缓存注解" class="headerlink" title="声明式缓存注解"></a>声明式缓存注解</h3><p>Spring提供了4个注解来声明缓存规则,声明式注解如下:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">注解</th>
+<th style="text-align:center">解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">@Cacheable</td>
+<td style="text-align:center">在执行方法之前,Spring会先查看缓存中是否有数据,如果有数据,则直接返回缓存数据,若没有,则调用方法,将数据查询出来后放进缓存</td>
+</tr>
+<tr>
+<td style="text-align:center">@CachePut</td>
+<td style="text-align:center">无论如何都会将方法的返回值放入到缓存中</td>
+</tr>
+<tr>
+<td style="text-align:center">@CacheEvict</td>
+<td style="text-align:center">将一条或则多条数据从缓存汇总删除</td>
+</tr>
+<tr>
+<td style="text-align:center">@Caching</td>
+<td style="text-align:center">可以通过@Caching注解组合多个注解策略在一个方法上</td>
+</tr>
+</tbody>
+</table>
+<p>声明式注解使用时配置内容为:</p>
+<pre><code># 可选generic,ehcache,hazelcast,infinispan,jcache,redis,simple,guava,none
+spring.cache.type= simple
+# 程序启动时常见缓存的名称
+spring.cache.cache-names=person
+# ehcache 配置文件地址,其他文件的配置内容差不多
+# spring.cache.ehcache.config=application.properties
+</code></pre><h3 id="声明式缓存实例"><a href="#声明式缓存实例" class="headerlink" title="声明式缓存实例"></a>声明式缓存实例</h3><p>例子是通过从接口传递过来的参数包装对象后插入到数据库中,同时又会缓存起来,下面在通过查询接口从数据库中根据主键查询这条数据,以及删除掉缓存以后再进行查询,整个过程中打印查询数据库的sql内容.具体的例子代码结构如下:</p>
+<p><img src="images/spring-boot/cache-1.png" alt=""></p>
+<h5 id="实体类对象"><a href="#实体类对象" class="headerlink" title="实体类对象"></a>实体类对象</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">@Entity</div><div class="line">public class Person &#123;</div><div class="line">    @Id</div><div class="line">//    @GeneratedValue</div><div class="line">    private Long id;</div><div class="line">    private String name;</div><div class="line">    private Integer age;</div><div class="line"></div><div class="line">    public Person()&#123;</div><div class="line">        super();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public Person(String name, Integer age)&#123;</div><div class="line">        this.name = name;</div><div class="line">        this.age = age;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public Person(Long id, String name, Integer age)&#123;</div><div class="line">        this.id = id;</div><div class="line">        this.name = name;</div><div class="line">        this.age = age;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">   .....</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h5 id="controller"><a href="#controller" class="headerlink" title="controller"></a>controller</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">@RestController</div><div class="line">public class CacheController &#123;</div><div class="line">    @Autowired</div><div class="line">    private DemoService service;</div><div class="line"></div><div class="line">    @RequestMapping(&quot;/put&quot;)</div><div class="line">    public Person put(@RequestParam Long id,@RequestParam String name,@RequestParam int age)&#123;</div><div class="line">        return service.save(new Person(id,name,age));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @RequestMapping(&quot;/able&quot;)</div><div class="line">    public Person able(@RequestParam Long id)&#123;</div><div class="line">        return service.findOne(id);</div><div class="line">    &#125;</div><div class="line">    @RequestMapping(&quot;/evit&quot;)</div><div class="line">    public String evit(Long id)&#123;</div><div class="line">        service.remove(id);</div><div class="line">        return &quot;ok&quot;;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h5 id="数据库操作"><a href="#数据库操作" class="headerlink" title="数据库操作"></a>数据库操作</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">public interface PersonRepository extends JpaRepository&lt;Person,Long&gt; &#123;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h5 id="service"><a href="#service" class="headerlink" title="service"></a>service</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">@Service</div><div class="line">public class DemoService &#123;</div><div class="line">    @Autowired</div><div class="line">    private PersonRepository repository;</div><div class="line"></div><div class="line">    @CachePut(value = &quot;person&quot;, key = &quot;#person.id&quot;)</div><div class="line">    public Person save(Person person)&#123;</div><div class="line">        //保存数据</div><div class="line">        Person p = repository.save(person);</div><div class="line">        System.out.println(&quot;为id,key为:&quot; + p.getId() + &quot;数据做了缓存&quot;);</div><div class="line">        return p;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @CacheEvict(value = &quot;person&quot;)</div><div class="line">    public void remove(Long id)&#123;</div><div class="line">        System.out.println(&quot;删除了id,key为:&quot; + id + &quot;的数据缓存&quot;);</div><div class="line">//        repository.delete(id);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Cacheable(value = &quot;person&quot;, key = &quot;#id&quot;)</div><div class="line">    public Person findOne(long id)&#123;</div><div class="line">        Person p = repository.findOne(id);</div><div class="line">        System.out.println(&quot;为id,key为:&quot; + p.getId() + &quot;数据做了缓存&quot;);</div><div class="line">        return p;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h5 id="运行结果说明"><a href="#运行结果说明" class="headerlink" title="运行结果说明"></a>运行结果说明</h5><p>首先通过接口向数据库中插入一条数据,这条数据会缓存起来,然后在调用接口查询这条数据,会发现数据已经被缓存起来了,没有打印查询sql直接从缓存中将数据返回了,这个时候删除调用缓存,在通过查询接口将数据查询出来,查询的sql会被打印出来,也就是缓存中没有再去查询数据库。具体的执行结果截图如下：</p>
+<p><img src="images/spring-boot/cache-2.png" alt=""></p>
+<p>由于数据被缓存了,进行数据查询时时通过aop切面进行操作的,如果缓存中有数据,方法体实际是不执行的,这里就没有打印第二步的操作。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/spring/" rel="tag">#spring</a>
+          
+            <a href="/tags/spring-boot/" rel="tag">#spring boot</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/10/27/spring-boot-study012/" rel="next" title="Spring Boot基础学习(十二) 声明式事务">
+                <i class="fa fa-chevron-left"></i> Spring Boot基础学习(十二) 声明式事务
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+           <!-- 多说热评文章 start -->
+	<div class="ds-top-threads" data-range="daily" data-num-items="5"></div>
+<!-- 多说热评文章 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+
+           <section id="comments">
+   <!-- 多说评论框 start -->
+<div id="ds-thread" class="ds-thread" data-thread-key="<%= post.path %>" data-title="<%= post.title %>" data-url="<%= post.permalink %>"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+  </section>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="孙星" />
+          <p class="site-author-name" itemprop="name">孙星</p>
+          <p class="site-description motion-element" itemprop="description">sunxing's blog | mysql | java | scala | hadoop | spark | kafka | flume</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">78</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Spring-Boot-Cache"><span class="nav-number">1.</span> <span class="nav-text">Spring Boot Cache</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#声明式缓存注解"><span class="nav-number">1.0.1.</span> <span class="nav-text">声明式缓存注解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#声明式缓存实例"><span class="nav-number">1.0.2.</span> <span class="nav-text">声明式缓存实例</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#实体类对象"><span class="nav-number">1.0.2.0.1.</span> <span class="nav-text">实体类对象</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#controller"><span class="nav-number">1.0.2.0.2.</span> <span class="nav-text">controller</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#数据库操作"><span class="nav-number">1.0.2.0.3.</span> <span class="nav-text">数据库操作</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#service"><span class="nav-number">1.0.2.0.4.</span> <span class="nav-text">service</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#运行结果说明"><span class="nav-number">1.0.2.0.5.</span> <span class="nav-text">运行结果说明</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孙星</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"sunxing"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>

@@ -231,8 +231,8 @@
             
               
                 
-                <a class="post-title-link" href="/2016/05/10/java-io-2/" itemprop="url">
-                  JavaIO学习笔记(二) Java标准I/O
+                <a class="post-title-link" href="/2016/06/01/hbase-study001/" itemprop="url">
+                  HBase学习笔记(一) HBase的集群环境搭建
                 </a>
               
             
@@ -245,8 +245,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-05-10T10:57:55+08:00" content="2016-05-10">
-              2016-05-10
+            <time itemprop="dateCreated" datetime="2016-06-01T18:55:55+08:00" content="2016-06-01">
+              2016-06-01
             </time>
           </span>
 
@@ -259,8 +259,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
+                  <a href="/categories/hbase/" itemprop="url" rel="index">
+                    <span itemprop="name">hbase</span>
                   </a>
                 </span>
 
@@ -275,8 +275,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/05/10/java-io-2/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/10/java-io-2/" itemprop="commentsCount"></span>
+                <a href="/2016/06/01/hbase-study001/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/01/hbase-study001/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -301,485 +301,50 @@
       
         
           
-            <p>java系统自带的标准数据流：java.lang.System</p>
-<p><img src="/images/io/system.png" alt=""></p>
-<p>System类中标准输入,输出,异常输出流</p>
-<pre><code>/**
- * The &quot;standard&quot; input stream. This stream is already
- * open and ready to supply input data. Typically this stream
- * corresponds to keyboard input or another input source specified by
- * the host environment or user.
- */
-public final static InputStream in = null;
+            <h2 id="1-集群环境部署"><a href="#1-集群环境部署" class="headerlink" title="1 集群环境部署"></a>1 集群环境部署</h2><p>hbase集群环境是通过zookeeper来进行协调管理调度的,也就是说搭建集群环境需要有zookeeper,在hbase中集成了zookeeper,可以通过配置文件中的参数来实现控制,参数的详细说明如下:</p>
+<p><img src="/images/hbase/hbase-zk-config.png" alt=""></p>
+<p>这个参数在hbase-env.sh中,由上面的注释可知这个是告诉hbase应该去管理哪一个zk实例。</p>
+<h2 id="2-zookeeper的配置安装"><a href="#2-zookeeper的配置安装" class="headerlink" title="2 zookeeper的配置安装"></a>2 zookeeper的配置安装</h2><p>1 下载zookeeper的安装包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">wget http://mirrors.cnnic.cn/apache/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz</div><div class="line"></div><div class="line">tar -zxvf zookeeper-3.4.8.tar.gz</div></pre></td></tr></table></figure>
+<p>2 修改zookeeper的配置：</p>
+<p><img src="/images/hbase/zookeeper-conf.png" alt=""></p>
+<p>3 给每个节点增加对应的id编号,并且和配置文件中对应</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cat &quot;1&quot; &gt;&gt; data/myid</div></pre></td></tr></table></figure>
+<p>在不同的节点上修改不同的id参数,配置信息。</p>
+<p>4 将配置好的zookeeper迁移到其他机器上去</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">scp zookeeper3.4.8 root@hadoop-slave:/data/</div></pre></td></tr></table></figure>
+<p>5 启动相应的zookeeper</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">cd /data/zookeeper3.4.8</div><div class="line"></div><div class="line">./bin/zkServer.sh start</div></pre></td></tr></table></figure>
+<h2 id="3-hbase的安装"><a href="#3-hbase的安装" class="headerlink" title="3 hbase的安装"></a>3 hbase的安装</h2><p>hbase-site.xml的配置信息如下:</p>
+<p><img src="/images/hbase/hbase-site.png" alt=""></p>
+<p>将配置好的hbase拷贝到多台机器上去</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">scp hbase1.2.0 root@hadoop-slave:/data/</div></pre></td></tr></table></figure>
+<p>启动hbase:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">cd /data/hbase1.2.0</div><div class="line"></div><div class="line">./bin/start-hbase.sh</div></pre></td></tr></table></figure>
+<p>hbase运行起来后的进程如下:</p>
+<p>主节进程如下:</p>
+<p><img src="/images/hbase/hbase-master.png" alt=""></p>
+<p>从节点的进程如下:</p>
+<p><img src="/images/hbase/hbase-node.png" alt=""></p>
+<p>由于测试环境在跑数据，所以会有一些yarn的进程在。hbase运行正常的话,在主节点有进程:HMaster,从节点会有:HRegionServer。</p>
+<h2 id="4-安装过程遇到的问题"><a href="#4-安装过程遇到的问题" class="headerlink" title="4 安装过程遇到的问题"></a>4 安装过程遇到的问题</h2><p>1 时间同步问题</p>
+<p>异常截图如下：</p>
+<p><img src="/images/hbase/hbase-error-clock.png" alt=""></p>
+<p>主要原因是因为hbase集群中各个节点中时间不同步,解决方案如下:</p>
+<pre><code>a 允许各个节点间时间存在差异,指定差异的大小,设定方式如：
+&lt;property&gt;
+    &lt;name&gt;hbase.master.maxclockskew&lt;/name&gt;
+    &lt;value&gt;180000&lt;/value&gt;
+    &lt;description&gt;Time difference of regionserver from master&lt;/description&gt;
+&lt;/property&gt;
 
-/**
- * The &quot;standard&quot; output stream. This stream is already
- * open and ready to accept output data. Typically this stream
- * corresponds to display output or another output destination
- * specified by the host environment or user.
- * &lt;p&gt;
- * For simple stand-alone Java applications, a typical way to write
- * a line of output data is:
- * &lt;blockquote&gt;&lt;pre&gt;
- *     System.out.println(data)
- * &lt;/pre&gt;&lt;/blockquote&gt;
- * &lt;p&gt;
- * See the &lt;code&gt;println&lt;/code&gt; methods in class &lt;code&gt;PrintStream&lt;/code&gt;.
- *
- * @see     java.io.PrintStream#println()
- * @see     java.io.PrintStream#println(boolean)
- * @see     java.io.PrintStream#println(char)
- * @see     java.io.PrintStream#println(char[])
- * @see     java.io.PrintStream#println(double)
- * @see     java.io.PrintStream#println(float)
- * @see     java.io.PrintStream#println(int)
- * @see     java.io.PrintStream#println(long)
- * @see     java.io.PrintStream#println(java.lang.Object)
- * @see     java.io.PrintStream#println(java.lang.String)
- */
-public final static PrintStream out = null;
+b 或者同步各个节点的数据
 
-/**
- * The &quot;standard&quot; error output stream. This stream is already
- * open and ready to accept output data.
- * &lt;p&gt;
- * Typically this stream corresponds to display output or another
- * output destination specified by the host environment or user. By
- * convention, this output stream is used to display error messages
- * or other information that should come to the immediate attention
- * of a user even if the principal output stream, the value of the
- * variable &lt;code&gt;out&lt;/code&gt;, has been redirected to a file or other
- * destination that is typically not continuously monitored.
- */
-public final static PrintStream err = null;
-</code></pre><p>  标准输入输出的初始化过程主要是在java.lang.System中有静态块,静态块中调用了一个native方法,也就是调用了一个非java代码接口,源码截图如下:</p>
-<p>  <img src="/images/io/system-native.png" alt=""></p>
-<p>  可以看到注释中发射调用了initializeSystemClass这个方法,这个方法的源代码如下：</p>
-<pre><code>  /**
- * Initialize the system class.  Called after thread initialization.
- */
-private static void initializeSystemClass() {
-    // VM might invoke JNU_NewStringPlatform() to set those encoding
-    // sensitive properties (user.home, user.name, boot.class.path, etc.)
-    // during &quot;props&quot; initialization, in which it may need access, via
-    // System.getProperty(), to the related system encoding property that
-    // have been initialized (put into &quot;props&quot;) at early stage of the
-    // initialization. So make sure the &quot;props&quot; is available at the
-    // very beginning of the initialization and all system properties to
-    // be put into it directly.
-    props = new Properties();
-    initProperties(props);  // initialized by the VM
-
-    // There are certain system configurations that may be controlled by
-    // VM options such as the maximum amount of direct memory and
-    // Integer cache size used to support the object identity semantics
-    // of autoboxing.  Typically, the library will obtain these values
-    // from the properties set by the VM.  If the properties are for
-    // internal implementation use only, these properties should be
-    // removed from the system properties.
-    //
-    // See java.lang.Integer.IntegerCache and the
-    // sun.misc.VM.saveAndRemoveProperties method for example.
-    //
-    // Save a private copy of the system properties object that
-    // can only be accessed by the internal implementation.  Remove
-    // certain system properties that are not intended for public access.
-    sun.misc.VM.saveAndRemoveProperties(props);
-
-
-    lineSeparator = props.getProperty(&quot;line.separator&quot;);
-    sun.misc.Version.init();
-
-    FileInputStream fdIn = new FileInputStream(FileDescriptor.in);
-    FileOutputStream fdOut = new FileOutputStream(FileDescriptor.out);
-    FileOutputStream fdErr = new FileOutputStream(FileDescriptor.err);
-    setIn0(new BufferedInputStream(fdIn));
-    setOut0(new PrintStream(new BufferedOutputStream(fdOut, 128), true));
-    setErr0(new PrintStream(new BufferedOutputStream(fdErr, 128), true));
-    // Load the zip library now in order to keep java.util.zip.ZipFile
-    // from trying to use itself to load this library later.
-    loadLibrary(&quot;zip&quot;);
-
-    // Setup Java signal handlers for HUP, TERM, and INT (where available).
-    Terminator.setup();
-
-    // Initialize any miscellenous operating system settings that need to be
-    // set for the class libraries. Currently this is no-op everywhere except
-    // for Windows where the process-wide error mode is set before the java.io
-    // classes are used.
-    sun.misc.VM.initializeOSEnvironment();
-
-    // The main thread is not added to its thread group in the same
-    // way as other threads; we must do it ourselves here.
-    Thread current = Thread.currentThread();
-    current.getThreadGroup().add(current);
-
-    // register shared secrets
-    setJavaLangAccess();
-
-    // Subsystems that are invoked during initialization can invoke
-    // sun.misc.VM.isBooted() in order to avoid doing things that should
-    // wait until the application class loader has been set up.
-    // IMPORTANT: Ensure that this remains the last initialization action!
-    sun.misc.VM.booted();
-}
-</code></pre><p>  System可以看到主要的工作是进行系统配置的初始化,标准输入输出以及异常错误输出的操作。由上面的源码看出初始化的动作是在：</p>
-<pre><code>  FileInputStream fdIn = new FileInputStream(FileDescriptor.in);
-FileOutputStream fdOut = new FileOutputStream(FileDescriptor.out);
-FileOutputStream fdErr = new FileOutputStream(FileDescriptor.err);
-setIn0(new BufferedInputStream(fdIn));
-setOut0(new PrintStream(new BufferedOutputStream(fdOut, 128), true));
-setErr0(new PrintStream(new BufferedOutputStream(fdErr, 128), true));
-
-private static native void setIn0(InputStream in);
-private static native void setOut0(PrintStream out);
-private static native void setErr0(PrintStream err);
-
-   /**
- * Reassigns the &quot;standard&quot; error output stream.
- *
- * &lt;p&gt;First, if there is a security manager, its &lt;code&gt;checkPermission&lt;/code&gt;
- * method is called with a &lt;code&gt;RuntimePermission(&quot;setIO&quot;)&lt;/code&gt; permission
- *  to see if it&apos;s ok to reassign the &quot;standard&quot; error output stream.
- *
- * @param err the new standard error output stream.
- *
- * @throws SecurityException
- *        if a security manager exists and its
- *        &lt;code&gt;checkPermission&lt;/code&gt; method doesn&apos;t allow
- *        reassigning of the standard error output stream.
- *
- * @see SecurityManager#checkPermission
- * @see java.lang.RuntimePermission
- *
- * @since   JDK1.1
- */
-public static void setErr(PrintStream err) {
-    checkIO();
-    setErr0(err);
-}
-</code></pre><p> 也就是在初始化System的同时,调用非java接口初始化相应的标准输出流,同样的,从上面的源码代码可以看到：标准输出对象实质上就是FileDescriptor对象,而FileDescriptor没有输出接口,所以创建out对应的“输出流对象”，然后通过“输出流”的write()等输出接口就可以将信息输出到屏幕上。</p>
-<p>FileDescriptor.java中，相关源码如下：</p>
-<pre><code>public final class FileDescriptor {  
-private int fd;  
-public static final FileDescriptor out = new FileDescriptor(1);  
-    private FileDescriptor(int fd) {  
-        this.fd = fd;  
-        useCount = new AtomicInteger();  
-    }  
-    ...
- }
-</code></pre><p>从中，可以看出</p>
-<ul>
-<li>out就是一个FileDescriptor对象。它是通过构造函数FileDescriptor(int fd)创建的。</li>
-<li>FileDescriptor(int fd)的操作：就是给fd对象(int类型)赋值，并新建一个使用计数变量useCount。<br>fd对象是非常重要的一个变量，“fd=1”就代表了“标准输出”，“fd=0”就代表了“标准输入”，“fd=2”就代表了“标准错误输出”。</li>
-</ul>
-<p>FileOutputStream out = new FileOutputStream(FileDescriptor.out); 就是利用构造函数FileOutputStream(FileDescriptor fdObj)来创建“Filed.out对应的FileOutputStream对象”</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/05/10/java-io-1/" itemprop="url">
-                  JavaIO学习笔记(一) JavaIO概述
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-05-10T09:57:55+08:00" content="2016-05-10">
-              2016-05-10
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/05/10/java-io-1/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/10/java-io-1/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>Java的IO包主要是数据源的读取和结果源的输出,结果元的输出一般输出到指定的目标媒介上。以下是最典型的数据源和目标媒介：</p>
-<pre><code>* 文件
- * 管道
-* 网络连接
-* 内存缓存
-* System.in, System.out, System.error(注：Java标准输入、输出、错误输出)
-</code></pre><p>JavaIO中一个最重要的概念是流,流从概念上说是一个连续的数据流,可以从流中读取数据也可以向流中写入数据。</p>
-<p>IO流的分类<br>根据处理数据类型的不同分为：字符流和字节流<br>根据数据流向不同分为：输入流和输出流</p>
-<p>字符流和字节流<br>字符流的由来： 因为数据编码的不同，而有了对字符进行高效操作的流对象。本质其实就是基于字节流读取时，去查了指定的码表。 字节流和字符流的区别：</p>
-<p>读写单位不同：字节流以字节（8bit）为单位，字符流以字符为单位，根据码表映射字符，一次可能读多个字节。<br>处理对象不同：字节流能处理所有类型的数据（如图片、avi等），而字符流只能处理字符类型的数据。<br>结论：只要是处理纯文本数据，就优先考虑使用字符流。 除此之外都使用字节流。</p>
-<p>输入流和输出流<br>对输入流只能进行读操作，对输出流只能进行写操作，程序中需要根据待传输数据的不同特性而使用不同的流。 </p>
-<p>Java I/O主要包括如下几个层次，包含三个部分：</p>
-<ol>
-<li>流式部分――IO的主体部分；</li>
-<li>非流式部分――主要包含一些辅助流式部分的类，如：File类、RandomAccessFile类和FileDescriptor等类；</li>
-<li>其他类–文件读取部分的与安全相关的类，如：SerializablePermission类，以及与本地操作系统相关的文件系统的类，如：FileSystem类和Win32FileSystem类和WinNTFileSystem类。</li>
-</ol>
-<p>主要的类如下：</p>
-<ol>
-<li>File（文件特征与管理）：用于文件或者目录的描述信息，例如生成新目录，修改文件名，删除文件，判断文件所在路径等。</li>
-<li>InputStream（二进制格式操作）：抽象类，基于字节的输入操作，是所有输入流的父类。定义了所有输入流都具有的共同特征。</li>
-<li>OutputStream（二进制格式操作）：抽象类。基于字节的输出操作。是所有输出流的父类。定义了所有输出流都具有的共同特征。Java中字符是采用Unicode标准，一个字符是16位，即一个字符使用两个字节来表示。为此，JAVA中引入了处理字符的流。</li>
-<li>Reader（文件格式操作）：抽象类，基于字符的输入操作。</li>
-<li>Writer（文件格式操作）：抽象类，基于字符的输出操作。</li>
-<li>RandomAccessFile（随机文件操作）：它的功能丰富，可以从文件的任意位置进行存取（输入输出）操作。</li>
-</ol>
-<p>JavaIO的体系结果图如下:</p>
-<p><img src="/images/io/tixi.jpg" alt=""></p>
-<p>Java流类图结构：</p>
-<p><img src="/images/io/io.jpg" alt=""></p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/05/09/hive-study001/" itemprop="url">
-                  Hive学习笔记(一) Hive环境搭建
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-05-09T18:39:55+08:00" content="2016-05-09">
-              2016-05-09
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/hive/" itemprop="url" rel="index">
-                    <span itemprop="name">hive</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/05/09/hive-study001/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/09/hive-study001/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <blockquote>
-<p>Hive相当于是一个客户端,抽象的mysql客户端,而这个客户端对应的数据存储是存在HDFS中,Hive中相应的sql解析器主要是将sql语言解析封装成为一个可执行的MapReduce作业.</p>
-</blockquote>
-<p>Hive的元数据存储模式一共有三种:</p>
-<ul>
-<li>内嵌metastore</li>
-<li>本地metastore</li>
-<li>远程metastore</li>
-</ul>
-<p>由于内嵌的metastore不是很稳定,hive的原始配置文件中数据源的配置为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;property&gt;</div><div class="line">    &lt;name&gt;javax.jdo.option.ConnectionURL&lt;/name&gt;</div><div class="line">    &lt;value&gt;jdbc:derby:;databaseName=metastore_db;create=true&lt;/value&gt;</div><div class="line">    &lt;description&gt;JDBC connect string for a JDBC metastore&lt;/description&gt;</div><div class="line">  &lt;/property&gt;</div></pre></td></tr></table></figure>
-<p>Apache Derby是一个完全用java编写的数据库，Derby是一个Open source的产品,Apache Derby非常小巧，核心部分derby.jar只有2M，所以既可以做为单独的数据库服务器使用，也可以内嵌在应用程序中使用。但是不稳定,针对hive使用中不是很适合。因此这里使用mysql用作元数据的存储。</p>
-<h2 id="开始安装"><a href="#开始安装" class="headerlink" title="开始安装"></a>开始安装</h2><p>hive 安装版本使用的是1.2.1，安装模式采用的是本地模式，其中，安装文件夹路径如下：</p>
-<p><img src="/images/hive/first.png" alt=""></p>
-<p>安装方式:<br>1 解压hive1.2.1的安装包<br>2 修改配置文件</p>
-<p><img src="/images/hive/conf-list.png" alt=""></p>
-<p>在hive中配置文件中主要是hive-default.xml.template，以及hive-env.sh.template<br>其中hive中有要求，如果hive-default.xml和hive-site.xml同时存在的时候的，如果hive-site.xml和hive-default.xml中的key有相同的话<br>以hive-site.xml中为准。因此创建了一个hive-site.xml文件.</p>
-<p>3 首先需要修改的是环境变量，配置hadoop的路径以及hive的配置文件路径，如果需要积累hive的日志文件记录，需要修改hive-log4j.properties<br>修改的内容如下:<br>hive-env.sh</p>
-<p><img src="/images/hive/env-conf.png" alt=""></p>
-<p>log4j日志配置<br>hive-log4j.properties</p>
-<p><img src="/images/hive/log-conf.png" alt=""></p>
-<p>hive-site.xml的配置详细如下:</p>
-<p>​<img src="/images/hive/hive-site.png" alt=""><br>​<br>​对以上配置信息进行初步的说明:</p>
-<ul>
-<li>javax.jdo.option.ConnectionURL                        数据库的链接</li>
-<li>javax.jdo.option.ConnectionDriverName                 数据库驱动名称</li>
-<li>javax.jdo.option.ConnectionUserName                   登陆数据库的用户名称</li>
-<li>javax.jbo.option.ConnectionPassword                   登陆用户的密码</li>
-<li>hive.exec.local.scratchdir                            hive本地粗糙你的一些临时文件</li>
-<li>hive.metastore.warehouse.dir                            hive的数据库存储的路径</li>
-<li>hive.exec.mode.local.auto                                  是否是本地模式</li>
-<li>hive.querylog.location                                hive查询操作的日志目录</li>
-</ul>
-<h2 id="Hive安装后出现的问题"><a href="#Hive安装后出现的问题" class="headerlink" title="Hive安装后出现的问题"></a>Hive安装后出现的问题</h2><p>1 向hive中创建数据库并插入到一条数据，抛异常：Specified key was too long; max key length is 767 bytes</p>
-<pre><code>原因： 主要是hive使用的是本地的mysql，由于hive用到的数据库是手动创建的，编码格式不对，因此需要手动更改数据对应的编码格式
-首先需要在数据库中更改对应的数据库的编码格式:
-alter database hive character set latin1;
+ 安装工具
+ yum install ntp
+ 安装后执行
+ ntpdate cn.pool.ntp.org
+ 即可同步国际时间..
 </code></pre>
           
         
@@ -829,8 +394,8 @@ alter database hive character set latin1;
             
               
                 
-                <a class="post-title-link" href="/2016/05/09/hadoop-study003/" itemprop="url">
-                  Hadoop学习笔记(三) MapReduce框架详解
+                <a class="post-title-link" href="/2016/05/27/hive-study005/" itemprop="url">
+                  Hive学习笔记(五) Hive自定义函数开发
                 </a>
               
             
@@ -843,8 +408,8 @@ alter database hive character set latin1;
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-05-09T17:13:55+08:00" content="2016-05-09">
-              2016-05-09
+            <time itemprop="dateCreated" datetime="2016-05-27T18:55:55+08:00" content="2016-05-27">
+              2016-05-27
             </time>
           </span>
 
@@ -857,8 +422,8 @@ alter database hive character set latin1;
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/hadoop/" itemprop="url" rel="index">
-                    <span itemprop="name">hadoop</span>
+                  <a href="/categories/hive/" itemprop="url" rel="index">
+                    <span itemprop="name">hive</span>
                   </a>
                 </span>
 
@@ -873,8 +438,8 @@ alter database hive character set latin1;
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/05/09/hadoop-study003/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/09/hadoop-study003/" itemprop="commentsCount"></span>
+                <a href="/2016/05/27/hive-study005/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/27/hive-study005/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -899,33 +464,63 @@ alter database hive character set latin1;
       
         
           
-            <blockquote>
-<p>MapReduce是一个计算框架,有输入数据源和数据结果源,通过定义好的计算模型将输入数据源进行计算,得出相应的数据结果<br>在运行一个mapreduce计算任务时候,任务主要分为2个阶段：map阶段和reduce阶段,每个阶段都是通过kv键值对座位输入和输出的,计算模型主要就是编写相对应的map和reduce函数</p>
-</blockquote>
-<p>从mapreduce运行机制的各个阶段来说,按照时间顺序可以将mapreduce分为以下几个阶段：</p>
-<ul>
-<li>map</li>
-<li>partition</li>
-<li>combiner</li>
-<li>shuffle</li>
-<li>reduce</li>
-</ul>
-<p>mapreduce的运行大致的流程图如下:<br><img src="/images/hadoop/mapreduce.png" alt=""></p>
-<p>1 数据输入端<br><br>    每个输入分片会让一个map任务来处理，默认情况下，以HDFS的一个块的大小（默认为64M）为一个分片,当然我们也可以设置块的大小。map输出的结果会暂且放在一个环形内存缓冲区中（该缓冲区的大小默认为100M，由io.sort.mb属性控制）,当该缓冲区快要溢出时（默认为缓冲区大小的80%，由io.sort.spill.percent属性控制）,会在本地文件系统中创建一个溢出文件，将该缓冲区中的数据写入这个文件</p>
-<p>2 分区阶段<br><br>    在写入磁盘之前,线程首先根据reduce任务的数目将数据划分为相同数目的分区,也就是一个reduce任务对应一个分区的数据。这样做是为了避免有些reduce任务分配到大量数据，而有些reduce任务却分到很少数据。其实分区就是对数据进行hash的过程。然后对每个分区中的数据进行排序,如果此时设置了combia，将排序后的结果进行combia操作，这样做的目的是让尽可能少的数据写入到磁盘。</p>
-<p>3 合并阶段<br><br>    当map任务输出最后一个记录时，可能会有很多的溢写文件，这时需要将这些文件合并。合并的过程中会不断地进行排序和combia操作，目的有两个：1.尽量减少每次写入磁盘的数据量；2.尽量减少下一复制阶段网络传输的文件数量。最后合并成了一个已分区且已排序的文件。为了减少网络传输的文件数量，这里可以将数据压缩，只要将mapred.compress.map.out设置为true就可以了</p>
-<p>4 shuffle阶段<br></p>
-<pre><code>shuffle阶段主要分为：拷贝,合并两个阶段。
-拷贝阶段：去那台机器拷贝那些数据?因此在map阶段结束以后的数据主要是进行相应分区的数据,
-这些数据的根据分区进行相应hash取模运行,计算出每个分区的数据应该拷贝给那个reduces上进行汇总计算。
-合并阶段:也就是merge阶段,这个阶段有3种形式：
-                1) 内存中合并 
-                2）内存文件合并写入到磁盘 
-                3) 将磁盘中文件合并&lt;br&gt;
-当内存缓存池中的数据量达到一定的阈值以后,与map端类似,这里的缓冲区大小要比map端的更为灵活,
-它基于JVM的heap size设置,当内存中的大小达到上限后进行相应的溢写,将数据写入到文件磁盘中。
-</code></pre><p>Shuffle中的流程图如下：<br>    <img src="/images/hadoop/shuffle.jpg" alt=""></p>
-<p>5 reduce阶段<br><br>    结合上面的图可以看到,在reduce的输入可以看到有一个or,也就是说这个reduce的数据输入来源可以死磁盘和内存,数据进行过shuffler过程拷贝过来进行合并,如果拷贝和合并后的数据文件大小都没有超过内存缓冲池的阈值就不会出现溢写磁盘的动作,同样,在内存中,拷贝过来的文件有必要进行合并的动作嘛？从这个图中看应该是没有进行合并的动作,当然现在还是在学习中,没有具体的研究~</p>
+            <h2 id="1-UDF函数的编写"><a href="#1-UDF函数的编写" class="headerlink" title="1 UDF函数的编写"></a>1 UDF函数的编写</h2><p>主要是在解析数据的时候可能我们拿到的数据是一个json,当然在hive中有解析json的内置函数,但是我们的数据不是很规范而且还是json嵌套json的格式,因此想实现一个给定一个路径,也就是我需要抽取那个路径下的数据的字段对应的字比如：</p>
+<pre><code>{
+    &quot;a&quot;:[
+        {
+            &quot;age&quot;:1
+        },
+        {
+            &quot;age&quot;:2
+        }
+    ],
+    &quot;b&quot;:&quot;test&quot;
+}
+</code></pre><p>这个是乱写的测试数据,如果我想获取指定的数据如： a.0.age,这个是表示age:1的那个值,也就是获取的结果应该为1.主要的做法就是解析json.</p>
+<p>具体的代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div></pre></td><td class="code"><pre><div class="line">import org.apache.hadoop.hive.ql.exec.UDF;</div><div class="line">import org.apache.hadoop.io.Text;</div><div class="line">import org.json.JSONArray;</div><div class="line">import org.json.JSONObject;</div><div class="line"></div><div class="line">public class UDFTool extends UDF &#123;</div><div class="line">    /**</div><div class="line">     * 格式化抽取数据</div><div class="line">     *</div><div class="line">     * @param s</div><div class="line">     * @param parrent</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public String evaluate(final Text s, String parrent) &#123;</div><div class="line">        //数据判断</div><div class="line">        if (s == null) return null;</div><div class="line">        try &#123;</div><div class="line">            //格式化数据为json对象</div><div class="line">            JSONObject bean = new JSONObject(s.toString());</div><div class="line"></div><div class="line">            return UDFTool.cast(bean, parrent.toString().split(&quot;\\.&quot;), 0).toString();</div><div class="line">        &#125; catch (Exception e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 格式化抽取字符串数组</div><div class="line">     *</div><div class="line">     * @param s</div><div class="line">     * @param path</div><div class="line">     * @param split</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public String evaluate(final Text s, final String path, String split) &#123;</div><div class="line">        //数据判断</div><div class="line">        if (s == null) return null;</div><div class="line">        try &#123;</div><div class="line">            //格式化数据为json对象</div><div class="line">            JSONObject bean = new JSONObject(s.toString());</div><div class="line"></div><div class="line">            //获取json字符串的值</div><div class="line">            String array = UDFTool.cast(bean, path.toString().split(&quot;\\.&quot;), 0).toString();</div><div class="line"></div><div class="line">            //格式化为jsonarray</div><div class="line">            JSONArray arr = new JSONArray(array);</div><div class="line"></div><div class="line">            //遍历jsonarray</div><div class="line">            StringBuffer buffer = new StringBuffer();</div><div class="line">            for (int i = 0; i &lt; arr.length(); i++) &#123;</div><div class="line">                buffer.append(arr.get(i).toString());</div><div class="line">                if (i + 1 &lt; arr.length()) &#123;</div><div class="line">                    buffer.append(split);</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            return buffer.toString();</div><div class="line">        &#125; catch (Exception e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    /**</div><div class="line">     * 格式化数据格式</div><div class="line">     *</div><div class="line">     * @param bean</div><div class="line">     * @param key</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public static Object cast(Object bean, String key) &#123;</div><div class="line">        try&#123;</div><div class="line">            if (bean instanceof JSONObject) &#123;</div><div class="line">                if (((JSONObject) bean).has(key)) &#123;</div><div class="line">                    return ((JSONObject) bean).get(key);</div><div class="line">                &#125;</div><div class="line">                return null;</div><div class="line">            &#125; else if (bean instanceof JSONArray) &#123;</div><div class="line">                JSONArray ar = (JSONArray) bean;</div><div class="line">                int index = -1;</div><div class="line">                try &#123;</div><div class="line">                    index = Integer.parseInt(key);</div><div class="line">                &#125; catch (Exception e) &#123;</div><div class="line">                    index = -1;</div><div class="line">                &#125;</div><div class="line">                if (index &lt; 0 || index &gt; ar.length() - 1) return null;</div><div class="line">                return ar.get(index);</div><div class="line">            &#125; else &#123;</div><div class="line">                return bean;</div><div class="line">            &#125;</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 根据给定的格式解析json</div><div class="line">     *</div><div class="line">     * @param bean</div><div class="line">     * @param key</div><div class="line">     * @param index</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public static Object cast(Object bean, String[] key, int index) &#123;</div><div class="line">        if (index == key.length - 1) return cast(bean, key[index]);</div><div class="line">        return cast(cast(bean, key[index]), key, index + 1);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="2-UDAF"><a href="#2-UDAF" class="headerlink" title="2 UDAF"></a>2 UDAF</h2><pre><code>•Hive查询数据时，有些聚类函数在HQL没有自带，需要用户自定义实现
+•用户自定义聚合函数: Sum, Average…… n – 1
+•UDAF（User- Defined Aggregation Funcation） 
+</code></pre><p>用法</p>
+<pre><code>•一下两个包是必须的import org.apache.hadoop.hive.ql.exec.UDAF和org.apache.hadoop.hive.ql.exec.UDAFEvaluator
+</code></pre><p>开发步骤</p>
+<pre><code>•函数类需要继承UDAF类，内部类Evaluator实UDAFEvaluator接口
+•Evaluator需要实现 init、iterate、terminatePartial、merge、terminate这几个函数
+    a）init函数实现接口UDAFEvaluator的init函数。
+    b）iterate接收传入的参数，并进行内部的轮转。其返回类型为boolean。
+    c）terminatePartial无参数，其为iterate函数轮转结束后，返回轮转数据，terminatePartial类似于hadoop的Combiner。
+    d）merge接收terminatePartial的返回结果，进行数据merge操作，其返回类型为boolean。
+    e）terminate返回最终的聚集函数结果。
+</code></pre><p>执行步骤</p>
+<pre><code>•执行求平均数函数的步骤
+    a）将java文件编译成Avg_test.jar。
+    b）进入hive客户端添加jar包：
+        hive&gt;add jar /run/jar/Avg_test.jar。
+    c）创建临时函数：
+        hive&gt;create temporary function avg_test &apos;hive.udaf.Avg&apos;;
+    d）查询语句：
+        hive&gt;select avg_test(scores.math) from scores;
+    e）销毁临时函数：
+        hive&gt;drop temporary function avg_test;
+</code></pre><p>UDAF代码示例</p>
+<pre><code>public class MyAvg extends UDAF {
+
+public static class AvgEvaluator implements UDAFEvaluator {}
+public void init() {}
+public boolean iterate(Double o) {}
+public AvgState terminatePartial() {}
+public boolean terminatePartial(Double o) { }
+public Double terminate() {}}
+</code></pre><h2 id="3-UDTF"><a href="#3-UDTF" class="headerlink" title="3 UDTF"></a>3 UDTF</h2><p>开发步骤</p>
+<pre><code>•UDTF步骤：
+•必须继承org.apache.Hadoop.hive.ql.udf.generic.GenericUDTF
+•实现initialize, process, close三个方法
+•UDTF首先会
+•调用initialize方法，此方法返回UDTF的返回行的信息（返回个数，类型） 
+初始化完成后，会调用process方法，对传入的参数进行处理，可以通过forword()方法把结果返回
+•最后close()方法调用，对需要清理的方法进行清理
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div></pre></td><td class="code"><pre><div class="line">import org.apache.hadoop.hive.ql.exec.UDFArgumentException;</div><div class="line">import org.apache.hadoop.hive.ql.metadata.HiveException;</div><div class="line">import org.apache.hadoop.hive.ql.udf.generic.GenericUDTF;</div><div class="line">import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector;</div><div class="line">import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspectorFactory;</div><div class="line">import org.apache.hadoop.hive.serde2.objectinspector.PrimitiveObjectInspector;</div><div class="line">import org.apache.hadoop.hive.serde2.objectinspector.StructObjectInspector;</div><div class="line">import org.apache.hadoop.hive.serde2.objectinspector.primitive.PrimitiveObjectInspectorFactory;</div><div class="line"></div><div class="line">import java.util.ArrayList;</div><div class="line">import java.util.Iterator;</div><div class="line">import java.util.List;</div><div class="line"></div><div class="line">public class UDTFTool extends GenericUDTF &#123;</div><div class="line">    private PrimitiveObjectInspector stringOI = null;</div><div class="line">    private static final String SPLIT_STR = &quot;udtf_hive_tool&quot;;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public StructObjectInspector initialize(ObjectInspector[] args) throws UDFArgumentException &#123;</div><div class="line"></div><div class="line">        if (args.length != 1) &#123;</div><div class="line">            throw new UDFArgumentException(&quot;NameParserGenericUDTF() takes exactly one argument&quot;);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        if (args[0].getCategory() != ObjectInspector.Category.PRIMITIVE</div><div class="line">                &amp;&amp; ((PrimitiveObjectInspector) args[0]).getPrimitiveCategory() != PrimitiveObjectInspector.PrimitiveCategory.STRING) &#123;</div><div class="line">            throw new UDFArgumentException(&quot;NameParserGenericUDTF() takes a string as a parameter&quot;);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        // 输入格式（inspectors）</div><div class="line">        stringOI = (PrimitiveObjectInspector) args[0];</div><div class="line"></div><div class="line">        // 输出格式（inspectors） -- 有两个属性的对象</div><div class="line">        List&lt;String&gt; fieldNames = new ArrayList&lt;String&gt;();</div><div class="line">        List&lt;ObjectInspector&gt; fieldOIs = new ArrayList&lt;ObjectInspector&gt;();</div><div class="line">        fieldNames.add(&quot;value&quot;);</div><div class="line">        fieldOIs.add(PrimitiveObjectInspectorFactory.javaStringObjectInspector);</div><div class="line"></div><div class="line">        return ObjectInspectorFactory.getStandardStructObjectInspector(fieldNames, fieldOIs);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public ArrayList&lt;Object[]&gt; processInputRecord(String name)&#123;</div><div class="line">        ArrayList&lt;Object[]&gt; result = new ArrayList&lt;Object[]&gt;();</div><div class="line"></div><div class="line">        // 忽略null值与空值</div><div class="line">        if (name == null || name.isEmpty()) &#123;</div><div class="line">            return result;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        String[] tokens = name.split(SPLIT_STR);</div><div class="line"></div><div class="line">        if(tokens == null || tokens.length &lt;= 0)return result;</div><div class="line">        for(int i=0;i&lt;tokens.length;i++)&#123;</div><div class="line">            result.add(new Object[]&#123;tokens[i]&#125;);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        return result;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void process(Object[] record) throws HiveException &#123;</div><div class="line"></div><div class="line">        final String name = stringOI.getPrimitiveJavaObject(record[0]).toString();</div><div class="line"></div><div class="line">        ArrayList&lt;Object[]&gt; results = processInputRecord(name);</div><div class="line"></div><div class="line">        Iterator&lt;Object[]&gt; it = results.iterator();</div><div class="line"></div><div class="line">        while (it.hasNext())&#123;</div><div class="line">            Object[] r = it.next();</div><div class="line">            forward(r);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void close() throws HiveException &#123;</div><div class="line">        // do nothing</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 
           
         
@@ -975,8 +570,8 @@ alter database hive character set latin1;
             
               
                 
-                <a class="post-title-link" href="/2016/04/23/hadoop-study002/" itemprop="url">
-                  Hadoop学习笔记(二) Hadoop的搭建和WordCount程序的开发
+                <a class="post-title-link" href="/2016/05/27/hive-study004/" itemprop="url">
+                  Hive学习笔记(四) Hive参数
                 </a>
               
             
@@ -989,8 +584,8 @@ alter database hive character set latin1;
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-04-23T10:53:55+08:00" content="2016-04-23">
-              2016-04-23
+            <time itemprop="dateCreated" datetime="2016-05-27T16:31:55+08:00" content="2016-05-27">
+              2016-05-27
             </time>
           </span>
 
@@ -1003,8 +598,8 @@ alter database hive character set latin1;
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/hadoop/" itemprop="url" rel="index">
-                    <span itemprop="name">hadoop</span>
+                  <a href="/categories/hive/" itemprop="url" rel="index">
+                    <span itemprop="name">hive</span>
                   </a>
                 </span>
 
@@ -1019,8 +614,8 @@ alter database hive character set latin1;
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/04/23/hadoop-study002/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/04/23/hadoop-study002/" itemprop="commentsCount"></span>
+                <a href="/2016/05/27/hive-study004/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/27/hive-study004/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -1045,62 +640,470 @@ alter database hive character set latin1;
       
         
           
-            <h2 id="hadoop单节点的搭建"><a href="#hadoop单节点的搭建" class="headerlink" title="hadoop单节点的搭建"></a>hadoop单节点的搭建</h2><h3 id="下载hadoop："><a href="#下载hadoop：" class="headerlink" title="下载hadoop："></a>下载hadoop：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">wget http://apache.fayea.com/hadoop/common/hadoop-2.7.1/hadoop-2.7.1.tar.gz</div><div class="line">tar -zxvf hadoop-2.7.1.tar.gz</div></pre></td></tr></table></figure>
-<h3 id="解压配置免密码登陆"><a href="#解压配置免密码登陆" class="headerlink" title="解压配置免密码登陆:"></a>解压配置免密码登陆:</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">//生成秘钥</div><div class="line">ssh-keygen -t rsa</div><div class="line"></div><div class="line">//一直回车,在当前目录中会出现2个文件,一个是公钥,一个是私钥</div><div class="line">id_rsa:			私钥</div><div class="line">id_rsa.pub:		公钥</div><div class="line"></div><div class="line">//创建认证文件</div><div class="line">cat id_rsa.pub &gt;&gt; authorized_keys</div></pre></td></tr></table></figure>
-<h3 id="配置hosts"><a href="#配置hosts" class="headerlink" title="配置hosts"></a>配置hosts</h3><p>主要是修改其中的hostname和对应的ip,修改如下:</p>
-<center><br>    <img src="/images/hadoop/hosts.jpg" alt=""><br></center>
+            <h2 id="Hive-参数"><a href="#Hive-参数" class="headerlink" title="Hive 参数"></a>Hive 参数</h2><p>hive.exec.max.created.files</p>
+<pre><code>•说明：所有hive运行的map与reduce任务可以产生的文件的和
+•默认值:100000 
+</code></pre><p>hive.exec.dynamic.partition</p>
+<pre><code>•说明：是否为自动分区
+•默认值：false
+</code></pre><p>hive.mapred.reduce.tasks.speculative.execution</p>
+<pre><code>•说明：是否打开推测执行
+•默认值：true
+</code></pre><p>hive.input.format</p>
+<pre><code>•说明：Hive默认的input format
+•默认值： org.apache.hadoop.hive.ql.io.CombineHiveInputFormat
+•如果有问题可以使用org.apache.hadoop.hive.ql.io.HiveInputFormat
+</code></pre><p>hive.exec.counters.pull.interval</p>
+<pre><code>•说明：Hive与JobTracker拉取counter信息的时间
+•默认值：1000ms 
+</code></pre><p>hive.script.recordreader</p>
+<pre><code>•说明：使用脚本时默认的读取类
+•默认值： org.apache.hadoop.hive.ql.exec.TextRecordReader
+</code></pre><p>hive.script.recordwriter</p>
+<pre><code>•说明：使用脚本时默认的数据写入类
+•默认值： org.apache.hadoop.hive.ql.exec.TextRecordWriter
+</code></pre><p>hive.mapjoin.check.memory.rows</p>
+<pre><code>•说明： 内存里可以存储数据的行数
+•默认值： 100000
+</code></pre><p>hive.mapjoin.smalltable.filesize</p>
+<pre><code>•说明：输入小表的文件大小的阀值，如果小于该值，就采用普通的join
+•默认值： 25000000
+</code></pre><p>hive.auto.convert.join</p>
+<pre><code>•说明：是不是依据输入文件的大小，将Join转成普通的Map Join
+•默认值： false
+</code></pre><p>hive.mapjoin.followby.gby.localtask.max.memory.usage</p>
+<pre><code>•说明：map join做group by 操作时，可以使用多大的内存来存储数据，如果数据太大，则不会保存在内存里
+•默认值：0.55
+</code></pre><p>hive.mapjoin.localtask.max.memory.usage</p>
+<pre><code>•说明：本地任务可以使用内存的百分比
+•默认值： 0.90
+</code></pre><p>hive.heartbeat.interval</p>
+<pre><code>•说明：在进行MapJoin与过滤操作时，发送心跳的时间
+•默认值1000
+</code></pre><p>hive.merge.size.per.task</p>
+<pre><code>•说明： 合并后文件的大小
+•默认值： 256000000
+</code></pre><p>hive.mergejob.maponly</p>
+<pre><code>•说明： 在只有Map任务的时候 合并输出结果
+•默认值： true
+</code></pre><p>hive.merge.mapredfiles</p>
+<pre><code>•默认值： 在作业结束的时候是否合并小文件
+•说明： false
+</code></pre><p>hive.merge.mapfiles</p>
+<pre><code>•说明：Map-Only Job是否合并小文件
+•默认值：true
+</code></pre><p>hive.hwi.listen.host</p>
+<pre><code>•说明：Hive UI 默认的host
+•默认值：0.0.0.0
+</code></pre><p>hive.hwi.listen.port</p>
+<pre><code>•说明：Ui监听端口
+•默认值：9999
+</code></pre><p>hive.exec.parallel.thread.number</p>
+<pre><code>•说明：hive可以并行处理Job的线程数
+•默认值：8
+</code></pre><p>hive.exec.parallel</p>
+<pre><code>•说明：是否并行提交任务
+•默认值：false
+</code></pre><p>hive.exec.compress.output</p>
+<pre><code>•说明：输出使用压缩
+•默认值： false
+</code></pre><p>hive.mapred.mode</p>
+<pre><code>•说明： MapReduce的操作的限制模式，操作的运行在该模式下没有什么限制
+•默认值： nonstrict
+</code></pre><p>hive.join.cache.size</p>
+<pre><code>•说明： join操作时，可以存在内存里的条数
+•默认值： 25000
+</code></pre><p>hive.mapjoin.cache.numrows</p>
+<pre><code>•说明： mapjoin 存在内存里的数据量
+•默认值：25000
+</code></pre><p>hive.join.emit.interval</p>
+<pre><code>•说明： 有连接时Hive在输出前，缓存的时间
+•默认值： 1000
+</code></pre><p>hive.optimize.groupby</p>
+<pre><code>•说明：在做分组统计时，是否使用bucket table
+•默认值： true
+</code></pre><p>hive.fileformat.check</p>
+<pre><code>•说明：是否检测文件输入格式
+•默认值：true
+</code></pre><p>hive.metastore.client.connect.retry.delay</p>
+<pre><code>•说明： client 连接失败时,retry的时间间隔
+•默认值：1秒
+</code></pre><p>hive.metastore.client.socket.timeout</p>
+<pre><code>•说明:  Client socket 的超时时间
+•默认值：20秒
+</code></pre><p>mapred.reduce.tasks</p>
+<pre><code>•默认值：-1
+•说明：每个任务reduce的默认值
+     -1 代表自动根据作业的情况来设置reduce的值 
+</code></pre><p>hive.exec.reducers.bytes.per.reducer</p>
+<pre><code>•默认值： 1000000000 （1G）
+•说明：每个reduce的接受的数据量
+        如果送到reduce的数据为10G,那么将生成10个reduce任务 
+</code></pre><p>hive.exec.reducers.max</p>
+<pre><code>•默认值：999
+•说明： reduce的最大个数      
+</code></pre><p>hive.exec.reducers.max</p>
+<pre><code>•默认值：999
+•说明： reduce的最大个数
+</code></pre><p>hive.metastore.warehouse.dir</p>
+<pre><code>•默认值：/user/hive/warehouse
+•说明： 默认的数据库存放位置
+</code></pre><p>hive.default.fileformat</p>
+<pre><code>•默认值：TextFile
+•说明： 默认的fileformat
+</code></pre><p>hive.map.aggr</p>
+<pre><code>•默认值：true
+•说明： Map端聚合，相当于combiner
+</code></pre><p>hive.exec.max.dynamic.partitions.pernode</p>
+<pre><code>•默认值：100
+•说明：每个任务节点可以产生的最大的分区数
+</code></pre><p>hive.exec.max.dynamic.partitions</p>
+<pre><code>•默认值：1000
+•说明： 默认的可以创建的分区数
+</code></pre><p>hive.metastore.server.max.threads</p>
+<pre><code>•默认值：100000
+•说明： metastore默认的最大的处理线程数
+</code></pre><p>hive.metastore.server.min.threads</p>
+<pre><code>•默认值：200
+•说明： metastore默认的最小的处理线程数
+</code></pre>
+          
+        
+      
+    </div>
 
-<h3 id="配置相应的配置文件"><a href="#配置相应的配置文件" class="headerlink" title="配置相应的配置文件"></a>配置相应的配置文件</h3><p>进入到hadoop的解压目录中,其中etc/hadoop目录是配置目录,进入到目录中可以看到:</p>
-<center><br>    <img src="/images/hadoop/conf-list.jpg" alt=""><br></center>
+    <div>
+      
+    </div>
 
-<p>其中主要配置的是环境变量(hadoop-env.sh)和core-site.xml,hdfs-site.xml,mapred.site.xml以及yarn-site.xml则五个文件,相关的配置如下:</p>
-<p>hadoop-env.sh:</p>
-<center><br>    <img src="/images/hadoop/hadoop-env.jpg" alt=""><br></center>
+    <div>
+      
+    </div>
 
-<p>core-site.xml:</p>
-<center><br>    <img src="/images/hadoop/core-site.jpg" alt=""><br></center>
+    <footer class="post-footer">
+      
 
-<p>hdfs-site.xml:</p>
-<center><br>    <img src="/images/hadoop/hdfs-site.jpg" alt=""><br></center>
+      
 
-<p>mapred-site.xml:</p>
-<center><br>    <img src="/images/hadoop/mapred-site.jpg" alt=""><br></center>
-
-<p>yarn-site.sh:</p>
-<center><br>    <img src="/images/hadoop/yarn-site.jpg" alt=""><br></center>
-
-<h3 id="运行hadoop"><a href="#运行hadoop" class="headerlink" title="运行hadoop"></a>运行hadoop</h3><p>配置好以后,需要先格式化一下,格式的命令如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hadoop namenode -format</div></pre></td></tr></table></figure>
-<p>格式化NameNode的动作,主要做了一下一下内容：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">* 如果dfs.namenode.name.dir对应的文件夹目录不存在,则创建一个目录,并初始化fsimage,和edits并且写入一些初始值,这个动作在文件系统中一样,格式化主要是清空重置。</div><div class="line">* 如果对应的目录地址的数据已经存在了,则删除相应的,目录下的文件,在重新建立</div></pre></td></tr></table></figure>
-<p>格式完hadoop以后就可以启动hadoop了,启动的命令如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">cd /usr/loca/share/hadoop2.7.1</div><div class="line"></div><div class="line">./sbin/start-all.sh</div></pre></td></tr></table></figure>
-<p>启动过后的进程数据如下：</p>
-<center><br>    <img src="/images/hadoop/jps.jpg" alt=""><br></center>
-
-<center><br>    <img src="/images/hadoop/cluster-view.jpg" alt=""><br></center>
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
 
 
+    
+      
 
-<h2 id="hadoop的wordcount的程序的开发"><a href="#hadoop的wordcount的程序的开发" class="headerlink" title="hadoop的wordcount的程序的开发"></a>hadoop的wordcount的程序的开发</h2><p>代码结构如下:</p>
-<center><br>    <img src="/images/hadoop/code-tree.jpg" alt="流程图"><br></center>
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/05/27/hive-study003/" itemprop="url">
+                  Hive学习笔记(三) Hive的JDB开发
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-05-27T12:55:55+08:00" content="2016-05-27">
+              2016-05-27
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/hive/" itemprop="url" rel="index">
+                    <span itemprop="name">hive</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/05/27/hive-study003/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/27/hive-study003/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
 
 
-<p>自定义mapper类代码如下:</p>
-<center><br>    <img src="/images/hadoop/mapper.jpg" alt="流程图"><br></center>
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="1-hive-JDBC"><a href="#1-hive-JDBC" class="headerlink" title="1 hive JDBC"></a>1 hive JDBC</h2><p>使用jdbc进行hive的操作是需要将hiveserver2启动,启动hiveserver2的命令如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">hive --service hiveserver2</div></pre></td></tr></table></figure>
+<p>创建数据库和查询代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HIveUtils</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span>  String driverName = <span class="string">"org.apache.hive.jdbc.HiveDriver"</span>;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">createDB</span><span class="params">()</span> <span class="keyword">throws</span> Exception</span>&#123;</div><div class="line">        Connection conn = getConnect();</div><div class="line"></div><div class="line">        Statement stmt = conn.createStatement();</div><div class="line"></div><div class="line">        stmt.executeQuery(<span class="string">"create database test_db"</span>);</div><div class="line"></div><div class="line">        System.out.println(<span class="string">"create database success"</span>);</div><div class="line"></div><div class="line">        conn.close();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">select</span><span class="params">()</span> <span class="keyword">throws</span> Exception</span>&#123;</div><div class="line">        Connection conn = getConnect();</div><div class="line"></div><div class="line">        Statement stmt = conn.createStatement();</div><div class="line">        ResultSet rs = stmt.executeQuery(<span class="string">"select * from ym.test"</span>);</div><div class="line"></div><div class="line">        <span class="keyword">while</span>(rs.next())&#123;</div><div class="line">            <span class="keyword">int</span> i = rs.getInt(<span class="number">1</span>);</div><div class="line"></div><div class="line">            System.out.println(i);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Connection <span class="title">getConnect</span><span class="params">()</span> <span class="keyword">throws</span>  Exception</span>&#123;</div><div class="line">        Class.forName(driverName);</div><div class="line">        <span class="keyword">return</span> DriverManager.getConnection(<span class="string">"jdbc:hive2://localhost:10000"</span>,<span class="string">""</span>,<span class="string">""</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</div><div class="line">        <span class="keyword">new</span> HIveUtils().select();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>执行查询的结果如下:</p>
+<p><img src="/images/hive/hive-jdbc.png" alt=""></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
 
 
-<p>自定义reducer类代码如下:</p>
-<center><br>    <img src="/images/hadoop/reduce.jpg" alt="流程图"><br></center>
+    
+      
 
-<p>wordcount程序的数据源：</p>
-<center><br>    <img src="/images/hadoop/wordcount-data.jpg" alt=""><br></center>
+  
+  
 
-<p>wordcount程序的执行过程：</p>
-<center><br>    <img src="/images/hadoop/wordcount.jpg" alt=""><br></center>
+  
+  
+  
 
-<p>wordcount程序的结果展示:</p>
-<center><br>    <img src="/images/hadoop/wordcount-result.jpg" alt=""><br></center>
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/05/27/hive-study002/" itemprop="url">
+                  Hive学习笔记(二) Hive的数据类型和操作
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-05-27T11:55:55+08:00" content="2016-05-27">
+              2016-05-27
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/hive/" itemprop="url" rel="index">
+                    <span itemprop="name">hive</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/05/27/hive-study002/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/27/hive-study002/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="1-整型"><a href="#1-整型" class="headerlink" title="1 整型"></a>1 整型</h2><p>整型数据可以指定使用整型数据类型，INT。当数据范围超过INT的范围，需要使用BIGINT，如果数据范围比INT小，使用SMALLINT。 TINYINT比SMALLINT小。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">类型</th>
+<th style="text-align:right">后缀</th>
+<th style="text-align:center">示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">TINYINT</td>
+<td style="text-align:right">Y</td>
+<td style="text-align:center">10Y</td>
+</tr>
+<tr>
+<td style="text-align:left">SMALLINT</td>
+<td style="text-align:right">S</td>
+<td style="text-align:center">10S</td>
+</tr>
+<tr>
+<td style="text-align:left">INT</td>
+<td style="text-align:right">-</td>
+<td style="text-align:center">10</td>
+</tr>
+<tr>
+<td style="text-align:left">BIGINT</td>
+<td style="text-align:right">L</td>
+<td style="text-align:center">10L</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-字符串"><a href="#2-字符串" class="headerlink" title="2 字符串"></a>2 字符串</h2><p>字符串的类型可以使用单引号或者是双引号来指定,字符串类型的数据有两种:VARCHAR和CHAR. HIVE遵守C类型的转义字符。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">类型</th>
+<th style="text-align:right">长度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">VARCHAR</td>
+<td style="text-align:right">1 to 65535</td>
+</tr>
+<tr>
+<td style="text-align:left">CHAR</td>
+<td style="text-align:right">256</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-时间戳"><a href="#3-时间戳" class="headerlink" title="3 时间戳"></a>3 时间戳</h2><p>它支持传统的UNIX时间戳可选纳秒的精度。它支持的java.sql.Timestamp格式“YYYY-MM-DD HH:MM:SS.fffffffff”和格式“YYYY-MM-DD HH:MM:ss.ffffffffff”。</p>
+<h2 id="4-日期"><a href="#4-日期" class="headerlink" title="4 日期"></a>4 日期</h2><p>DATE值在年/月/日的格式形式描述 NaN.</p>
+<h2 id="5-浮点数"><a href="#5-浮点数" class="headerlink" title="5 浮点数"></a>5 浮点数</h2><p>可以使用DECIMAL(进度,保留小数位)</p>
+<h2 id="6-数据库操作"><a href="#6-数据库操作" class="headerlink" title="6 数据库操作"></a>6 数据库操作</h2><p>1 创建数据库</p>
+<pre><code>CREATE DATABASE|SCHEMA [IF NOT EXISTS] &lt;database name&gt;
+</code></pre><p>2 删除数据库</p>
+<pre><code>DROP DATABASE StatementDROP (DATABASE|SCHEMA) [IF EXISTS] database_name [RESTRICT|CASCADE];
+</code></pre><p>  删除非空数据库时需要加上参数：cascade</p>
+<h2 id="7-表操作"><a href="#7-表操作" class="headerlink" title="7 表操作"></a>7 表操作</h2><p>1 创建表</p>
+<pre><code>CREATE [TEMPORARY] [EXTERNAL] TABLE [IF NOT EXISTS] [db_name.] table_name
+[(col_name data_type [COMMENT col_comment], ...)]
+[COMMENT table_comment]
+[ROW FORMAT row_format]
+[STORED AS file_format]
+</code></pre><p>例如：创建一个用户表,有姓名和年龄两个字段,建表语句如下:</p>
+<pre><code>create table person(
+    name string,
+    age int
+)
+filelds terminated by &apos;\t&apos;
+lines terminated by &apos;\n&apos;
+stored in text file
+
+这个建表语句主要是制定了字段键分隔符和列之间分隔符以及存储的类型.
+hive中默认的字段间分隔符为\001,行之间分隔符为\n.
+</code></pre><p>2 删除表</p>
+<pre><code>drop table if exits person;
+</code></pre><p>3 表分区</p>
+<p>分区在文件存储的方式上主要呈现的就是讲数据按照不同的目录结构进行存储,比如在hive中按照天来进行分区,表存储目录结构为：</p>
+<pre><code>/user/hive/warehouse/test.db/test/dt=2016-05-21
+</code></pre><p>每天的数据会在test下新建一个目录进行存储。</p>
+<p>4 修改分区</p>
+<pre><code>ALTER TABLE table_name ADD [IF NOT EXISTS] PARTITION partition_spec
+[LOCATION &apos;location1&apos;] partition_spec [LOCATION &apos;location2&apos;] ...;
+partition_spec:
+: (p_column = p_col_value, p_column = p_col_value, ...)
+</code></pre><p>5 重命名分区</p>
+<pre><code>ALTER TABLE table_name PARTITION partition_spec RENAME TO PARTITION partition_spec;
+</code></pre><p>6 删除分区</p>
+<pre><code>ALTER TABLE table_name DROP [IF EXISTS] PARTITION partition_spec, PARTITION partition_spec,...;
+</code></pre><p>7 添加和删除字段</p>
+<pre><code>ALTER TABLE table_name ADD|REPLACE COLUMNS (col_name data_type[COMMENT col_comment], ...)
+</code></pre>
           
         
       
@@ -1132,7 +1135,7 @@ alter database hive character set latin1;
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/11/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><span class="page-number current">12</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/13/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/11/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><span class="page-number current">12</span><a class="page-number" href="/page/13/">13</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><a class="extend next" rel="next" href="/page/13/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1205,7 +1208,7 @@ var duoshuoQuery = {short_name:"sunxing"};
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">65</span>
+              <span class="site-state-item-count">78</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -1213,7 +1216,7 @@ var duoshuoQuery = {short_name:"sunxing"};
           
             <div class="site-state-item site-state-categories">
               
-                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-count">13</span>
                 <span class="site-state-item-name">分类</span>
               
             </div>
@@ -1222,7 +1225,7 @@ var duoshuoQuery = {short_name:"sunxing"};
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

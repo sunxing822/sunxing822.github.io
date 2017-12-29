@@ -231,8 +231,8 @@
             
               
                 
-                <a class="post-title-link" href="/2016/11/21/maven-study003/" itemprop="url">
-                  maven学习笔记(二) maven常用命令
+                <a class="post-title-link" href="/2017/10/10/spring-boot-study003/" itemprop="url">
+                  Spring Boot基础学习(三) MVC配置
                 </a>
               
             
@@ -245,8 +245,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-11-21T15:22:46+08:00" content="2016-11-21">
-              2016-11-21
+            <time itemprop="dateCreated" datetime="2017-10-10T17:22:46+08:00" content="2017-10-10">
+              2017-10-10
             </time>
           </span>
 
@@ -259,8 +259,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/maven/" itemprop="url" rel="index">
-                    <span itemprop="name">maven</span>
+                  <a href="/categories/spring-boot/" itemprop="url" rel="index">
+                    <span itemprop="name">spring boot</span>
                   </a>
                 </span>
 
@@ -275,8 +275,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/11/21/maven-study003/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/11/21/maven-study003/" itemprop="commentsCount"></span>
+                <a href="/2017/10/10/spring-boot-study003/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/10/10/spring-boot-study003/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -301,21 +301,61 @@
       
         
           
-            <h1 id="1-maven依赖管理"><a href="#1-maven依赖管理" class="headerlink" title="1 maven依赖管理"></a>1 maven依赖管理</h1><h2 id="1-1-添加依赖"><a href="#1-1-添加依赖" class="headerlink" title="1.1 添加依赖"></a>1.1 添加依赖</h2><p>通过上一节中自定义构建好项目以后,在项目中添加自己编写的工具包：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">  &lt;groupId&gt;com.sunx.downloader&lt;/groupId&gt;</div><div class="line">  &lt;artifactId&gt;Downloader&lt;/artifactId&gt;</div><div class="line">  &lt;version&gt;1.0&lt;/version&gt;</div><div class="line">&lt;/dependency&gt;</div></pre></td></tr></table></figure>
-<p>在pom.xml中的dependencies中添加上面的依赖，也就将编写好的并且打包到本地或者是私服，远程仓库中的包导入到当前项目中了。</p>
-<h2 id="1-2-过滤依赖"><a href="#1-2-过滤依赖" class="headerlink" title="1.2 过滤依赖"></a>1.2 过滤依赖</h2><p>上面是添加一个依赖，同样的删除依赖直接注释掉或则是删除掉，即可。</p>
-<p>如果对应上面的依赖项目Downloader中对应的pom.xml文件为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&lt;dependencies&gt;</div><div class="line">        &lt;!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient --&gt;</div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;org.apache.httpcomponents&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;httpclient&lt;/artifactId&gt;</div><div class="line">            &lt;version&gt;4.5.2&lt;/version&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line">        &lt;!-- https://mvnrepository.com/artifact/junit/junit --&gt;</div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;junit&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;junit&lt;/artifactId&gt;</div><div class="line">            &lt;version&gt;4.12&lt;/version&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line">    &lt;/dependencies&gt;</div></pre></td></tr></table></figure>
-<p>这个是Downloader项目中的依赖包,可以看到都有junit，那么是否可以将Downloader中的junit依赖取消掉,也就是不在加入到当前项目中，可以采用如下操作：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">      &lt;groupId&gt;com.sunx.downloader&lt;/groupId&gt;</div><div class="line">      &lt;artifactId&gt;Downloader&lt;/artifactId&gt;</div><div class="line">      &lt;version&gt;1.0&lt;/version&gt;</div><div class="line">      &lt;exclusions&gt;</div><div class="line">        &lt;exclusion&gt;</div><div class="line">          &lt;groupId&gt;junit&lt;/groupId&gt;</div><div class="line">          &lt;artifactId&gt;junit&lt;/artifactId&gt;</div><div class="line">        &lt;/exclusion&gt;</div><div class="line">      &lt;/exclusions&gt;</div><div class="line">    &lt;/dependency&gt;</div></pre></td></tr></table></figure>
-<p>如果Downloader中有很多依赖需要过滤掉,那么需要如下操作：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">      &lt;groupId&gt;com.sunx.downloader&lt;/groupId&gt;</div><div class="line">      &lt;artifactId&gt;Downloader&lt;/artifactId&gt;</div><div class="line">      &lt;version&gt;1.0&lt;/version&gt;</div><div class="line">      &lt;exclusions&gt;</div><div class="line">        &lt;exclusion&gt;</div><div class="line">          &lt;groupId&gt;*&lt;/groupId&gt;</div><div class="line">          &lt;artifactId&gt;*&lt;/artifactId&gt;</div><div class="line">        &lt;/exclusion&gt;</div><div class="line">      &lt;/exclusions&gt;</div><div class="line">    &lt;/dependency&gt;</div></pre></td></tr></table></figure>
-<p>这样就将所有的依赖全部过滤掉了。</p>
-<h2 id="1-3-过滤文件"><a href="#1-3-过滤文件" class="headerlink" title="1.3 过滤文件"></a>1.3 过滤文件</h2><p>打包的时候有的时候会出现java.lang.SecurityException: Invalid signature file digest for Manifest main attributes这个问题,解决这个问题的方法可以通过打包后冲jar文件中删除相应的文件，或者是在打包的时候过滤掉，删除命令如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">zip -d *.jar &apos;META-INF/*SF&apos; &apos;META-INF/*RSA&apos; &apos;META-INF/*SF&apos;</div></pre></td></tr></table></figure></p>
-<p>打包过滤的文件的配置如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">&lt;build&gt;        </div><div class="line">        &lt;resources&gt;</div><div class="line">            &lt;resource&gt;</div><div class="line">                &lt;directory&gt;src/main/Java&lt;/directory&gt;</div><div class="line">                &lt;!-- 包含 --&gt;</div><div class="line">                &lt;includes&gt;</div><div class="line">                    &lt;include&gt;**/*.vm&lt;/include&gt;</div><div class="line">                    &lt;include&gt;**/*.properties&lt;/include&gt;</div><div class="line">                &lt;/includes&gt;</div><div class="line">                &lt;!-- 排除  --&gt;</div><div class="line">                &lt;excludes&gt;</div><div class="line">                &lt;exclude&gt;**/*.log&lt;/exclude&gt;</div><div class="line">                &lt;/excludes&gt;</div><div class="line">            &lt;/resource&gt;</div><div class="line">            &lt;resource&gt;</div><div class="line">                &lt;directory&gt;src/main/resources&lt;/directory&gt;</div><div class="line">                &lt;filtering&gt;true&lt;/filtering&gt;</div><div class="line">                &lt;includes&gt;</div><div class="line">                    &lt;include&gt;**/*.*&lt;/include&gt;</div><div class="line">                &lt;/includes&gt;</div><div class="line">                &lt;excludes&gt;</div><div class="line">                &lt;exclude&gt;**/*.log&lt;/exclude&gt;</div><div class="line">                &lt;/excludes&gt;</div><div class="line">            &lt;/resource&gt;</div><div class="line">        &lt;/resources&gt;</div><div class="line">&lt;/build&gt;</div></pre></td></tr></table></figure></p>
-<h2 id="2-maven常用命令"><a href="#2-maven常用命令" class="headerlink" title="2 maven常用命令"></a>2 maven常用命令</h2><p>构建项目：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mvn archetype:create -DgroupId=packageName -DartifactId=projectName</div></pre></td></tr></table></figure></p>
-<p><a href="http://www.cnblogs.com/phoebus0501/archive/2011/05/10/2042511.html" target="_blank" rel="external">网络教程</a></p>
+            <h1 id="SpringBoot配置属性之MVC"><a href="#SpringBoot配置属性之MVC" class="headerlink" title="SpringBoot配置属性之MVC"></a>SpringBoot配置属性之MVC</h1><h2 id="SpringBoot实现简单的web服务"><a href="#SpringBoot实现简单的web服务" class="headerlink" title="SpringBoot实现简单的web服务"></a>SpringBoot实现简单的web服务</h2><p>使用spring boot来实现访问静态资源网页,这个配置很简单,创建一个spring boot项目,对应的pom文件内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</div><div class="line">&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</div><div class="line">	xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;</div><div class="line">	&lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;</div><div class="line"></div><div class="line">	&lt;groupId&gt;com.spring.study.web&lt;/groupId&gt;</div><div class="line">	&lt;artifactId&gt;demo&lt;/artifactId&gt;</div><div class="line">	&lt;version&gt;0.0.1-SNAPSHOT&lt;/version&gt;</div><div class="line">	&lt;packaging&gt;jar&lt;/packaging&gt;</div><div class="line"></div><div class="line">	&lt;name&gt;spring-boot-web&lt;/name&gt;</div><div class="line">	&lt;description&gt;Demo project for Spring Boot&lt;/description&gt;</div><div class="line"></div><div class="line">	&lt;parent&gt;</div><div class="line">		&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">		&lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;</div><div class="line">		&lt;version&gt;1.5.8.RELEASE&lt;/version&gt;</div><div class="line">		&lt;relativePath/&gt; &lt;!-- lookup parent from repository --&gt;</div><div class="line">	&lt;/parent&gt;</div><div class="line"></div><div class="line">	&lt;properties&gt;</div><div class="line">		&lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;</div><div class="line">		&lt;project.reporting.outputEncoding&gt;UTF-8&lt;/project.reporting.outputEncoding&gt;</div><div class="line">		&lt;java.version&gt;1.8&lt;/java.version&gt;</div><div class="line">	&lt;/properties&gt;</div><div class="line"></div><div class="line">	&lt;dependencies&gt;</div><div class="line">		&lt;dependency&gt;</div><div class="line">			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">			&lt;artifactId&gt;spring-boot-starter&lt;/artifactId&gt;</div><div class="line">		&lt;/dependency&gt;</div><div class="line"></div><div class="line">		&lt;dependency&gt;</div><div class="line">			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">			&lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;</div><div class="line">			&lt;scope&gt;test&lt;/scope&gt;</div><div class="line">		&lt;/dependency&gt;</div><div class="line"></div><div class="line">		&lt;dependency&gt;</div><div class="line">			&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">			&lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;</div><div class="line">		&lt;/dependency&gt;</div><div class="line">	&lt;/dependencies&gt;</div><div class="line"></div><div class="line">	&lt;build&gt;</div><div class="line">		&lt;plugins&gt;</div><div class="line">			&lt;plugin&gt;</div><div class="line">				&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">				&lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;</div><div class="line">			&lt;/plugin&gt;</div><div class="line">		&lt;/plugins&gt;</div><div class="line">	&lt;/build&gt;</div><div class="line"></div><div class="line"></div><div class="line">&lt;/project&gt;</div></pre></td></tr></table></figure>
+<p>pom文件中加入依赖：spring-boot-starter-web后,需要配置静态资源的访问路径规则,需要在配置文件加入如下配置:</p>
+<pre><code># 配置静态资源的路径配置规则
+spring.mvc.static-path-pattern=/**
+</code></pre><p>下面需要创建的是静态网页html：</p>
+<pre><code>&lt;a class=&quot;t&quot;&gt;test&lt;/a&gt;
+</code></pre><p>具体的代码结构如下：<br><img src="images/spring-boot/web-1.png" alt=""></p>
+<p>启动服务以后,输入网址：<a href="http://localhost:8080/test.html就可以访问到当前的静态网页。" target="_blank" rel="external">http://localhost:8080/test.html就可以访问到当前的静态网页。</a></p>
+<p><img src="images/spring-boot/web-2.png" alt=""></p>
+<p>其中在spring boot中还可以在resouce中创建一个public文件夹,将网页源码放在这个文件夹下面,同样的方式也可以进行访问.</p>
+<h2 id="SpringBoot使用模板来构建web服务"><a href="#SpringBoot使用模板来构建web服务" class="headerlink" title="SpringBoot使用模板来构建web服务"></a>SpringBoot使用模板来构建web服务</h2><p>SpringBoot中进行web服务的构建,最好采用thymeleaf来进行开发,Spring 官网也推荐使用thymeleaf框架来进行开发。使用thymeleaf开发需要先引用依赖</p>
+<pre><code>&lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-thymeleaf&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+</code></pre><p>依赖添加完毕以后,下面开始编写一个网页模板；</p>
+<pre><code>&lt;html xmlns:th=&quot;http://www.thymeleaf.org&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;utf-8&quot; /&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;a&gt;测试例子&lt;/a&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre><p>网页源码编辑好以后,下面为对应的Controller的代码:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">@Controller</div><div class="line">@SpringBootApplication</div><div class="line">public class SpringBootWebApplication &#123;</div><div class="line"></div><div class="line">	public static void main(String[] args) &#123;</div><div class="line">		SpringApplication.run(SpringBootWebApplication.class, args);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	@RequestMapping(value = &quot;/test&quot;, method = RequestMethod.GET)</div><div class="line">	public String test()&#123;</div><div class="line">		return &quot;demo&quot;;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	@RequestMapping(value = &quot;/test/1&quot;, method = RequestMethod.GET)</div><div class="line">	public ModelAndView test1()&#123;</div><div class="line">		ModelAndView mv = new ModelAndView(&quot;demo&quot;);</div><div class="line">		return mv;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面有两个接口,都可以进行叶面的跳转,默认的页面的存放路径为：resouce/templates下,通过名称来进行确定。执行结果为：<br><img src="images/spring-boot/web-3.png" alt=""></p>
+<p>这样直接调用是可以了,但是现在想向页面中传递数据如何处理,具体的见如下的例子:</p>
+<p>在Controller中增加如下代码:</p>
+<pre><code>@RequestMapping(value = &quot;/test/param&quot;, method = RequestMethod.GET)
+public String test2(Model model){
+    model.addAttribute(&quot;content&quot;,&quot;测试内容&quot;);
+    return &quot;demo1&quot;;
+}
+
+@RequestMapping(value = &quot;/test/param/1&quot;, method = RequestMethod.GET)
+public ModelAndView test3(){
+    ModelAndView mv = new ModelAndView(&quot;demo1&quot;);
+    mv.addObject(&quot;content&quot;,&quot;测试内容&quot;);
+    return mv;
+}
+</code></pre><p>增加里如下代码后,在templates中增加如下页面:</p>
+<pre><code>&lt;html xmlns:th=&quot;http://www.thymeleaf.org&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;utf-8&quot; /&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;a th:text=&quot;${content}&quot;&gt;&lt;/a&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre><p>下面使用浏览器进行调用:<br><img src="images/spring-boot/web-4.png" alt=""></p>
+<p>如果传递的是对象,则直接使用${对象.属性值}来获取相应的内容之.在页面中,需要在html标签中引用:</p>
+<pre><code>xmlns:th=&quot;http://www.thymeleaf.org&quot;
+</code></pre><p>里面常用的内容为：th:text,和th:value给标签填写内容和标签value属性</p>
 
           
         
@@ -365,8 +405,8 @@
             
               
                 
-                <a class="post-title-link" href="/2016/07/23/java-thread-study006/" itemprop="url">
-                  Java 多线程学习笔记(六) 阻塞队列
+                <a class="post-title-link" href="/2017/10/10/spring-boot-study001/" itemprop="url">
+                  Spring Boot基础学习(一) 基本的概念
                 </a>
               
             
@@ -379,8 +419,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-07-23T09:57:55+08:00" content="2016-07-23">
-              2016-07-23
+            <time itemprop="dateCreated" datetime="2017-10-10T17:22:46+08:00" content="2017-10-10">
+              2017-10-10
             </time>
           </span>
 
@@ -393,8 +433,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
+                  <a href="/categories/spring-boot/" itemprop="url" rel="index">
+                    <span itemprop="name">spring boot</span>
                   </a>
                 </span>
 
@@ -409,8 +449,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/07/23/java-thread-study006/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/23/java-thread-study006/" itemprop="commentsCount"></span>
+                <a href="/2017/10/10/spring-boot-study001/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/10/10/spring-boot-study001/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -435,597 +475,496 @@
       
         
           
-            <h2 id="1-BlockingQueue介绍"><a href="#1-BlockingQueue介绍" class="headerlink" title="1 BlockingQueue介绍"></a>1 BlockingQueue介绍</h2><blockquote>
-<p>阻塞队列通常用生产者和消费者场景,一个线程用于生产一个线程用于消费。具体的结构图如下：</p>
+            <h3 id="Bean的Scope"><a href="#Bean的Scope" class="headerlink" title="Bean的Scope"></a>Bean的Scope</h3><p>@Scope这个注解可表示的内容有以下几个：</p>
+<pre><code>1 singleton 一个spring容器中只有一个Bean的实例对象,为spring的默认配置
+2 prototype 每次调用新建一个Bean的实例对象
+3 request web项目中,给每一个http request新建一个Bean的实例对象
+4 session web项目中,给每一个http session新建一个Bean实例
+5 globalsession 这个旨在protal应用中有用,给每一个global http session新建一个Bean实例对象
+</code></pre><h3 id="spring-资源的加载-EL和资源调用"><a href="#spring-资源的加载-EL和资源调用" class="headerlink" title="spring 资源的加载(EL和资源调用)"></a>spring 资源的加载(EL和资源调用)</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.auto.login.el;</div><div class="line"></div><div class="line"><span class="keyword">import</span> org.apache.commons.io.IOUtils;</div><div class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</div><div class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Value;</div><div class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</div><div class="line"><span class="keyword">import</span> org.springframework.context.annotation.ComponentScan;</div><div class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</div><div class="line"><span class="keyword">import</span> org.springframework.context.annotation.PropertySource;</div><div class="line"><span class="keyword">import</span> org.springframework.context.support.PropertySourcesPlaceholderConfigurer;</div><div class="line"><span class="keyword">import</span> org.springframework.core.env.Environment;</div><div class="line"><span class="keyword">import</span> org.springframework.core.io.Resource;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"><span class="comment"> * 演示配置类</span></div><div class="line"><span class="comment"> */</span></div><div class="line"><span class="meta">@Configuration</span></div><div class="line"><span class="meta">@ComponentScan</span>(<span class="string">"com.auto.login.*"</span>)</div><div class="line"><span class="meta">@PropertySource</span>(<span class="string">"classpath:test.properties"</span>)</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ElConfig</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Value</span>(<span class="string">"i love you"</span>)        <span class="comment">//注入普通字符串</span></div><div class="line">    <span class="keyword">private</span> String normal;</div><div class="line">    <span class="meta">@Value</span>(<span class="string">"#&#123;systemProperties['os.name']&#125;"</span>)    <span class="comment">//注入操作系统属性</span></div><div class="line">    <span class="keyword">private</span> String osName;</div><div class="line">    <span class="meta">@Value</span>(<span class="string">"#&#123;T(java.lang.Math).random() * 100.0&#125;"</span>) <span class="comment">// 注入表达式</span></div><div class="line">    <span class="keyword">private</span> String random;</div><div class="line">    <span class="meta">@Value</span>(<span class="string">"#&#123;demoServie.another&#125;"</span>) <span class="comment">//注入其他bean属性</span></div><div class="line">    <span class="keyword">private</span> String another;</div><div class="line">    <span class="meta">@Value</span>(<span class="string">"classpath:test.properties"</span>) <span class="comment">//注入文件资源</span></div><div class="line">    <span class="keyword">private</span> Resource testFile;</div><div class="line">    <span class="meta">@Value</span>(<span class="string">"http://www.baidu.com"</span>) <span class="comment">//注入网址资源</span></div><div class="line">    <span class="keyword">private</span> Resource testUrl;</div><div class="line">    <span class="meta">@Value</span>(<span class="string">"$&#123;bookName&#125;"</span>) <span class="comment">//注入配置文件内容 注意是$符号</span></div><div class="line">    <span class="keyword">private</span> String bookName;</div><div class="line"></div><div class="line">    <span class="meta">@Autowired</span></div><div class="line">    <span class="keyword">private</span> Environment environment;  <span class="comment">//注入配置文件内容</span></div><div class="line"></div><div class="line">    <span class="meta">@Bean</span>   <span class="comment">//注入配置文件内容</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> PropertySourcesPlaceholderConfigurer <span class="title">propertyConfigure</span><span class="params">()</span></span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> PropertySourcesPlaceholderConfigurer();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">show</span><span class="params">()</span></span>&#123;</div><div class="line">        <span class="keyword">try</span>&#123;</div><div class="line">            System.out.println(normal);</div><div class="line">            System.out.println(osName);</div><div class="line">            System.out.println(random);</div><div class="line">            System.out.println(another);</div><div class="line">            System.out.println(IOUtils.toString(testFile.getInputStream()));</div><div class="line">            System.out.println(IOUtils.toString(testUrl.getInputStream()));</div><div class="line">            System.out.println(bookName);</div><div class="line">            System.out.println(environment.getProperty(<span class="string">"bookAuthor"</span>));</div><div class="line">        &#125;<span class="keyword">catch</span> (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>具体的可以看到上面有标记是如何获取数据内容的</p>
+<h3 id="Bean的初始化与销毁"><a href="#Bean的初始化与销毁" class="headerlink" title="Bean的初始化与销毁"></a>Bean的初始化与销毁</h3><p>在实际的开发过程中,经常会遇到Bean在使用之前或则是使用之后做一些必须操作,Spring对Bean的生命周期的操作提供了支持,具体的方式如下：</p>
+<pre><code>1 java配置方式：使用@Bean的initMethod和destroyMethod(相当于xml配置中的init-method和destroy-method)
+2 使用注解的方式： @PostConstruct和@PreDestroy
+</code></pre><h3 id="Profile"><a href="#Profile" class="headerlink" title="Profile"></a>Profile</h3><p>Profile为不同环境下使用不同的配置提供了支持(开发环境使用开发环境的配置和生产环境下使用生产环境下的配置)</p>
+<pre><code>1 通过设定Environment的activeProfiles来设定当前的context需要使用的配置环境,在开发中使用@Profile注解类或则是方法,达到不同情况下选择实例化不同的Bean
+2 通过jvm的spring.profiles,active参数来设置环境变量
+3 Web项目设置在servlet的context parameter中
+</code></pre><p>下面看下具体的例子如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.auto.login.bean;</div><div class="line"></div><div class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</div><div class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</div><div class="line"><span class="keyword">import</span> org.springframework.context.annotation.Profile;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"><span class="comment"> * Created by sunx on 2017/7/31.</span></div><div class="line"><span class="comment"> */</span></div><div class="line"><span class="meta">@Configuration</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ProfileConfig</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Bean</span></div><div class="line">    <span class="meta">@Profile</span>(<span class="string">"dev"</span>)</div><div class="line">    <span class="function"><span class="keyword">public</span> DemoBean <span class="title">devDemoBean</span><span class="params">()</span></span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> DemoBean(<span class="string">"dev"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Bean</span></div><div class="line">    <span class="meta">@Profile</span>(<span class="string">"pro"</span>)</div><div class="line">    <span class="function"><span class="keyword">public</span> DemoBean <span class="title">proDemoBean</span><span class="params">()</span></span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> DemoBean(<span class="string">"pro"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DemoBean</span> </span>&#123;</div><div class="line">    <span class="comment">//文本内容</span></div><div class="line">    <span class="keyword">private</span> String content;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DemoBean</span><span class="params">(String content)</span></span>&#123;</div><div class="line">        <span class="keyword">this</span>.content = content;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getContent</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> content;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setContent</span><span class="params">(String content)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.content = content;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</div><div class="line">        AnnotationConfigApplicationContext context = <span class="keyword">new</span> AnnotationConfigApplicationContext();</div><div class="line">        context.getEnvironment().setActiveProfiles(<span class="string">"pro"</span>);</div><div class="line">        context.register(ProfileConfig.class);</div><div class="line">        context.refresh();</div><div class="line"></div><div class="line">        DemoBean bean = context.getBean(DemoBean.class);</div><div class="line">        System.out.println(bean.getContent());</div><div class="line">        context.close();</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<h3 id="spring-事件"><a href="#spring-事件" class="headerlink" title="spring 事件"></a>spring 事件</h3><p>spring 事件为bean与bean之间的消息通信提供了支持,当处理完一个任务以后,希望另外一个Bean知道并能做出相应的处理,这个需要让另一个Bean坚挺当前Bean所发送的事件,spring的事情要遵循以下流程:</p>
+<pre><code>1 自定义事件,需要继承ApplicationEvent
+2 定义事件监听器,实现ApplicationListener
+3 使用容器发布事件
+</code></pre><p>具体的例子如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"><span class="comment"> * 自定义事件</span></div><div class="line"><span class="comment"> */</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DemoEvent</span> <span class="keyword">extends</span> <span class="title">ApplicationEvent</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> String msg;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DemoEvent</span><span class="params">(Object source,String msg)</span></span>&#123;</div><div class="line">        <span class="keyword">super</span>(source);</div><div class="line">        <span class="keyword">this</span>.msg = msg;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getMsg</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> msg;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setMsg</span><span class="params">(String msg)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.msg = msg;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"><span class="comment"> * 事件监听器</span></div><div class="line"><span class="comment"> */</span></div><div class="line"><span class="meta">@Component</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DemoListener</span> <span class="keyword">implements</span> <span class="title">ApplicationListener</span>&lt;<span class="title">DemoEvent</span>&gt;</span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onApplicationEvent</span><span class="params">(DemoEvent event)</span> </span>&#123;</div><div class="line">        String msg = event.getMsg();</div><div class="line">        System.out.println(<span class="string">"我(bean-demoListener)接收到bean-demoPublisher发布的小时:"</span> + msg);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"><span class="comment"> * 事件的发布类</span></div><div class="line"><span class="comment"> */</span></div><div class="line"><span class="meta">@Component</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DemoPublisher</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@Autowired</span></div><div class="line">    <span class="keyword">private</span> ApplicationContext context;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">publish</span><span class="params">(String msg)</span></span>&#123;</div><div class="line">        context.publishEvent(<span class="keyword">new</span> DemoEvent(<span class="keyword">this</span>,msg));</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"><span class="comment"> * 配置类</span></div><div class="line"><span class="comment"> */</span></div><div class="line"><span class="meta">@Configuration</span></div><div class="line"><span class="meta">@ComponentScan</span>(<span class="string">"com.auto.login.*"</span>)</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">EventConfig</span> </span>&#123;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</div><div class="line">        AnnotationConfigApplicationContext context = <span class="keyword">new</span> AnnotationConfigApplicationContext(EventConfig.class);</div><div class="line"></div><div class="line">        DemoPublisher publisher = context.getBean(DemoPublisher.class);</div><div class="line">        publisher.publish(<span class="string">"hello application event"</span>);</div><div class="line"></div><div class="line">        context.close();</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<h2 id="Spring-高级话题"><a href="#Spring-高级话题" class="headerlink" title="Spring 高级话题"></a>Spring 高级话题</h2><h3 id="Spring-Aware"><a href="#Spring-Aware" class="headerlink" title="Spring Aware"></a>Spring Aware</h3><p>spring依赖注入的最大的亮点就是所有的Bean对Spring容积的存在是没有意识的,也就是你可以将spring容器换成其他的容器。</p>
+<p>但是很多时候不可避免的需要使用spring容器本身的功能资源,这个时候你的Bean必须意思到容器的存在,才能调用容器的资源。Spring Aware就是spring设计用来框架内部使用的。如果使用了Spring Aware,那么你的Bean就会和框架耦合.Spring提供的Aware接口如下：</p>
+<p><img src="images/spring-cloud/spring-aware.png" alt=""></p>
+<p>具体的例子如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"><span class="comment"> * 获取当前容器中Bean的名称</span></div><div class="line"><span class="comment"> * 获取当前资源加载器,可以获取外部资源</span></div><div class="line"><span class="comment"> */</span></div><div class="line"><span class="meta">@Service</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AwareService</span> <span class="keyword">implements</span> <span class="title">BeanNameAware</span>,<span class="title">ResourceLoaderAware</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> String beanName;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> ResourceLoader loader;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setBeanName</span><span class="params">(String s)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.beanName = s;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setResourceLoader</span><span class="params">(ResourceLoader resourceLoader)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.loader = resourceLoader;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">outputResult</span><span class="params">()</span></span>&#123;</div><div class="line">        System.out.println(<span class="string">"Bean的名词为:"</span> + beanName);</div><div class="line">        Resource resource = loader.getResource(<span class="string">"file:conf/qcwy.css"</span>);</div><div class="line">        <span class="keyword">try</span>&#123;</div><div class="line">            System.out.println(IOUtils.toString(resource.getInputStream()));</div><div class="line">        &#125;<span class="keyword">catch</span> (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"><span class="comment">/**</span></div><div class="line"><span class="comment"> * 配置类</span></div><div class="line"><span class="comment"> */</span></div><div class="line"><span class="meta">@Configuration</span></div><div class="line"><span class="meta">@ComponentScan</span>(<span class="string">"com.auto.login.aware"</span>)</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AwareConfig</span> </span>&#123;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</div><div class="line">        AnnotationConfigApplicationContext context = <span class="keyword">new</span> AnnotationConfigApplicationContext(AwareConfig.class);</div><div class="line"></div><div class="line">        AwareService service = context.getBean(AwareService.class);</div><div class="line">        service.outputResult();</div><div class="line"></div><div class="line">        context.close();</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<h3 id="spring-多线程"><a href="#spring-多线程" class="headerlink" title="spring 多线程"></a>spring 多线程</h3><p>spring boot中多线程是采用的TaskExecutor来实现的。使用了ThreadPoolTaskExecutor来实现的一个基于线程池的TaskExecutor。实际中开发任务一般是非阻塞的,因此需要使用@EnableAsync来开启对异步任务的支持,并通过在实际执行的Bean的方法中使用@Async注解来声明其是一个异步的任务。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> *</div><div class="line"> */</div><div class="line">@Configuration</div><div class="line">@ComponentScan(&quot;com.study.spring&quot;)</div><div class="line">@EnableAsync</div><div class="line">public class TaskExecutorConfig implements AsyncConfigurer &#123;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public Executor getAsyncExecutor() &#123;</div><div class="line">        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();</div><div class="line">        taskExecutor.setCorePoolSize(5);</div><div class="line">        taskExecutor.setMaxPoolSize(10);</div><div class="line">        taskExecutor.setQueueCapacity(25);</div><div class="line">        taskExecutor.initialize();</div><div class="line"></div><div class="line">        return taskExecutor;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() &#123;</div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<pre><code>1 使用@EnableAsync这个注解来开启异步支持
+2 配置类实现AsyncConfigurer接口并重写getAsyncExecutor方法,返回一个配置好的ThreadPoolTaskExecutor,这样就获得一个基于线程池的TaskExecutor
+</code></pre><p>执行类:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">@Service</div><div class="line">public class AsyncTaskService &#123;</div><div class="line"></div><div class="line">    @Async</div><div class="line">    public void executeAsyncTask(Integer i)&#123;</div><div class="line">        System.out.println(&quot;执行异步任务:&quot; + i);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Async</div><div class="line">    public void executeAsyncTaskPlus(Integer i)&#123;</div><div class="line">        System.out.println(&quot;执行异步任务(i + 1):&quot; + (i + 1));</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<pre><code>1 @Async这个注解表示该方法是一个异步的方法,如果注解是在类级别的,则表示这个类中的所有的方法都是异步的。
+2 其实异步的方法的理解已很简单,也就是通过TaskExecutor中代用线程来进行执行,其中通过Feture来获取执行结果
+</code></pre><p>上面执行的都只是一次性执行后就结束的内容,那么如何可以实现循环执行,spring中也支持定时任务,定时周期执行任务。定时任务的支持首先需要使用@EnableScheduling来启动对定时任务的支持,然后需要定时执行的任务需要添加注解@Scheduled声明这个是一个定时任务。具体的例子如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * 计划任务执行类</div><div class="line"> */</div><div class="line">@Service</div><div class="line">public class ScheduledTaskService &#123;</div><div class="line">    //时间格式化工具</div><div class="line">    private static final SimpleDateFormat sdf = new SimpleDateFormat(&quot;HH:mm:ss&quot;);</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 定时任务</div><div class="line">     */</div><div class="line">    @Scheduled(fixedRate = 5000)</div><div class="line">    public void reportCurrentTime()&#123;</div><div class="line">          System.out.println(&quot;每隔5秒钟执行一次:&quot; + sdf.format(new Date()));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Scheduled(cron = &quot;*/1 * * * * *&quot;)</div><div class="line">    public void finxTimeExecution()&#123;</div><div class="line">        System.out.println(&quot;每隔一秒执行一次:&quot; + sdf.format(new Date()));</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>其中使用@Scheduled来表示当前的一个任务是定时任务,至于调度的方式有多种,具体的如下：</p>
+<pre><code>1 @Scheduled(cron = &apos;*/1 * * * * *&apos;): 表示按照linux中的crontab来做任务调度,该调度任务为:每一秒执行一次
+2 @    Scheduled(fixedRate=5000, fixedDelay = 6000): 表示每隔5s跑一次,6s后才开始启动调度
+</code></pre><p>Cron表达式由6~7项组成，中间用空格分开。从左到右依次是：秒、分、时、日、月、周几、年(可省略),值可以是数字，也可以是以下符号：</p>
+<pre><code>*：所有值都匹配
+?：无所谓，不关心，通常放在“周几”里
+,：或者
+/：增量值
+-：区间
+</code></pre><p>配置类和测试main的代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">@Configuration</div><div class="line">@ComponentScan(&quot;com.study.spring.task&quot;)</div><div class="line">@EnableScheduling</div><div class="line">public class TaskSchedulerConfig &#123;</div><div class="line">&#125;</div><div class="line"></div><div class="line">public static void main(String[] args)&#123;</div><div class="line">        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(TaskExecutorConfig.class);</div><div class="line"></div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<h3 id="Spring-条件注解"><a href="#Spring-条件注解" class="headerlink" title="Spring 条件注解"></a>Spring 条件注解</h3><p>很多时候我们可能会根据不同的环境或则是不同的条件需要初始化不同的Bean,在spring中提供了对这一需求的支持,采用条件注解来实例化不同条件下的实例对象。具体的例子如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">public class WindowsCondition implements Condition &#123;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) &#123;</div><div class="line">        return context.getEnvironment().getProperty(&quot;os.name&quot;).contains(&quot;Windows&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">public class LinuxCondition implements Condition &#123;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) &#123;</div><div class="line">        return context.getEnvironment().getProperty(&quot;os.name&quot;).contains(&quot;Mac&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面的是两个条件,创建条件的方式为：实现Condition接口。并实现接口中的方法:matches方法,该方法返回boolean值,当返回为true时,添加该条件注解的bean才会被实例化。</p>
+<p>具体的接口以及接口的子类如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">public interface ListService &#123;</div><div class="line">    public void showCmd();</div><div class="line">&#125;</div><div class="line">public class WindowsListService implements ListService &#123;</div><div class="line">    @Override</div><div class="line">    public void showCmd() &#123;</div><div class="line">        System.out.println(&quot;dir&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">public class LinuxListService implements ListService &#123;</div><div class="line">    @Override</div><div class="line">    public void showCmd() &#123;</div><div class="line">        System.out.println(&quot;ls&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面是创建实例化对应的不同条件下类,通过接口来获取执行对应的方法,下面为初始化时的配置内容,根据不同的条件来进行初始化:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">@Configuration</div><div class="line">public class ConditionConfig &#123;</div><div class="line"></div><div class="line">    @Bean</div><div class="line">    @Conditional(WindowsCondition.class)</div><div class="line">    public ListService windowsListService()&#123;</div><div class="line">        return new WindowsListService();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Bean</div><div class="line">    @Conditional(LinuxCondition.class)</div><div class="line">    public ListService linuxListService()&#123;</div><div class="line">        return new LinuxListService();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>其中使用@Conditionl注解来标注,在实例化的时候会根据给定的条件,调用相应的matches方法,如果返回为true,则会执行该方法。</p>
+<h3 id="Spring-组合注解和元注解"><a href="#Spring-组合注解和元注解" class="headerlink" title="Spring 组合注解和元注解"></a>Spring 组合注解和元注解</h3><p>元注解及时可以注解到别的注解上的注解,而被注解了的注解就是组合注解。组合注解的例子如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">@Target(ElementType.TYPE)</div><div class="line">@Retention(RetentionPolicy.RUNTIME)</div><div class="line">@Documented</div><div class="line">@Configuration</div><div class="line">@ComponentScan</div><div class="line">public @interface SimpleConfigration &#123;</div><div class="line">    /**</div><div class="line">     * 覆盖元注解中的value值</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    String[] value() default &#123;&#125;;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这个注解中被另外一批注解标记了,这些注解叫做元注解,当前的注解叫做组合注解,其中由于元注解中有的需要填写内容,当前注解中覆盖了元注解中的value值。如当前的配置类为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">@SimpleConfigration(&quot;com.study.spring.annotation&quot;)</div><div class="line">public class DemoConfig &#123;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>测试代码如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">@Service</div><div class="line">public class DemoService &#123;</div><div class="line">    /**</div><div class="line">     *</div><div class="line">     */</div><div class="line">    public void test()&#123;</div><div class="line">        System.out.println(&quot;从组合注解中配置相应的内容...&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">public static void main(String[] args)&#123;</div><div class="line">        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(DemoConfig.class);</div><div class="line">        DemoService service = context.getBean(DemoService.class);</div><div class="line"></div><div class="line">        service.test();</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/10/10/spring-boot-study002/" itemprop="url">
+                  Spring Boot基础学习(二) 基本配置
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2017-10-10T17:22:46+08:00" content="2017-10-10">
+              2017-10-10
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/spring-boot/" itemprop="url" rel="index">
+                    <span itemprop="name">spring boot</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2017/10/10/spring-boot-study002/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/10/10/spring-boot-study002/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="基本配置"><a href="#基本配置" class="headerlink" title="基本配置"></a>基本配置</h3><h4 id="定制Banner"><a href="#定制Banner" class="headerlink" title="定制Banner"></a>定制Banner</h4><p>在启动spring boot的时候,会有一个默认的启动的图案,这图案是可以修改的,修改步骤：</p>
+<pre><code>1 src/main/resources下新建一个banner.txt文件
+2 到网站http://patorjk.com/software/taag/#p=display&amp;f=Graffiti&amp;中填写自己的文字内容,将生成的字符串拷贝下来复制到banner.txt中即可
+</code></pre><h4 id="关闭banner"><a href="#关闭banner" class="headerlink" title="关闭banner"></a>关闭banner</h4><p>第一种方式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">SpringApplication application = new SpringApplication(AntWorkerApplication.class);</div><div class="line">application.setBannerMode(Banner.Mode.OFF);</div><div class="line">application.run(args);</div></pre></td></tr></table></figure>
+<p>第二种方式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">new SpringApplicationBuilder(AntWorkerApplication.class)</div><div class="line">				.bannerMode(Banner.Mode.OFF)</div><div class="line">				.run(args)</div></pre></td></tr></table></figure>
+<h4 id="修改tomcat的默认端口"><a href="#修改tomcat的默认端口" class="headerlink" title="修改tomcat的默认端口"></a>修改tomcat的默认端口</h4><p>修改tomcat的默认端口,可以通过配置文件,或则是启动时传递过来,或则是在代码中设置。具体的每种方式如下：</p>
+<p>使用配置文件appliocation.properties：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"># 配置默认的端口地址</div><div class="line">server.port=9999</div><div class="line"># 配置默认访问路径由&quot;/&quot;该为&quot;/hello/boot&quot;</div><div class="line">server.context-path=/hello/boot</div></pre></td></tr></table></figure>
+<p>也可以通过配置application.yml：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">server:</div><div class="line">	port:9999</div><div class="line">	contextPath:/hello/boot</div></pre></td></tr></table></figure>
+<p>上面可以使用配置文件来处理,可以参考springboot的源码可以知道,内容只是加载到对应的配置类中,启动时传递进来的参数也是通过这个来加载的,那么可以知道我在启动时使用命令行参数也是可以操作的。具体的如下：</p>
+<pre><code>java -jar xxx.jar --server.port=9999
+</code></pre><p>上面已经介绍了配置文件,外部输入都可以改变对应的端口,那么如何在代码中改动端口,具体的操作例子如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">@SpringBootApplication</div><div class="line">public class AntWorkerApplication implements EmbeddedServletContainerCustomizer&#123;</div><div class="line">	/**</div><div class="line">	 * 测试main</div><div class="line">	 * @param args</div><div class="line">	 */</div><div class="line">	public static void main(String[] args) &#123;</div><div class="line">		SpringApplication application = new SpringApplication(AntWorkerApplication.class);</div><div class="line">//		application.setBannerMode(Banner.Mode.OFF);</div><div class="line">		application.run(args);</div><div class="line"></div><div class="line">//		new SpringApplicationBuilder(AntWorkerApplication.class)</div><div class="line">//				.bannerMode(Banner.Mode.OFF)</div><div class="line">//				.run(args);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	@Override</div><div class="line">	public void customize(ConfigurableEmbeddedServletContainer container) &#123;</div><div class="line">		container.setPort(9090);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>通过实现接口EmbeddedServletContainerCustomizer并实现其中的customize方法来修改其中的接口。</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/04/01/machine-learn001/" itemprop="url">
+                  机器学习(一) windows下Python的安装以及配置
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2017-04-01T15:22:46+08:00" content="2017-04-01">
+              2017-04-01
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/机器学习/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2017/04/01/machine-learn001/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/04/01/machine-learn001/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="安装python环境"><a href="#安装python环境" class="headerlink" title="安装python环境"></a>安装python环境</h2><p>现在选择的是Python3.x,对应的下载版本地址为</p>
+<pre><code>https://www.python.org/ftp/python/3.6.1/python-3.6.1.exe
+</code></pre><p>在上面这个目录中可以看到对应的python的安装版本,下载好以后点击安装即可,安装号以后需要做的就是配置一下环境变量<br><img src="/images/machine/python-install.png" alt=""></p>
+<p>安装好以后进行测试</p>
+<p><img src="/images/machine/python-cmd.png" alt=""></p>
+<h2 id="配置类库numpy"><a href="#配置类库numpy" class="headerlink" title="配置类库numpy"></a>配置类库numpy</h2><p>安装Numpy我采用的方式是使用pip命令进行安装,命令如下：</p>
+<pre><code>pip install numpy
+</code></pre><p>安装过后的截图如下：</p>
+<p><img src="/images/machine/python-numpy.png" alt=""></p>
+<h2 id="配置类库Scipy"><a href="#配置类库Scipy" class="headerlink" title="配置类库Scipy"></a>配置类库Scipy</h2><p>在官方网站中下载对应的scipy版本的安装包,具体的采用的whl文件来进行安装的,下载地址为:</p>
+<pre><code>http://www.lfd.uci.edu/~gohlke/pythonlibs/#scipy    
+</code></pre><p>选择如图中对应的版本,我的Python是3.6版本,因此采用cp36.</p>
+<p><img src="/images/machine/scipy-path.png" alt=""></p>
+<p><img src="/images/machine/pyhton-scipy.png" alt=""></p>
+<h2 id="配置Matplotlib"><a href="#配置Matplotlib" class="headerlink" title="配置Matplotlib"></a>配置Matplotlib</h2><p>配置Matplotlib采用的也是命令行安装最新版本,具体的安装命令如下：</p>
+<pre><code>pip install matplotlib
+</code></pre><p><img src="/images/machine/python-matplotlib.png" alt=""></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/03/20/kafka-study001/" itemprop="url">
+                  kafka学习笔记(一) kafka伪分布式环境搭建
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2017-03-20T11:55:55+08:00" content="2017-03-20">
+              2017-03-20
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/kafka/" itemprop="url" rel="index">
+                    <span itemprop="name">kafka</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2017/03/20/kafka-study001/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/03/20/kafka-study001/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>kafka是实时消息队列,主要的应用场景是做实时出具流，比如日志的收集等。</p>
 </blockquote>
-<p><img src="/images/thread/blocking-queue.png" alt=""></p>
-<p>阻塞队列与普通队列的区别在于，当队列是空的时，从队列中获取元素的操作将会被阻塞，或者当队列是满时，往队列里添加元素的操作会被阻塞。试图从空的阻塞队列中获取元素的线程将会被阻塞，直到其他的线程往空的队列插入新的元素。同样，试图往已满的阻塞队列中添加新元素的线程同样也会被阻塞，直到其他的线程使队列重新变得空闲起来，如从队列中移除一个或者多个元素，或者完全清空队列</p>
-<p>BlockingQueue的常用方法截图如下：</p>
-<p><img src="/images/thread/blocking-queue-method.png" alt=""></p>
-<p>其中队列主要的方法为：插入,移除,检测,大小,转化。等操作。</p>
-<p>数据插入的方法,具体的插入数据的方式以及每个方法是否会抛异常,返回值内容,以及备注。</p>
-<p><img src="/images/thread/block-queue-method-detail.png" alt=""></p>
-<p>删除数据的各种方法具体的方法名称,结果,异常等,具体的如下：</p>
-<p><img src="/images/thread/block-queue-poll.png" alt=""></p>
-<p>获取获取队列首部的数据,但是不移除对象,具体的方法调用如下：</p>
-<p><img src="/images/thread/block-queue-peek.png" alt=""></p>
-<p>通过上面的都已经了解到了,其实BlockingQueue的实现类主要有一下集中,常用的是前三个：</p>
-<pre><code>1 LinkedBlockingQueue
-2 ArrayBlockingQueue
-3 PriorityBlockingQueue
-4 DelayQueue
-5 SynchronousQueue
-</code></pre><p>下面开始详细介绍下以上几个BlockingQueue的详细用法和内部实现机理。</p>
-<h2 id="2-LinkedBlockingQueue"><a href="#2-LinkedBlockingQueue" class="headerlink" title="2 LinkedBlockingQueue"></a>2 LinkedBlockingQueue</h2><p>LinkedBlockingQueue内部实现的是一个链表,在数据结构中,链表中每一个节点都有一个向上和向下的指针,在java中也就是一个应用,同时每个节点需要保存当前的内容.同样的LinkedBlockingQueue其内部的链表数据结构如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">static class Node&lt;E&gt; &#123;</div><div class="line">        E item;</div><div class="line"></div><div class="line">        /**</div><div class="line">         * One of:</div><div class="line">         * - the real successor Node</div><div class="line">         * - this Node, meaning the successor is head.next</div><div class="line">         * - null, meaning there is no successor (this is the last node)</div><div class="line">         */</div><div class="line">        Node&lt;E&gt; next;</div><div class="line"></div><div class="line">        Node(E x) &#123; item = x; &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>既然是链表,那么大小应该没有限制了？其实不是的,对于java中的集合和队列一般都会有大小的限制,用户可以自己在初始化的时候指定或者是内部有一个初始化的大小,当然有的时候是根据进行扩容。那么在LinkedBlockingQueue中内部用于表示集合大小的参数是什么？</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">/** The capacity bound, or Integer.MAX_VALUE if none */</div><div class="line">private final int capacity;</div><div class="line"></div><div class="line">/** Current number of elements */</div><div class="line">private final AtomicInteger count = new AtomicInteger(0);</div></pre></td></tr></table></figure>
-<p>从上面可以看到其中capacity是用来表示用户指定的或者默认的集合大小,同时count是一个Integer原子操作类,用于统计当前的链表集合的大小。</p>
-<p>对于链表的数据结构基本的操作是添加一个,查找下一个。下面介绍基本的操作添加,删除操作的方法和内部机理。</p>
-<p>添加数据的方法如下一共有5个：</p>
-<pre><code>1 add(object)
-2 put(object)
-3 offer(object)
-4 offer(object,timeout,TimeUnit)
-5 addAll(Collection)
-</code></pre><p>下面主要介绍一下put方法：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">public void put(E e) throws InterruptedException &#123;</div><div class="line">       if (e == null) throw new NullPointerException();</div><div class="line">       // Note: convention in all put/take/etc is to preset local var</div><div class="line">       // holding count negative to indicate failure unless set.</div><div class="line">       int c = -1;</div><div class="line">       Node&lt;E&gt; node = new Node(e);</div><div class="line">       final ReentrantLock putLock = this.putLock;</div><div class="line">       final AtomicInteger count = this.count;</div><div class="line">       putLock.lockInterruptibly();</div><div class="line">       try &#123;</div><div class="line">           /*</div><div class="line">            * Note that count is used in wait guard even though it is</div><div class="line">            * not protected by lock. This works because count can</div><div class="line">            * only decrease at this point (all other puts are shut</div><div class="line">            * out by lock), and we (or some other waiting put) are</div><div class="line">            * signalled if it ever changes from capacity. Similarly</div><div class="line">            * for all other uses of count in other wait guards.</div><div class="line">            */</div><div class="line">           while (count.get() == capacity) &#123;</div><div class="line">               notFull.await();</div><div class="line">           &#125;</div><div class="line">           enqueue(node);</div><div class="line">           c = count.getAndIncrement();</div><div class="line">           if (c + 1 &lt; capacity)</div><div class="line">               notFull.signal();</div><div class="line">       &#125; finally &#123;</div><div class="line">           putLock.unlock();</div><div class="line">       &#125;</div><div class="line">       if (c == 0)</div><div class="line">           signalNotEmpty();</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
-<p>说明：</p>
-<p>1 如果当前链表的数据达到用户设定或者默认值的大小(count.get() == capacity),则等待队列数据移除队列,释放空间。</p>
-<p>2 一个队列有头部和尾部,一般从尾部添加数据,头部获取数据,同样的,在LinkedBlockingQueue中如下成员变量：</p>
-<pre><code>/**
- * Head of linked list.
- * Invariant: head.item == null
- */
-private transient Node&lt;E&gt; head;
-
-/**
- * Tail of linked list.
- * Invariant: last.next == null
- */
-private transient Node&lt;E&gt; last;
-</code></pre><p>每次有新的数据需要添加进来,从尾部开始添加,也就是：last = last.next = node;</p>
-<p>下面介绍一下offer(object),这个方法的源码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">public boolean offer(E e) &#123;</div><div class="line">       if (e == null) throw new NullPointerException();</div><div class="line">       final AtomicInteger count = this.count;</div><div class="line">       if (count.get() == capacity)</div><div class="line">           return false;</div><div class="line">       int c = -1;</div><div class="line">       Node&lt;E&gt; node = new Node(e);</div><div class="line">       final ReentrantLock putLock = this.putLock;</div><div class="line">       putLock.lock();</div><div class="line">       try &#123;</div><div class="line">           if (count.get() &lt; capacity) &#123;</div><div class="line">               enqueue(node);</div><div class="line">               c = count.getAndIncrement();</div><div class="line">               if (c + 1 &lt; capacity)</div><div class="line">                   notFull.signal();</div><div class="line">           &#125;</div><div class="line">       &#125; finally &#123;</div><div class="line">           putLock.unlock();</div><div class="line">       &#125;</div><div class="line">       if (c == 0)</div><div class="line">           signalNotEmpty();</div><div class="line">       return c &gt;= 0;</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
-<p>由此可以看到当前队列没有满,就向其中添加一个数据,如果队列还没有满,就唤醒所有阻塞的插入数据动作。</p>
-<p>下面开始看看出队的操作,出队的方法很很多,主要的看上面的截图介绍,现在来看下take()方法的源码:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">public E take() throws InterruptedException &#123;</div><div class="line">        E x;</div><div class="line">        int c = -1;</div><div class="line">        final AtomicInteger count = this.count;</div><div class="line">        final ReentrantLock takeLock = this.takeLock;</div><div class="line">        takeLock.lockInterruptibly();</div><div class="line">        try &#123;</div><div class="line">            while (count.get() == 0) &#123;</div><div class="line">                notEmpty.await();</div><div class="line">            &#125;</div><div class="line">            x = dequeue();</div><div class="line">            c = count.getAndDecrement();</div><div class="line">            if (c &gt; 1)</div><div class="line">                notEmpty.signal();</div><div class="line">        &#125; finally &#123;</div><div class="line">            takeLock.unlock();</div><div class="line">        &#125;</div><div class="line">        if (c == capacity)</div><div class="line">            signalNotFull();</div><div class="line">        return x;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>首先检查队列是否为空,如果为空,则阻塞等待队列中有数据,如果队列中有数据了,进行出队动作,如果出队后队列中有数据,则唤醒其他阻塞的出队线程。</p>
-<p>在阻塞队列中用到的锁如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">/** Lock held by take, poll, etc */</div><div class="line">private final ReentrantLock takeLock = new ReentrantLock();</div><div class="line"></div><div class="line">/** Wait queue for waiting takes */</div><div class="line">private final Condition notEmpty = takeLock.newCondition();</div><div class="line"></div><div class="line">/** Lock held by put, offer, etc */</div><div class="line">private final ReentrantLock putLock = new ReentrantLock();</div><div class="line"></div><div class="line">/** Wait queue for waiting puts */</div><div class="line">private final Condition notFull = putLock.newCondition();</div></pre></td></tr></table></figure>
-<p>出队和入队都有锁对象来进行控制,同时一些阻塞类方法是通过条件阻塞Condition来实现的,同样的通过上面的与那吗可以看出队列的操作是线程安全的。</p>
-<h2 id="3-ArrayBlockingQueue"><a href="#3-ArrayBlockingQueue" class="headerlink" title="3 ArrayBlockingQueue"></a>3 ArrayBlockingQueue</h2><p>ArrayBlockingQueue 是一个有界的阻塞队列，其内部实现是将对象放到一个数组里.和缓冲区的构造思想相同,通过构建一个数组,在提供一些指针来表示不同操作,同样的和LinkedBlockingQueue一样,ArrayBlockingQueue也是线程安全的队列,在对其中数据进行操作的时候是进行加锁的.</p>
-<p>来看下他的内部是怎么实现初始化的：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">     * Creates an &#123;@code ArrayBlockingQueue&#125; with the given (fixed)</div><div class="line">     * capacity and default access policy.</div><div class="line">     *</div><div class="line">     * @param capacity the capacity of this queue</div><div class="line">     * @throws IllegalArgumentException if &#123;@code capacity &lt; 1&#125;</div><div class="line">     */</div><div class="line">    public ArrayBlockingQueue(int capacity) &#123;</div><div class="line">        this(capacity, false);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * Creates an &#123;@code ArrayBlockingQueue&#125; with the given (fixed)</div><div class="line">     * capacity and the specified access policy.</div><div class="line">     *</div><div class="line">     * @param capacity the capacity of this queue</div><div class="line">     * @param fair if &#123;@code true&#125; then queue accesses for threads blocked</div><div class="line">     *        on insertion or removal, are processed in FIFO order;</div><div class="line">     *        if &#123;@code false&#125; the access order is unspecified.</div><div class="line">     * @throws IllegalArgumentException if &#123;@code capacity &lt; 1&#125;</div><div class="line">     */</div><div class="line">    public ArrayBlockingQueue(int capacity, boolean fair) &#123;</div><div class="line">        if (capacity &lt;= 0)</div><div class="line">            throw new IllegalArgumentException();</div><div class="line">        this.items = new Object[capacity];</div><div class="line">        lock = new ReentrantLock(fair);</div><div class="line">        notEmpty = lock.newCondition();</div><div class="line">        notFull =  lock.newCondition();</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>也就是在ArrayBlockingQueue的初始化中开发者必须指定队列的大小,jdk中没有提供默认的大小.这个是和其他的有点区别的。同样的,因为是数组,在java中数组的大小一旦指定以后是不能改变的,也就是这个队列的大小是定死了。从第二个构造函数中可以看到,指定了锁是公平还是非公平锁.公平锁死指按照FIFO的方式来分配锁,非公平锁死是按照优先级或者是线程锁获取次数,或者是自定义方式来分配。</p>
-<p>同样的插入数据到队列中也是同样的,在插入时进行加锁,检测队列容量,如果当前队列满了,则等待出队动作移除数据后唤醒,同样的,如果阻塞了多个线程,其中一个线程检测发现已经有数据出队了,同样的插入数据后,队列还是没满,继续进行唤醒,唤醒阻塞的入队操作。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">     * Inserts the specified element at the tail of this queue, waiting</div><div class="line">     * for space to become available if the queue is full.</div><div class="line">     *</div><div class="line">     * @throws InterruptedException &#123;@inheritDoc&#125;</div><div class="line">     * @throws NullPointerException &#123;@inheritDoc&#125;</div><div class="line">     */</div><div class="line">    public void put(E e) throws InterruptedException &#123;</div><div class="line">        checkNotNull(e);</div><div class="line">        final ReentrantLock lock = this.lock;</div><div class="line">        lock.lockInterruptibly();</div><div class="line">        try &#123;</div><div class="line">            while (count == items.length)</div><div class="line">                notFull.await();</div><div class="line">            insert(e);</div><div class="line">        &#125; finally &#123;</div><div class="line">            lock.unlock();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">     private void insert(E x) &#123;</div><div class="line">        items[putIndex] = x;</div><div class="line">        putIndex = inc(putIndex);</div><div class="line">        ++count;</div><div class="line">        notEmpty.signal();</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<h2 id="4-PriorityBlockingQueue"><a href="#4-PriorityBlockingQueue" class="headerlink" title="4 PriorityBlockingQueue"></a>4 PriorityBlockingQueue</h2><p>优先级队列,主要用于处理有优先级需求的数据,根据自定义的比较方式进行队列数据的排序。内部实现四通过封装一个数组来实现的队列,同样的内部有一个比较器,这个比较器是用来进行优先级的判定的。不同于ArrayBlockingQueue,PriorityBlockingQueue有一个默认的数组大小,为11。</p>
-<p>PriorityBlockingQueue 是一个无界的并发队列。它使用了和类 java.util.PriorityQueue 一样的排序规则。你无法向这个队列中插入 null 值。所有插入到 PriorityBlockingQueue 的元素必须实现<br>java.lang.Comparable 接口。因此该队列中元素的排序就取决于你自己的 Comparable 实现。注意 PriorityBlockingQueue 对于具有相等优先级(compare() == 0)的元素并不强制任何特定行为。同时注意，如果你从一个 PriorityBlockingQueue 获得一个 Iterator 的话，该 Iterator 并不能保证它对元素的遍历是以优先级为序的。</p>
-<p>下面来看下添加数据的操作的源代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">public boolean offer(E e) &#123;</div><div class="line">    if (e == null)</div><div class="line">        throw new NullPointerException();</div><div class="line">    final ReentrantLock lock = this.lock;</div><div class="line">    lock.lock();</div><div class="line">    int n, cap;</div><div class="line">    Object[] array;</div><div class="line">    while ((n = size) &gt;= (cap = (array = queue).length))</div><div class="line">        tryGrow(array, cap);</div><div class="line">    try &#123;</div><div class="line">        Comparator&lt;? super E&gt; cmp = comparator;</div><div class="line">        if (cmp == null)</div><div class="line">            siftUpComparable(n, e, array);</div><div class="line">        else</div><div class="line">            siftUpUsingComparator(n, e, array, cmp);</div><div class="line">        size = n + 1;</div><div class="line">        notEmpty.signal();</div><div class="line">    &#125; finally &#123;</div><div class="line">        lock.unlock();</div><div class="line">    &#125;</div><div class="line">    return true;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>检测当前队列是否已经满了,如果满了进行扩容,具体的扩容细节就不说了,下面开始看try{}catch(){}中的代码。<br>如果比较器为空则调用siftUpComparable(n, e, array);,否则siftUpUsingComparator(n, e, array, cmp);那么我们来看下如果我指定了了Comparator后,具体是怎么排序的：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">private static &lt;T&gt; void siftUpUsingComparator(int k, T x, Object[] array,</div><div class="line">                                   Comparator&lt;? super T&gt; cmp) &#123;</div><div class="line">    while (k &gt; 0) &#123;</div><div class="line">        int parent = (k - 1) &gt;&gt;&gt; 1;</div><div class="line">        Object e = array[parent];</div><div class="line">        if (cmp.compare(x, (T) e) &gt;= 0)</div><div class="line">            break;</div><div class="line">        array[k] = e;</div><div class="line">        k = parent;</div><div class="line">    &#125;</div><div class="line">    array[k] = x;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>上面的代码可以简单的使用一句话进行说明：k位置上的数与(k-1)/2位置上的数进行比较,如果如果满足自定义的比较规则,也就是(cmp.compare(x, (T) e) &gt;= 0)为true,数据不动,也就是就放在k这个位置上。如果为false,则交换两个位置的数据。</p>
-<p>下面开始举个具体的例子来说明,自定义比较方式如果x - e &gt; 0 返回1,否则返回-1,也就是升序排序。那么如果数据来的顺序是降序的那么就会出现下面的情况：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">1 k=0,x=9  									    =&gt; array[k] = array[0] = 9</div><div class="line">2 k=1,parent=0,x=8,</div><div class="line">  array[parent]=9,</div><div class="line">  x - array[parent] &lt; 0,					</div><div class="line">  a[1] = 9,</div><div class="line">  a[0]	= 8										=&gt; array[1] = 9,array[0] = 8</div><div class="line">3 k=2,parent = 0,x = 7</div><div class="line">  array[parent]=8,</div><div class="line">  x - array[parent] &lt; 0,					</div><div class="line">  a[2] = 8,</div><div class="line">  a[0]	= 7										=&gt; array[2] = 8,array[0] = 7</div><div class="line">  </div><div class="line">=&gt; 数据插入顺序为: 9,8,7 结果在数组中为 =&gt; 7,9,8</div></pre></td></tr></table></figure>
-<p>由此可以看到在优先级队列中数据并不是有序的,同样由上面可以看出每次其实只是对比了两个点上对应的数据,并没有全部比较,同样可能是基于效率上的考虑,比较两个点相对于那些各种的排序来实现优先级队列的话,效率是极大的提高了.</p>
-<p>那么数据不是有序的,那么是怎么获取优先级最高的数据？</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">private E dequeue() &#123;</div><div class="line">       int n = size - 1;</div><div class="line">       if (n &lt; 0)</div><div class="line">           return null;</div><div class="line">       else &#123;</div><div class="line">           Object[] array = queue;</div><div class="line">           E result = (E) array[0];</div><div class="line">           E x = (E) array[n];</div><div class="line">           array[n] = null;</div><div class="line">           Comparator&lt;? super E&gt; cmp = comparator;</div><div class="line">           if (cmp == null)</div><div class="line">               siftDownComparable(0, x, array, n);</div><div class="line">           else</div><div class="line">               siftDownUsingComparator(0, x, array, n, cmp);</div><div class="line">           size = n;</div><div class="line">           return result;</div><div class="line">       &#125;</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
-<p>上面是出队的代码,同样的代码中获取了第1个和最后一个数据,然后在调用方法：siftDownUsingComparator(0, x, array, n, cmp);</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">private static &lt;T&gt; void siftDownUsingComparator(int k, T x, Object[] array,</div><div class="line">                                                int n,</div><div class="line">                                                Comparator&lt;? super T&gt; cmp) &#123;</div><div class="line">    if (n &gt; 0) &#123;</div><div class="line">        int half = n &gt;&gt;&gt; 1;</div><div class="line">        while (k &lt; half) &#123;</div><div class="line">            int child = (k &lt;&lt; 1) + 1;</div><div class="line">            Object c = array[child];</div><div class="line">            int right = child + 1;</div><div class="line">            if (right &lt; n &amp;&amp; cmp.compare((T) c, (T) array[right]) &gt; 0)</div><div class="line">                c = array[child = right];</div><div class="line">            if (cmp.compare(x, (T) c) &lt;= 0)</div><div class="line">                break;</div><div class="line">            array[k] = c;</div><div class="line">            k = child;</div><div class="line">        &#125;</div><div class="line">        array[k] = x;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>其实这里就是进行二分查找的过程,找到最大的值。</p>
-<h2 id="5-DelayQueue"><a href="#5-DelayQueue" class="headerlink" title="5 DelayQueue"></a>5 DelayQueue</h2><p>Delayed 元素的一个无界阻塞队列，只有在延迟期满时才能从中提取元素。该队列的头部 是延迟期满后保存时间最长的 Delayed 元素。如果延迟都还没有期满，则队列没有头部，并且 poll 将返回 null。当一个元素的getDelay(TimeUnit.NANOSECONDS) 方法返回一个小于或等于零的值时，则出现期满。此队列不允许使用 null 元素</p>
-<p>它的内部成员变量如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">private transient final ReentrantLock lock = new ReentrantLock();</div><div class="line">    private final PriorityQueue&lt;E&gt; q = new PriorityQueue&lt;E&gt;();</div><div class="line"></div><div class="line">    /**</div><div class="line">     * Thread designated to wait for the element at the head of</div><div class="line">     * the queue.  This variant of the Leader-Follower pattern</div><div class="line">     * (http://www.cs.wustl.edu/~schmidt/POSA/POSA2/) serves to</div><div class="line">     * minimize unnecessary timed waiting.  When a thread becomes</div><div class="line">     * the leader, it waits only for the next delay to elapse, but</div><div class="line">     * other threads await indefinitely.  The leader thread must</div><div class="line">     * signal some other thread before returning from take() or</div><div class="line">     * poll(...), unless some other thread becomes leader in the</div><div class="line">     * interim.  Whenever the head of the queue is replaced with</div><div class="line">     * an element with an earlier expiration time, the leader</div><div class="line">     * field is invalidated by being reset to null, and some</div><div class="line">     * waiting thread, but not necessarily the current leader, is</div><div class="line">     * signalled.  So waiting threads must be prepared to acquire</div><div class="line">     * and lose leadership while waiting.</div><div class="line">     */</div><div class="line">    private Thread leader = null;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * Condition signalled when a newer element becomes available</div><div class="line">     * at the head of the queue or a new thread may need to</div><div class="line">     * become leader.</div><div class="line">     */</div><div class="line">    private final Condition available = lock.newCondition();</div></pre></td></tr></table></figure>
-<p>有这个可以看到其内部实现的是一个优先级队列,其中该队列中的元素必须继承Delayed：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">public class DelayQueue&lt;E extends Delayed&gt; extends AbstractQueue&lt;E&gt;</div><div class="line">    implements BlockingQueue&lt;E&gt;</div></pre></td></tr></table></figure>
-<p>下面给一个简单的测试代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">public void test1()&#123;</div><div class="line">    DelayQueue delayQueue = new DelayQueue();</div><div class="line">    delayQueue.add(new MyDelayItem());</div><div class="line">&#125;</div><div class="line"></div><div class="line">public class MyDelayItem implements Delayed&#123;</div><div class="line">    @Override</div><div class="line">    public long getDelay(TimeUnit unit) &#123;</div><div class="line">        return 0;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public int compareTo(Delayed o) &#123;</div><div class="line">        return 0;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="6-SynchronousQueue"><a href="#6-SynchronousQueue" class="headerlink" title="6 SynchronousQueue"></a>6 SynchronousQueue</h2><p>SynchronousQueue 是一个特殊的队列，它的内部同时只能够容纳单个元素。如果该队列已有一元素的话，试图向队列中插入一个新元素的线程将会阻塞，直到另一个线程将该元素从队列中抽走。同样，如果该队列为空，试图向队列中抽取一个元素的线程将会阻塞，直到另一个线程向队列中插入了一条新的元素。</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/07/22/java-nio-study005/" itemprop="url">
-                  JavaNIO学习笔记(五) JavaNIO ByteBuffer
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-07-22T09:57:55+08:00" content="2016-07-22">
-              2016-07-22
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/07/22/java-nio-study005/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/22/java-nio-study005/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="1-Buffer"><a href="#1-Buffer" class="headerlink" title="1 Buffer"></a>1 Buffer</h2><p>缓冲区本质上是一块可以写入数据，然后可以从中读取数据的内存。这块内存被包装成NIO Buffer对象，并提供了一组方法，用来方便的访问该块内存。</p>
-<p>那么也就是说对Buffer的出现是为了让用户更好的访问和操作缓冲区,可以实现简便的读写重置等操作。api的封装我个人觉得可以从以思考以下几个问题：</p>
-<pre><code>1 缓冲区有多大
-2 我读取或者写入到那个位置了
-3 我还可以像缓冲区中写入到少数据或者读取多少数据
-4 我可以重复读取和写入嘛
-5 缓冲区的重置
-6 清空缓冲区
-7 其他操作
-</code></pre><p>当然从上面几个问题在去看Buffer的源码就可以理解了,Buffer的源码中有一下几个重点的参数,截图如下:</p>
-<p><img src="/images/io/buffer-fields.png" alt=""></p>
-<p>从代码中可以看到,其中的有几个成员变量,具体的意义和解释可以看下面的图来进行解释：</p>
-<p><img src="/images/io/buffers-modes.png" alt=""></p>
-<p>capacity: 作为一个内存块，Buffer有一个固定的大小值，也叫“capacity”.你只能往里写capacity个byte、long，char等类型。一旦Buffer满了，需要将其清空（通过读数据或者清除数据）才能继续写数据往里写数据。</p>
-<p>position: 当你写数据到Buffer中时，position表示当前的位置。初始的position值为0.当一个byte、long等数据写到Buffer后， position会向前移动到下一个可插入数据的Buffer单元。position最大可为capacity – 1.</p>
-<p>当读取数据时，也是从某个特定位置读。当将Buffer从写模式切换到读模式，position会被重置为0. 当从Buffer的position处读取数据时，position向前移动到下一个可读的位置。</p>
-<p>limit: 在写模式下，Buffer的limit表示你最多能往Buffer里写多少数据。 写模式下，limit等于Buffer的capacity。</p>
-<p>当切换Buffer到读模式时， limit表示你最多能读到多少数据。因此，当切换Buffer到读模式时，limit会被设置成写模式下的position值。换句话说，你能读到之前写入的所有数据（limit被设置成已写数据的数量，这个值在写模式下就是position）</p>
-<h2 id="2-Buffer的常用api"><a href="#2-Buffer的常用api" class="headerlink" title="2 Buffer的常用api"></a>2 Buffer的常用api</h2><p>Buffer的创建,创建的常用方式为从内从中直接申请一个一定大小的内存空间,用于存储数据。具体的创建过程如下:</p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">//构建一个缓冲区</div><div class="line">ByteBuffer buffer = ByteBuffer.allocate(1024);</div></pre></td></tr></table></figure>
-<p> 缓冲区的构建其实很简单,内部就是一个字节数组,基于字节数组进行的封装。比如上面的创建缓冲区的过程源码如下:</p>
-<p><img src="/images/io/buffer-allocate.png" alt=""></p>
-<p><img src="/images/io/buffer-init.png" alt=""></p>
-<p><img src="/images/io/buffer-init-1.png" alt=""></p>
-<p>从上面的过程可以看得出来,通过指定的大小构造出一个字节数组,通过相应的位置指针来实现相应的操作。</p>
-<p>由于是对字节数组的包装,在java中数组的大小在初始化时指定后不能再做更改,所以在缓冲区的包装中是不能更改缓冲区的大小的,除非重新申请。</p>
-<p>用一个一定大小的字节数组来构建一个缓冲区,具体的api如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ByteBuffer buffer = ByteBuffer.wrap(&quot;构建一个缓冲区&quot;.getBytes());</div></pre></td></tr></table></figure>
-<p>构建缓冲区结束了,那么可以向其中写入数据了,写入数据的api有：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">buffer.put((byte)i);</div><div class="line">buffer.put(i,(byte)i);</div><div class="line">buffer.put(&quot;&quot;.getBytes());</div><div class="line">buffer.put(ByteBuffer.allocate(24));</div></pre></td></tr></table></figure>
-<p>也就是可以向其中放入一个字节,当然这个放入的时候回去找到字节数组的最后,将这个自己加入进去.同样的可以指定位置进行插入数据以及将一个自己数组或者是对象放入到缓冲区中,其实就是内部字节数组指针引用的重新指向其他的数组。</p>
-<p>由于是向数组中写入数据,那么肯定存在的问题就是数组边界问题,如果我采用后面两种写入数据的方式向缓冲区中写入数据,会出现什么问题？</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">@Test</div><div class="line">public void test()&#123;</div><div class="line">    //构建一个缓冲区</div><div class="line">    ByteBuffer buffer = ByteBuffer.allocate(2);</div><div class="line">    buffer.put(&quot;abcd&quot;.getBytes());</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>执行结果可见:</p>
-<p><img src="/images/io/buffer-test-overflow.png" alt=""></p>
-<p>put方法的源代码可以看到如下：</p>
-<p><img src="/images/io/buffer-put.png" alt=""></p>
-<p>由代码可以看到当待写入缓冲区的字节数组的大小超过缓冲区的大小时会抛出这个异常,这个异常时运行时异常。</p>
-<p>由put方法可以看到,先检测的是数组下表越界问题。然后在拷贝数据到缓冲区中,之后修改相应的位置数据。也就是移动了position.</p>
-<p>向缓冲区中写入数据后想读取出来,写入数据的时候修改了position,读取的时候如果还是从position这个位置开始,所以如果想读取刚才写入的数据,具体的操作代码如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">@Test</div><div class="line"> public void test()&#123;</div><div class="line">     //构建一个缓冲区</div><div class="line">     ByteBuffer buffer = ByteBuffer.allocate(10);</div><div class="line">     buffer.put(&quot;abcd&quot;.getBytes());</div><div class="line">     buffer.flip();</div><div class="line"></div><div class="line">     while(buffer.position() &lt; buffer.limit())&#123;</div><div class="line">         System.out.println((char)buffer.get());</div><div class="line">     &#125;</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
-<p>代码执行结果如下：</p>
-<p><img src="/images/io/buffer-test-reader.png" alt=""></p>
-<p>在读取的时候需要将缓冲区重置一下,由于在写入的时候position已经移动到写入的最新的数据位置,而在新构建的缓冲区中,limit的初始化大小是根据capacity定的。</p>
-<p>如上面申请一个10个字节的数组后,写入4个字母后,position = 4 ,limit = 10, capacity=10.</p>
-<p>当我需要读取刚才写入到缓冲区的数据,需要重置position,在重置的时候,limit也会重置为当前position的位置。使用flip()来切换缓冲区的读写状态。源码如下：</p>
-<p><img src="/images/io/buffer-flip.png" alt=""></p>
-<p>rewind()方法,这个方法用于将position进行重置为0,limit是不会改变的,同样的在写入操作的时候,limit也是不变的,因此如果使用这个方法在从缓冲中读取数据和flip()方法重置后读取数据的区别如下代码执行结果：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">@Test</div><div class="line">    public void test()&#123;</div><div class="line">        //构建一个缓冲区</div><div class="line">        ByteBuffer buffer = ByteBuffer.allocate(10);</div><div class="line">        buffer.put(&quot;abcd&quot;.getBytes());</div><div class="line">        buffer.flip();</div><div class="line"></div><div class="line">        System.out.println(buffer.position() + &quot;\t&quot; + buffer.limit());</div><div class="line">        byte b ;</div><div class="line">        while(true)&#123;</div><div class="line">            System.out.println(&quot;data -&gt; &quot; + buffer.get());</div><div class="line">            if(buffer.position() &gt;= buffer.limit())break;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        System.out.println(buffer.position() + &quot;\t&quot; + buffer.limit());</div><div class="line">        buffer.rewind();</div><div class="line">        System.out.println(buffer.position() + &quot;\t&quot; + buffer.limit());</div><div class="line">    &#125;</div><div class="line"></div><div class="line">代码执行结果如下：</div><div class="line">0	4</div><div class="line">data -&gt; 97</div><div class="line">data -&gt; 98</div><div class="line">data -&gt; 99</div><div class="line">data -&gt; 100</div><div class="line">4	4</div><div class="line">0	4</div></pre></td></tr></table></figure>
-<p>clear方法主要是用来清空缓冲区的,一旦读取完缓冲区中的数据,需要让缓冲区准备好再次被写入数据,可以通过调研clear方法来实现缓冲区的重置,也就是清空数据后再从新准备写入,当然现在的重置不是清空数据,而是重置特定的指针,进行覆盖写入。</p>
-<p>如果调用的是clear()方法，position将被设回0，limit被设置成 capacity的值。换句话说，Buffer 被清空了。Buffer中的数据并未清除，只是这些标记告诉我们可以从哪里开始往Buffer里写数据。</p>
-<p>如果Buffer中有一些未读的数据，调用clear()方法，数据将“被遗忘”，意味着不再有任何标记会告诉你哪些数据被读过，哪些还没有。</p>
-<p>clear()方法的例子如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">@Test</div><div class="line">    public void test1()&#123;</div><div class="line">        //构建一个缓冲区</div><div class="line">        ByteBuffer buffer = ByteBuffer.allocate(10);</div><div class="line">        buffer.put(&quot;abcd&quot;.getBytes());</div><div class="line">        buffer.flip();</div><div class="line">        while(true)&#123;</div><div class="line">            System.out.println(&quot;first reader data -&gt; &quot; + buffer.get());</div><div class="line">            if(buffer.position() &gt;= buffer.limit())break;</div><div class="line">        &#125;</div><div class="line">        buffer.clear();</div><div class="line">        while(true)&#123;</div><div class="line">            System.out.println(&quot;second reader data -&gt; &quot; + buffer.get());</div><div class="line">            if(buffer.position() &gt;= buffer.limit())break;</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>代码执行的结果截图如下:</p>
-<p><img src="/images/io/buffer-clear.png" alt=""></p>
-<p>第一次读取数据通过put()方法写入一批数据以后,position的位置移动到4,limit为10,调用flip()方法重置,用于读取刚才写入的shuju,这个时候position为0,limit为4,这个时候可以从0-4读取刚才写入的数据。</p>
-<p>读取完成以后,调用clear()方法,清空缓冲区,通过上面的说明可以看出其实只是重置了相应的指针值。这个时候position为0,limit为capacity,也就是10.在重新读取的时候会从0-10读取所有的数据。</p>
-<p>如果说我调用clear()方法以后,那些我已经写入到缓冲区并且读取了的重新写入覆盖可以,但是对于那些我写入到缓冲区还没有进行读取的数据如何处理？在jdk中也有考虑,主要用到的方法是：compact方法</p>
-<p>compact()方法将所有未读的数据拷贝到Buffer起始处。然后将position设到最后一个未读元素正后面。limit属性依然像clear()方法一样，设置成capacity。现在Buffer准备好写数据了，但是不会覆盖未读的数据。</p>
-<p>具体的代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">@Test</div><div class="line">    public void test3()&#123;</div><div class="line">        //构建一个缓冲区</div><div class="line">        ByteBuffer buffer = ByteBuffer.allocate(10);</div><div class="line">        buffer.put(&quot;abcd&quot;.getBytes());</div><div class="line">        buffer.flip();</div><div class="line">        System.out.println(&quot;first reader data -&gt; &quot; + (char)buffer.get());</div><div class="line">        buffer.compact();</div><div class="line">        while(true)&#123;</div><div class="line">            System.out.println(&quot;second reader data -&gt; &quot; + (char)buffer.get());</div><div class="line">            if(buffer.position() &gt;= buffer.limit())break;</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p><img src="/images/io/buffer-compact.png" alt=""></p>
-<p>同样的如果我想从任意位置开始重新进行读取和写入操作,那么可能需要使用的api为reset()方法和mark()方法。以及指定位置position(position)等</p>
-<p>代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">@Test</div><div class="line">    public void test4()&#123;</div><div class="line">        //构建一个缓冲区</div><div class="line">        ByteBuffer buffer = ByteBuffer.allocate(10);</div><div class="line">        buffer.put(&quot;abcd&quot;.getBytes());</div><div class="line">        buffer.position(0);</div><div class="line">        buffer.mark();</div><div class="line">        buffer.put(&quot;efg&quot;.getBytes());</div><div class="line">        buffer.reset();</div><div class="line">        buffer.limit(4);</div><div class="line"></div><div class="line">        while(true)&#123;</div><div class="line">            System.out.println(&quot;second reader data -&gt; &quot; + (char)buffer.get());</div><div class="line">            if(buffer.position() &gt;= buffer.limit())break;</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>代码的执行结果如下：</p>
-<p><img src="/images/io/buffer-reset.png" alt=""></p>
-<p>整个过程是这个样子的：</p>
-<pre><code>1 buffer.put()后,position为4,limit为10
-2 buffer.position后,直接修改为0
-3 buffer.mark主要是在这个位置上设置一个回复点,也就是mark = 0
-4 在想缓冲区中写入3个字符,position = 4,limit = 10
-5 直接重置position = mark = 0
-6 为了读取少些数据,只读取到有内容的数据,也就是4个字符,设置limit = 4
-7 最后打印出来。
-</code></pre>
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/07/22/java-thread-study005/" itemprop="url">
-                  Java 多线程学习笔记(五) 线程安全集合
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-07-22T09:57:55+08:00" content="2016-07-22">
-              2016-07-22
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/07/22/java-thread-study005/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/22/java-thread-study005/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="1-线程安全的集合"><a href="#1-线程安全的集合" class="headerlink" title="1 线程安全的集合"></a>1 线程安全的集合</h2><h3 id="1-1-ConcurrentHashMap"><a href="#1-1-ConcurrentHashMap" class="headerlink" title="1.1 ConcurrentHashMap"></a>1.1 ConcurrentHashMap</h3><p>HashMap不是线程安全的,在大并发下,写入操作会造成死循环,基本上在高并发的情况下,一般也不用HashMap来。 </p>
-<p>ConcurrentHashMap的构建是如何实现的？在源码层面上可以看出：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">@SuppressWarnings(&quot;unchecked&quot;)</div><div class="line">   public ConcurrentHashMap(int initialCapacity,</div><div class="line">                             float loadFactor, int concurrencyLevel) &#123;</div><div class="line">        if (!(loadFactor &gt; 0) || initialCapacity &lt; 0 || concurrencyLevel &lt;= 0)</div><div class="line">            throw new IllegalArgumentException();</div><div class="line">        if (concurrencyLevel &gt; MAX_SEGMENTS)</div><div class="line">            concurrencyLevel = MAX_SEGMENTS;</div><div class="line">        // Find power-of-two sizes best matching arguments</div><div class="line">        int sshift = 0;</div><div class="line">        int ssize = 1;</div><div class="line">        while (ssize &lt; concurrencyLevel) &#123;</div><div class="line">            ++sshift;</div><div class="line">            ssize &lt;&lt;= 1;</div><div class="line">        &#125;</div><div class="line">        this.segmentShift = 32 - sshift;</div><div class="line">        this.segmentMask = ssize - 1;</div><div class="line">        if (initialCapacity &gt; MAXIMUM_CAPACITY)</div><div class="line">            initialCapacity = MAXIMUM_CAPACITY;</div><div class="line">        int c = initialCapacity / ssize;</div><div class="line">        if (c * ssize &lt; initialCapacity)</div><div class="line">            ++c;</div><div class="line">        int cap = MIN_SEGMENT_TABLE_CAPACITY;</div><div class="line">        while (cap &lt; c)</div><div class="line">            cap &lt;&lt;= 1;</div><div class="line">        // create segments and segments[0]</div><div class="line">        Segment&lt;K,V&gt; s0 =</div><div class="line">            new Segment&lt;K,V&gt;(loadFactor, (int)(cap * loadFactor),</div><div class="line">                             (HashEntry&lt;K,V&gt;[])new HashEntry[cap]);</div><div class="line">        Segment&lt;K,V&gt;[] ss = (Segment&lt;K,V&gt;[])new Segment[ssize];</div><div class="line">        UNSAFE.putOrderedObject(ss, SBASE, s0); // ordered write of segments[0]</div><div class="line">        this.segments = ss;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>由上面的代码可以看出其中最重要的是：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Segment&lt;K,V&gt; s0 =</div><div class="line">           new Segment&lt;K,V&gt;(loadFactor, (int)(cap * loadFactor),</div><div class="line">                            (HashEntry&lt;K,V&gt;[])new HashEntry[cap]);</div><div class="line">                            Segment&lt;K,V&gt;[] ss = (Segment&lt;K,V&gt;[])new Segment[ssize];</div><div class="line">       UNSAFE.putOrderedObject(ss, SBASE, s0); // ordered write of segments[0]</div><div class="line">       this.segments = ss;</div></pre></td></tr></table></figure>
-<p>创建一个segment,并将其拷贝到ss数组中,在修改对应的引用指向。由此可以看出其实ConcurrentHashMap就是内部包装了这个Segment数组,那么数组中每个元素是Segment<k,v>对象,那么这个这个元素的内部实现四什么呢？</k,v></p>
-<p>Segment继承了ReentrantLock类,而ReentrantLock是用来提供锁操作的对象,同时实现了实现了接口Serializable。由此可以看出是可以进行序列化的。</p>
-<p>Segment的构造函数如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Segment(float lf, int threshold, HashEntry&lt;K,V&gt;[] tab) &#123;</div><div class="line">     this.loadFactor = lf;</div><div class="line">     this.threshold = threshold;</div><div class="line">     this.table = tab;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>由构造函数可以看出也就是内部包装了一个HashEntry<k,v>。同样的根据第一个源码中的代码可以看出,这个绑定的HashEntry<k,v>其实是在初四构建出来的指定长度的数组,长度的大小为：2</k,v></k,v></p>
-<p>debug调试下截图如下：</p>
-<p><img src="/images/thread/thread-entry.png" alt=""></p>
-<p>下面开始查看完集合中添加一个元素的动作ConcurrentHashMap做了哪些动作？</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">@SuppressWarnings(&quot;unchecked&quot;)</div><div class="line">    public V put(K key, V value) &#123;</div><div class="line">        Segment&lt;K,V&gt; s;</div><div class="line">        if (value == null)</div><div class="line">            throw new NullPointerException();</div><div class="line">        int hash = hash(key);</div><div class="line">        int j = (hash &gt;&gt;&gt; segmentShift) &amp; segmentMask;</div><div class="line">        if ((s = (Segment&lt;K,V&gt;)UNSAFE.getObject          // nonvolatile; recheck</div><div class="line">             (segments, (j &lt;&lt; SSHIFT) + SBASE)) == null) //  in ensureSegment</div><div class="line">            s = ensureSegment(j);</div><div class="line">        return s.put(key, hash, value, false);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>通过给定需要插入到map中的k和v,通过k进行hash加密下,通过这个hash值来获取到相应的在Segment<k,v>[]数组中的对应的下标,如果不存在就在数组Segment<k,v>[]对应下标位置上的创建一个新的Segment<k,v>。</k,v></k,v></k,v></p>
-<p>之后再向这个Segment中写入数据,具体的写入操作很简单就是获取到Segment后,可以找到Segment包装的HashEntry<k,v>集合,在对这个集合进行加锁,实现并发情况下的数据写入。</k,v></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line">final V put(K key, int hash, V value, boolean onlyIfAbsent) &#123;</div><div class="line">           HashEntry&lt;K,V&gt; node = tryLock() ? null :</div><div class="line">               scanAndLockForPut(key, hash, value);</div><div class="line">           V oldValue;</div><div class="line">           try &#123;</div><div class="line">               HashEntry&lt;K,V&gt;[] tab = table;</div><div class="line">               int index = (tab.length - 1) &amp; hash;</div><div class="line">               HashEntry&lt;K,V&gt; first = entryAt(tab, index);</div><div class="line">               for (HashEntry&lt;K,V&gt; e = first;;) &#123;</div><div class="line">                   if (e != null) &#123;</div><div class="line">                       K k;</div><div class="line">                       if ((k = e.key) == key ||</div><div class="line">                           (e.hash == hash &amp;&amp; key.equals(k))) &#123;</div><div class="line">                           oldValue = e.value;</div><div class="line">                           if (!onlyIfAbsent) &#123;</div><div class="line">                               e.value = value;</div><div class="line">                               ++modCount;</div><div class="line">                           &#125;</div><div class="line">                           break;</div><div class="line">                       &#125;</div><div class="line">                       e = e.next;</div><div class="line">                   &#125;</div><div class="line">                   else &#123;</div><div class="line">                       if (node != null)</div><div class="line">                           node.setNext(first);</div><div class="line">                       else</div><div class="line">                           node = new HashEntry&lt;K,V&gt;(hash, key, value, first);</div><div class="line">                       int c = count + 1;</div><div class="line">                       if (c &gt; threshold &amp;&amp; tab.length &lt; MAXIMUM_CAPACITY)</div><div class="line">                           rehash(node);</div><div class="line">                       else</div><div class="line">                           setEntryAt(tab, index, node);</div><div class="line">                       ++modCount;</div><div class="line">                       count = c;</div><div class="line">                       oldValue = null;</div><div class="line">                       break;</div><div class="line">                   &#125;</div><div class="line">               &#125;</div><div class="line">           &#125; finally &#123;</div><div class="line">               unlock();</div><div class="line">           &#125;</div><div class="line">           return oldValue;</div><div class="line">       &#125;</div></pre></td></tr></table></figure>
-<p>集合如何情况下会进行增加容量,每次增加容量增加多少？在源代码中看到其中有如下代码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">if (c &gt; threshold &amp;&amp; tab.length &lt; MAXIMUM_CAPACITY)</div><div class="line">       rehash(node);</div></pre></td></tr></table></figure>
-<p>其中threshold这个值是在初始化函数中进行赋值的, MAXIMUM_CAPACITY的大小为：1 &lt;&lt; 30;由这个可以看到其实最主要的参数是threshold。这个值的初始化地方在构造函数中,而Segment<k,v>的创建在ConcurrentHashMap的创建中就已经指定了。代码截图</k,v></p>
-<p><img src="/images/thread/thread-entry.png" alt=""></p>
-<p>其中cap的默认大小为2,其中每次当集合的容量超过75%以后,就增加一倍的容量。增加容量的代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div></pre></td><td class="code"><pre><div class="line">@SuppressWarnings(&quot;unchecked&quot;)</div><div class="line">       private void rehash(HashEntry&lt;K,V&gt; node) &#123;</div><div class="line">           /*</div><div class="line">            * Reclassify nodes in each list to new table.  Because we</div><div class="line">            * are using power-of-two expansion, the elements from</div><div class="line">            * each bin must either stay at same index, or move with a</div><div class="line">            * power of two offset. We eliminate unnecessary node</div><div class="line">            * creation by catching cases where old nodes can be</div><div class="line">            * reused because their next fields won&apos;t change.</div><div class="line">            * Statistically, at the default threshold, only about</div><div class="line">            * one-sixth of them need cloning when a table</div><div class="line">            * doubles. The nodes they replace will be garbage</div><div class="line">            * collectable as soon as they are no longer referenced by</div><div class="line">            * any reader thread that may be in the midst of</div><div class="line">            * concurrently traversing table. Entry accesses use plain</div><div class="line">            * array indexing because they are followed by volatile</div><div class="line">            * table write.</div><div class="line">            */</div><div class="line">           HashEntry&lt;K,V&gt;[] oldTable = table;</div><div class="line">           int oldCapacity = oldTable.length;</div><div class="line">           int newCapacity = oldCapacity &lt;&lt; 1;</div><div class="line">           threshold = (int)(newCapacity * loadFactor);</div><div class="line">           HashEntry&lt;K,V&gt;[] newTable =</div><div class="line">               (HashEntry&lt;K,V&gt;[]) new HashEntry[newCapacity];</div><div class="line">           int sizeMask = newCapacity - 1;</div><div class="line">           for (int i = 0; i &lt; oldCapacity ; i++) &#123;</div><div class="line">               HashEntry&lt;K,V&gt; e = oldTable[i];</div><div class="line">               if (e != null) &#123;</div><div class="line">                   HashEntry&lt;K,V&gt; next = e.next;</div><div class="line">                   int idx = e.hash &amp; sizeMask;</div><div class="line">                   if (next == null)   //  Single node on list</div><div class="line">                       newTable[idx] = e;</div><div class="line">                   else &#123; // Reuse consecutive sequence at same slot</div><div class="line">                       HashEntry&lt;K,V&gt; lastRun = e;</div><div class="line">                       int lastIdx = idx;</div><div class="line">                       for (HashEntry&lt;K,V&gt; last = next;</div><div class="line">                            last != null;</div><div class="line">                            last = last.next) &#123;</div><div class="line">                           int k = last.hash &amp; sizeMask;</div><div class="line">                           if (k != lastIdx) &#123;</div><div class="line">                               lastIdx = k;</div><div class="line">                               lastRun = last;</div><div class="line">                           &#125;</div><div class="line">                       &#125;</div><div class="line">                       newTable[lastIdx] = lastRun;</div><div class="line">                       // Clone remaining nodes</div><div class="line">                       for (HashEntry&lt;K,V&gt; p = e; p != lastRun; p = p.next) &#123;</div><div class="line">                           V v = p.value;</div><div class="line">                           int h = p.hash;</div><div class="line">                           int k = h &amp; sizeMask;</div><div class="line">                           HashEntry&lt;K,V&gt; n = newTable[k];</div><div class="line">                           newTable[k] = new HashEntry&lt;K,V&gt;(h, p.key, v, n);</div><div class="line">                       &#125;</div><div class="line">                   &#125;</div><div class="line">               &#125;</div><div class="line">           &#125;</div><div class="line">           int nodeIndex = node.hash &amp; sizeMask; // add the new node</div><div class="line">           node.setNext(newTable[nodeIndex]);</div><div class="line">           newTable[nodeIndex] = node;</div><div class="line">           table = newTable;</div><div class="line">       &#125;</div></pre></td></tr></table></figure>
-<p>可以看出每次当容量达到75%以后,集合的容量就新增加一倍,在增加容量的时候是通过新建一个一定容量的数组来讲原来的数据拷贝进来,在修改原来集合的引用地址。</p>
-<p>那么获取数据的过程就不在多说了,根据给定的key找到相应的Segment后,在找到相应的值.同样的那么删除数据呢？</p>
-<p>其实HashEntry<k,v>的具体的结构如下：</k,v></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">final int hash;</div><div class="line">final K key;</div><div class="line">volatile V value;</div><div class="line">volatile HashEntry&lt;K,V&gt; next;</div></pre></td></tr></table></figure>
-<p>有这个可以看出删除说句是最简单的过程,通过找到上一个节点,将上一个节点的下一个节点引用修改为当前需要删除节点的下一个节点。链表的思想。</p>
-<p>其实通过上面的过程可以看出在ConcurrentHashMap是通过找到相应的Segment,在Segment中包含了HashEntry<k,v>,也就相当于将一个大的集合通过key的不同,分割为多个小的table,同样的在高并发情况下,我们防备的是对同一个数据的修改情况,在集合中对应的就是key,而ConcurrentHashMap又是通过key来讲数据划分的,所以在高并发情况下只需要针对每个key进行数据加锁就可以实现了并发控制。详细请看put方法的源码。</k,v></p>
-<h3 id="1-2-Hashtable"><a href="#1-2-Hashtable" class="headerlink" title="1.2 Hashtable"></a>1.2 Hashtable</h3><p>Hashtable的创建其实和HashMap差不多,构建的源码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">     * Constructs a new, empty hashtable with a default initial capacity (11)</div><div class="line">     * and load factor (0.75).</div><div class="line">     */</div><div class="line">    public Hashtable() &#123;</div><div class="line">        this(11, 0.75f);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>也就是默认初始化的大小为11,当超过了75%的集合容量以后,集合进行增加容量的操作。具体的Hashtable的内部的实现构造如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">     * Constructs a new, empty hashtable with the specified initial</div><div class="line">     * capacity and the specified load factor.</div><div class="line">     *</div><div class="line">     * @param      initialCapacity   the initial capacity of the hashtable.</div><div class="line">     * @param      loadFactor        the load factor of the hashtable.</div><div class="line">     * @exception  IllegalArgumentException  if the initial capacity is less</div><div class="line">     *             than zero, or if the load factor is nonpositive.</div><div class="line">     */</div><div class="line">    public Hashtable(int initialCapacity, float loadFactor) &#123;</div><div class="line">        if (initialCapacity &lt; 0)</div><div class="line">            throw new IllegalArgumentException(&quot;Illegal Capacity: &quot;+</div><div class="line">                                               initialCapacity);</div><div class="line">        if (loadFactor &lt;= 0 || Float.isNaN(loadFactor))</div><div class="line">            throw new IllegalArgumentException(&quot;Illegal Load: &quot;+loadFactor);</div><div class="line"></div><div class="line">        if (initialCapacity==0)</div><div class="line">            initialCapacity = 1;</div><div class="line">        this.loadFactor = loadFactor;</div><div class="line">        table = new Entry[initialCapacity];</div><div class="line">        threshold = (int)Math.min(initialCapacity * loadFactor, MAX_ARRAY_SIZE + 1);</div><div class="line">        initHashSeedAsNeeded(initialCapacity);</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">  /**</div><div class="line">     * Hashtable bucket collision list entry</div><div class="line">     */</div><div class="line">    private static class Entry&lt;K,V&gt; implements Map.Entry&lt;K,V&gt; &#123;</div><div class="line">        int hash;</div><div class="line">        final K key;</div><div class="line">        V value;</div><div class="line">        Entry&lt;K,V&gt; next;</div><div class="line">    	</div><div class="line">    	  ...    </div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>也就是Hashtable初始化大小为11,当容量超过75%以后就增加容量,其内部的实现机理是通过Entry<k,v>数组来实现的.具体的结构图如下：</k,v></p>
-<p><img src="/images/thread/hash-img.jpg" alt=""></p>
-<p>那么在增加容量的时候,每次增加容量的大小为多少呢？是和ConcurrentHashMap相同的方式来实现的吗？</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">protected void rehash() &#123;</div><div class="line">    int oldCapacity = table.length;</div><div class="line">    Entry&lt;K,V&gt;[] oldMap = table;</div><div class="line"></div><div class="line">    // overflow-conscious code</div><div class="line">    int newCapacity = (oldCapacity &lt;&lt; 1) + 1;</div><div class="line">    if (newCapacity - MAX_ARRAY_SIZE &gt; 0) &#123;</div><div class="line">        if (oldCapacity == MAX_ARRAY_SIZE)</div><div class="line">            // Keep running with MAX_ARRAY_SIZE buckets</div><div class="line">            return;</div><div class="line">        newCapacity = MAX_ARRAY_SIZE;</div><div class="line">    &#125;</div><div class="line">    Entry&lt;K,V&gt;[] newMap = new Entry[newCapacity];</div><div class="line"></div><div class="line">    modCount++;</div><div class="line">    threshold = (int)Math.min(newCapacity * loadFactor, MAX_ARRAY_SIZE + 1);</div><div class="line">    boolean rehash = initHashSeedAsNeeded(newCapacity);</div><div class="line"></div><div class="line">    table = newMap;</div><div class="line"></div><div class="line">    for (int i = oldCapacity ; i-- &gt; 0 ;) &#123;</div><div class="line">        for (Entry&lt;K,V&gt; old = oldMap[i] ; old != null ; ) &#123;</div><div class="line">            Entry&lt;K,V&gt; e = old;</div><div class="line">            old = old.next;</div><div class="line"></div><div class="line">            if (rehash) &#123;</div><div class="line">                e.hash = hash(e.key);</div><div class="line">            &#125;</div><div class="line">            int index = (e.hash &amp; 0x7FFFFFFF) % newCapacity;</div><div class="line">            e.next = newMap[index];</div><div class="line">            newMap[index] = e;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>也就是每次需要增加容量的时候,先计算出新增加的容量大小是多少,在构建一个新的Entry<k,v>数组,将历史数据拷贝过来后,在修改原来的引用。</k,v></p>
-<p>上面介绍了如何的构建集合以及以及的构建构建和扩容机制,那么如何进行并发的限制呢？<br>也就是在并发的情况下,hashtable是如何进行并发控制的,下面是put(K k,V v)方法的源码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">public synchronized V put(K key, V value) &#123;</div><div class="line">        // Make sure the value is not null</div><div class="line">        if (value == null) &#123;</div><div class="line">            throw new NullPointerException();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        // Makes sure the key is not already in the hashtable.</div><div class="line">        Entry tab[] = table;</div><div class="line">        int hash = hash(key);</div><div class="line">        int index = (hash &amp; 0x7FFFFFFF) % tab.length;</div><div class="line">        for (Entry&lt;K,V&gt; e = tab[index] ; e != null ; e = e.next) &#123;</div><div class="line">            if ((e.hash == hash) &amp;&amp; e.key.equals(key)) &#123;</div><div class="line">                V old = e.value;</div><div class="line">                e.value = value;</div><div class="line">                return old;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        modCount++;</div><div class="line">        if (count &gt;= threshold) &#123;</div><div class="line">            // Rehash the table if the threshold is exceeded</div><div class="line">            rehash();</div><div class="line"></div><div class="line">            tab = table;</div><div class="line">            hash = hash(key);</div><div class="line">            index = (hash &amp; 0x7FFFFFFF) % tab.length;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        // Creates the new entry.</div><div class="line">        Entry&lt;K,V&gt; e = tab[index];</div><div class="line">        tab[index] = new Entry&lt;&gt;(hash, key, value, e);</div><div class="line">        count++;</div><div class="line">        return null;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>由上面的可以看到其实它的内部是通过关键字synchronized来实现的并发控制,那么在高并发下效率是很低的,同步方法在高并发下性能是很低的。</p>
-<h3 id="1-3-Vector"><a href="#1-3-Vector" class="headerlink" title="1.3 Vector"></a>1.3 Vector</h3><p>Vector是继承List接口的集合类,是最早版本的线程安全的集合,下面是集合的初始化过程</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * Constructs an empty vector with the specified initial capacity and</div><div class="line"> * capacity increment.</div><div class="line"> *</div><div class="line"> * @param   initialCapacity     the initial capacity of the vector</div><div class="line"> * @param   capacityIncrement   the amount by which the capacity is</div><div class="line"> *                              increased when the vector overflows</div><div class="line"> * @throws IllegalArgumentException if the specified initial capacity</div><div class="line"> *         is negative</div><div class="line"> */</div><div class="line">public Vector(int initialCapacity, int capacityIncrement) &#123;</div><div class="line">    super();</div><div class="line">    if (initialCapacity &lt; 0)</div><div class="line">        throw new IllegalArgumentException(&quot;Illegal Capacity: &quot;+</div><div class="line">                                           initialCapacity);</div><div class="line">    this.elementData = new Object[initialCapacity];</div><div class="line">    this.capacityIncrement = capacityIncrement;</div><div class="line">&#125;</div><div class="line"></div><div class="line">/**</div><div class="line"> * Constructs an empty vector with the specified initial capacity and</div><div class="line"> * with its capacity increment equal to zero.</div><div class="line"> *</div><div class="line"> * @param   initialCapacity   the initial capacity of the vector</div><div class="line"> * @throws IllegalArgumentException if the specified initial capacity</div><div class="line"> *         is negative</div><div class="line"> */</div><div class="line">public Vector(int initialCapacity) &#123;</div><div class="line">    this(initialCapacity, 0);</div><div class="line">&#125;</div><div class="line"></div><div class="line">/**</div><div class="line"> * Constructs an empty vector so that its internal data array</div><div class="line"> * has size &#123;@code 10&#125; and its standard capacity increment is</div><div class="line"> * zero.</div><div class="line"> */</div><div class="line">public Vector() &#123;</div><div class="line">    this(10);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>初始化大小为10,同样的扩容的条件是什么呢？</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">private void grow(int minCapacity) &#123;</div><div class="line">        // overflow-conscious code</div><div class="line">        int oldCapacity = elementData.length;</div><div class="line">        int newCapacity = oldCapacity + ((capacityIncrement &gt; 0) ?</div><div class="line">                                         capacityIncrement : oldCapacity);</div><div class="line">        if (newCapacity - minCapacity &lt; 0)</div><div class="line">            newCapacity = minCapacity;</div><div class="line">        if (newCapacity - MAX_ARRAY_SIZE &gt; 0)</div><div class="line">            newCapacity = hugeCapacity(minCapacity);</div><div class="line">        elementData = Arrays.copyOf(elementData, newCapacity);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>如果用户不指定每次增加的容量大小,那么它的增量是2倍原来大小的容量,也就是没有指定就增长一倍。那么同样的,获取到需要新扩增后的容量大小后,将原来的数据拷贝到新的容器中,在修改引用地址指向。</p>
-<p>那么grow(int minCapacity)在什么情况下会被调用,具体的调用情况是这样的,每次往集合中添加数据的时候,首先检查当前数据量 加1 减去当前集合的最大容量是否大于0,如果大于0,表示集合已经满了,需要扩充容量。</p>
-<p>代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">public synchronized boolean add(E e) &#123;</div><div class="line">        modCount++;</div><div class="line">        ensureCapacityHelper(elementCount + 1);</div><div class="line">        elementData[elementCount++] = e;</div><div class="line">        return true;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"> private void ensureCapacityHelper(int minCapacity) &#123;</div><div class="line">        // overflow-conscious code</div><div class="line">        if (minCapacity - elementData.length &gt; 0)</div><div class="line">            grow(minCapacity);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>同样的通过上面的代码可以看出在Vector中内部通过关键字synchronized来实现线程同步的。</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/07/21/java-thread-study004/" itemprop="url">
-                  Java 多线程学习笔记(四) ThreadLocal
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-07-21T09:57:55+08:00" content="2016-07-21">
-              2016-07-21
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/07/21/java-thread-study004/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/21/java-thread-study004/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="1-ThreadLocal的目的"><a href="#1-ThreadLocal的目的" class="headerlink" title="1 ThreadLocal的目的"></a>1 ThreadLocal的目的</h2><p>有的时候在多线程并发情况下,很多时候变量会因为多线程之间的干扰,导致数据错误。比如下面的代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">public class TestLocal implements Runnable&#123;</div><div class="line">    private int ids = 0;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void run() &#123;</div><div class="line">        while(true)&#123;</div><div class="line">            try&#123;</div><div class="line">                System.out.println(Thread.currentThread().getName() + &quot;\t&quot; + ids);</div><div class="line"></div><div class="line">                ids = ids + 1;</div><div class="line"></div><div class="line">                Thread.sleep(1000);</div><div class="line">            &#125;catch (Exception e)&#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void test()&#123;</div><div class="line">        for(int i=0;i&lt;2;i++)&#123;</div><div class="line">            Thread thread = new Thread(this,&quot;&quot; + i);</div><div class="line">            thread.start();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">        new TestLocal().test();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>从上面的代码可以看出,其中ids这个变量是共享变量,运行结果如下：</p>
-<p><img src="/images/thread/thread-local.png" alt=""></p>
-<p>有这个运行结果可以看出来,第一个线程修改后结果被第二个线程拿过来直接用了。并发应用的一个关键地方就是共享数据。这个对那些扩展Thread类或者实现Runnable接口的对象特别重要。</p>
-<p>如果你创建一个类对象，实现Runnable接口，然后多个Thread对象使用同样的Runnable对象，全部的线程都共享同样的属性。这意味着，如果你在一个线程里改变一个属性，全部的线程都会受到这个改变的影响。</p>
-<p>在这个地方就需要使用ThreadLoacl来管理。修改后的代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">public class TestThreadLocal implements Runnable&#123;</div><div class="line">    private int ids = 0;</div><div class="line"></div><div class="line">    private ThreadLocal&lt;Integer&gt; local = new ThreadLocal&lt;Integer&gt;()&#123;</div><div class="line">        @Override</div><div class="line">        protected Integer initialValue() &#123;</div><div class="line">            return ids;</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void run() &#123;</div><div class="line">        while(true)&#123;</div><div class="line">            try&#123;</div><div class="line">                int id = local.get();</div><div class="line">                System.out.println(Thread.currentThread().getName() + &quot;\t&quot; + id);</div><div class="line"></div><div class="line">                local.set(id + 1);</div><div class="line"></div><div class="line">                Thread.sleep(1000);</div><div class="line">            &#125;catch (Exception e)&#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void test()&#123;</div><div class="line">        for(int i=0;i&lt;2;i++)&#123;</div><div class="line">            Thread thread = new Thread(this,&quot;&quot; + i);</div><div class="line">            thread.start();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">        new TestThreadLocal().test();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>代码执行结果如下：</p>
-<p><img src="/images/thread/thread-local-2.png" alt=""></p>
-<p>由此可以看到,每个线程没有相互干扰,数据递增上去了。</p>
-<h2 id="2-ThreadLocal的原理"><a href="#2-ThreadLocal的原理" class="headerlink" title="2 ThreadLocal的原理"></a>2 ThreadLocal的原理</h2><p>从上面的过程可以看出来ThreadLoacl是可以解决并发下的共享变量访问问题.那么它是怎么做到的呢？</p>
-<p>在代码中我通过set来改变原有的值,那么set方法的源码如下:</p>
-<p><img src="/images/thread/thread-local-set.png" alt=""></p>
-<p>可以看到其实内部的实现机理是通过map来实现的,ThreadLoaclMap其实是Thread的成员变量,默认初始值为null,具体的可以看到</p>
-<p><img src="/images/thread/thread-local-3.png" alt=""></p>
-<p>那么第一次根据thread获取相应的ThreadLoaclMap时获取到的对象为空,那么应该会执行createMap方法,那么我们来看看createMap方法做了什么操作：</p>
-<p><img src="/images/thread/thread-createmap.png" alt=""></p>
-<p>由这个可以看出就是构建一个新的ThreadLocalMap,并且赋值给当前线程的成员变量。<br>其内部基本的抽象为了一个Map<thread,t>的方式来存储每一个成员变量。</thread,t></p>
-<h2 id="3-ThreadLocal的api"><a href="#3-ThreadLocal的api" class="headerlink" title="3 ThreadLocal的api"></a>3 ThreadLocal的api</h2><p><img src="/images/thread/thread-local-api.png" alt=""><br>由图上可以知道ThreadLoacl的api主要有3个：<br>get():获取当前线程的参数<br>remove():删除当前线程的key<br>set(value):设置values</p>
+<h2 id="kafka安装"><a href="#kafka安装" class="headerlink" title="kafka安装"></a>kafka安装</h2><p>首先下载kafka，以及zookeeper</p>
+<p><img src="/images/kafka/kafka-downloader.png" alt=""></p>
+<p><img src="/images/kafka/zookeeper-downloader.png" alt=""></p>
+<h2 id="配置zookeeper服务"><a href="#配置zookeeper服务" class="headerlink" title="配置zookeeper服务"></a>配置zookeeper服务</h2><p>1 解压zookeeper3.4.9压缩包后修改主要配置如下<br>修改文件夹下的配置文件conf/zoo_sample.cfg 重命名为zoo.cfg<br>修改的主要内容如下:</p>
+<p><img src="/images/kafka/zookeeper-node.png" alt=""></p>
+<p>对应的参数：</p>
+<p>tickTime：这个参数主要是用来针对 ZooKeeper 服务端和客户端的会话控制，包括心跳控制，一般来说，会话超时时间是该值的两倍，它的单位是毫秒，我们设置为 2000 毫秒。</p>
+<p>dataDir：这个目录用来存放数据库的镜像和操作数据库的日志。注意，如果这个文件夹不存在，需要手动创建一个并赋予读写权限，我们设置为/data/zookeeper3.4.7/data，不用手动创建这个文件夹，系统运行后会自动创建或覆盖。</p>
+<p>clientPort：ZooKeeper 服务端监听客户端的端口，默认是 2181，这里沿用默认设置。</p>
+<p>initLimit：follower 对于 Leader 的初始化连接 timeout 时间；</p>
+<p>syncLimit：follower 对于 Leader 的同步 timeout 时间；</p>
+<p>timeout 的计算公式是 initLimit <em> tickTime，syncLimit </em> tickTime。</p>
+<p>server.A=B：C：D：其中 A 是一个数字，表示这个是第几号服务器；B 是这个服务器的 ip 地址；C 表示的是这个服务器与集群中的 Leader 服务器交换信息的端口；D 表示的是万一集群中的 Leader 服务器挂了，需要一个端口来重新进行选举，选出一个新的 Leader，而这个端口就是用来执行选举时服务器相互通信的端口。如果是伪集群的配置方式，由于 B 都是一样，所以不同的 Zookeeper 实例通信端口号不能一样，所以要给它们分配不同的端口号。</p>
+<p>2 在对应的机器中的data目录下创建相应的myid文件,该文件内容为对应的服务机器的id.</p>
+<p><img src="/images/kafka/zookeeper-myid.png" alt=""></p>
+<p>3 拷贝数据到相应的客户机上后重新建立myid文件，同时,修改zoo.cfg中的文件地址目录</p>
+<p><img src="/images/kafka/zookeeper-list.png" alt=""></p>
+<h2 id="启动服务"><a href="#启动服务" class="headerlink" title="启动服务"></a>启动服务</h2><p>1 接下来通过 bin 目录下面的 zkServer.sh 脚本启动 ZooKeeper 服务，如果不清楚具体参数，可以直接调用脚本查看输出，ZooKeeper 采用的是 Bourne Shell</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">localhost:bin sunxing$ ./zkServer.sh start</div><div class="line">ZooKeeper JMX enabled by default</div><div class="line">Using config: /usr/local/share/zookeeper3.4.7/bin/../conf/zoo.cfg</div><div class="line">Starting zookeeper ... STARTED</div></pre></td></tr></table></figure>
+<h2 id="解压配置kafka"><a href="#解压配置kafka" class="headerlink" title="解压配置kafka"></a>解压配置kafka</h2><p>kafka和zookeeper的部署过程相同,先解压压缩包,kafka的配置主要都在config中,其中主要的配置项为：service.properites</p>
+<p>该文件的内容为:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div></pre></td><td class="code"><pre><div class="line"># Licensed to the Apache Software Foundation (ASF) under one or more</div><div class="line"># contributor license agreements.  See the NOTICE file distributed with</div><div class="line"># this work for additional information regarding copyright ownership.</div><div class="line"># The ASF licenses this file to You under the Apache License, Version 2.0</div><div class="line"># (the &quot;License&quot;); you may not use this file except in compliance with</div><div class="line"># the License.  You may obtain a copy of the License at</div><div class="line">#</div><div class="line">#    http://www.apache.org/licenses/LICENSE-2.0</div><div class="line">#</div><div class="line"># Unless required by applicable law or agreed to in writing, software</div><div class="line"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</div><div class="line"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</div><div class="line"># See the License for the specific language governing permissions and</div><div class="line"># limitations under the License.</div><div class="line"></div><div class="line"># see kafka.server.KafkaConfig for additional details and defaults</div><div class="line"></div><div class="line">############################# Server Basics #############################</div><div class="line"></div><div class="line"># The id of the broker. This must be set to a unique integer for each broker.</div><div class="line">broker.id=1</div><div class="line"></div><div class="line"># Switch to enable topic deletion or not, default value is false</div><div class="line">delete.topic.enable=true</div><div class="line"></div><div class="line">############################# Socket Server Settings #############################</div><div class="line"></div><div class="line"># The address the socket server listens on. It will get the value returned from </div><div class="line"># java.net.InetAddress.getCanonicalHostName() if not configured.</div><div class="line">#   FORMAT:</div><div class="line">#     listeners = security_protocol://host_name:port</div><div class="line">#   EXAMPLE:</div><div class="line">#     listeners = PLAINTEXT://your.host.name:9092</div><div class="line">listeners=PLAINTEXT://sunx:9091</div><div class="line"></div><div class="line"># Hostname and port the broker will advertise to producers and consumers. If not set, </div><div class="line"># it uses the value for &quot;listeners&quot; if configured.  Otherwise, it will use the value</div><div class="line"># returned from java.net.InetAddress.getCanonicalHostName().</div><div class="line">advertised.listeners=PLAINTEXT://your.host.name:9092</div><div class="line"></div><div class="line"># The number of threads handling network requests</div><div class="line">num.network.threads=3</div><div class="line"></div><div class="line"># The number of threads doing disk I/O</div><div class="line">num.io.threads=8</div><div class="line"></div><div class="line"># The send buffer (SO_SNDBUF) used by the socket server</div><div class="line">socket.send.buffer.bytes=102400</div><div class="line"></div><div class="line"># The receive buffer (SO_RCVBUF) used by the socket server</div><div class="line">socket.receive.buffer.bytes=102400</div><div class="line"></div><div class="line"># The maximum size of a request that the socket server will accept (protection against OOM)</div><div class="line">socket.request.max.bytes=104857600</div><div class="line"></div><div class="line"></div><div class="line">############################# Log Basics #############################</div><div class="line"></div><div class="line"># A comma seperated list of directories under which to store log files</div><div class="line">log.dirs=/data/service/kafka/kafka-node1/data/</div><div class="line"></div><div class="line"># The default number of log partitions per topic. More partitions allow greater</div><div class="line"># parallelism for consumption, but this will also result in more files across</div><div class="line"># the brokers.</div><div class="line">num.partitions=20</div><div class="line"></div><div class="line"># The number of threads per data directory to be used for log recovery at startup and flushing at shutdown.</div><div class="line"># This value is recommended to be increased for installations with data dirs located in RAID array.</div><div class="line">num.recovery.threads.per.data.dir=1</div><div class="line"></div><div class="line">############################# Log Flush Policy #############################</div><div class="line"></div><div class="line"># Messages are immediately written to the filesystem but by default we only fsync() to sync</div><div class="line"># the OS cache lazily. The following configurations control the flush of data to disk.</div><div class="line"># There are a few important trade-offs here:</div><div class="line">#    1. Durability: Unflushed data may be lost if you are not using replication.</div><div class="line">#    2. Latency: Very large flush intervals may lead to latency spikes when the flush does occur as there will be a lot of data to </div><div class="line">flush.</div><div class="line">#    3. Throughput: The flush is generally the most expensive operation, and a small flush interval may lead to exceessive seeks.</div><div class="line"># The settings below allow one to configure the flush policy to flush data after a period of time or</div><div class="line"># every N messages (or both). This can be done globally and overridden on a per-topic basis.</div><div class="line"></div><div class="line"># The number of messages to accept before forcing a flush of data to disk</div><div class="line">#log.flush.interval.messages=10000</div><div class="line"></div><div class="line"># The maximum amount of time a message can sit in a log before we force a flush</div><div class="line">#log.flush.interval.ms=1000</div><div class="line"></div><div class="line">############################# Log Retention Policy #############################</div><div class="line"></div><div class="line"># The following configurations control the disposal of log segments. The policy can</div><div class="line"># be set to delete segments after a period of time, or after a given size has accumulated.</div><div class="line"># A segment will be deleted whenever *either* of these criteria are met. Deletion always happens</div><div class="line"># from the end of the log.</div><div class="line"></div><div class="line"># The minimum age of a log file to be eligible for deletion</div><div class="line">log.retention.hours=72</div><div class="line"></div><div class="line"># A size-based retention policy for logs. Segments are pruned from the log as long as the remaining</div><div class="line"># segments don&apos;t drop below log.retention.bytes.</div><div class="line">#log.retention.bytes=1073741824</div><div class="line"></div><div class="line"># The maximum size of a log segment file. When this size is reached a new log segment will be created.</div><div class="line">log.segment.bytes=1073741824</div><div class="line"></div><div class="line"># The interval at which log segments are checked to see if they can be deleted according</div><div class="line"># to the retention policies</div><div class="line">log.retention.check.interval.ms=300000</div><div class="line"></div><div class="line">############################# Zookeeper #############################</div><div class="line"></div><div class="line"># Zookeeper connection string (see zookeeper docs for details).</div><div class="line"># This is a comma separated host:port pairs, each corresponding to a zk</div><div class="line"># server. e.g. &quot;127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3002&quot;.</div><div class="line"># You can also append an optional chroot string to the urls to specify the</div><div class="line"># root directory for all kafka znodes.</div><div class="line">zookeeper.connect=sunx:2181,sunx:2182,sunx:2183</div><div class="line"></div><div class="line"># Timeout in ms for connecting to zookeeper</div><div class="line">zookeeper.connection.timeout.ms=6000</div></pre></td></tr></table></figure></p>
+<p>以上为主要的配置项,那么配置好以后，需要将kafka拷贝部署三个节点,修改其中主要的几个点:</p>
+<p>logs.dir: kafka中所有topic存储的目录<br>log.retention.hours：kafka中数据失效的时间,默认是小时为单位<br>num.partitions:每个topic的分区<br>advertised.listeners:对位给生产者和消费者提供的端口地址<br>delete.topic.enable:是否直接删除topic,如果为true,则删除topic时，直接删除并清掉该topic数据。</p>
+<p>同时对于服务需要监控日志,在日志中配置需要配置相应的日志存储的文件地址:</p>
+<pre><code>kafka.logs.dir=/data/service/kafka/kafka-node1/logs
+</code></pre><h2 id="启动kafka"><a href="#启动kafka" class="headerlink" title="启动kafka"></a>启动kafka</h2><p>启动zookeeper集群节点后,在启动kafka:</p>
+<p><img src="/images/kafka/kafka-start.png" alt=""></p>
+<h2 id="kafka常用命令"><a href="#kafka常用命令" class="headerlink" title="kafka常用命令"></a>kafka常用命令</h2><p>创建topic<br><img src="/images/kafka/kafka-create.png" alt=""></p>
+<p>查看是topic列表:<br><img src="/images/kafka/kafka-list.png" alt=""></p>
+<p>修改topic,增加topic的分区<br><img src="/images/kafka/kafka-alter.png" alt=""></p>
+<p>删除topic<br><img src="/images/kafka/kafka-delete.png" alt=""></p>
+<p>发送数据<br><img src="/images/kafka/kafka-producer.png" alt=""></p>
+<p>消费数据<br><img src="/images/kafka/kafka-consumer.png" alt=""></p>
 
           
         
@@ -1058,7 +997,7 @@ private transient Node&lt;E&gt; last;
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1131,7 +1070,7 @@ var duoshuoQuery = {short_name:"sunxing"};
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">65</span>
+              <span class="site-state-item-count">78</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -1139,7 +1078,7 @@ var duoshuoQuery = {short_name:"sunxing"};
           
             <div class="site-state-item site-state-categories">
               
-                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-count">13</span>
                 <span class="site-state-item-name">分类</span>
               
             </div>
@@ -1148,7 +1087,7 @@ var duoshuoQuery = {short_name:"sunxing"};
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

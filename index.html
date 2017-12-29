@@ -231,8 +231,8 @@
             
               
                 
-                <a class="post-title-link" href="/2017/04/01/machine-learn001/" itemprop="url">
-                  机器学习(一) windows下Python的安装以及配置
+                <a class="post-title-link" href="/2017/10/30/spring-boot-study013/" itemprop="url">
+                  Spring Boot基础学习(十三) 数据缓存
                 </a>
               
             
@@ -245,8 +245,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2017-04-01T15:22:46+08:00" content="2017-04-01">
-              2017-04-01
+            <time itemprop="dateCreated" datetime="2017-10-30T17:22:46+08:00" content="2017-10-30">
+              2017-10-30
             </time>
           </span>
 
@@ -259,8 +259,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/机器学习/" itemprop="url" rel="index">
-                    <span itemprop="name">机器学习</span>
+                  <a href="/categories/spring-boot/" itemprop="url" rel="index">
+                    <span itemprop="name">spring boot</span>
                   </a>
                 </span>
 
@@ -275,8 +275,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2017/04/01/machine-learn001/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/04/01/machine-learn001/" itemprop="commentsCount"></span>
+                <a href="/2017/10/30/spring-boot-study013/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/10/30/spring-boot-study013/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -301,23 +301,51 @@
       
         
           
-            <h2 id="安装python环境"><a href="#安装python环境" class="headerlink" title="安装python环境"></a>安装python环境</h2><p>现在选择的是Python3.x,对应的下载版本地址为</p>
-<pre><code>https://www.python.org/ftp/python/3.6.1/python-3.6.1.exe
-</code></pre><p>在上面这个目录中可以看到对应的python的安装版本,下载好以后点击安装即可,安装号以后需要做的就是配置一下环境变量<br><img src="/images/machine/python-install.png" alt=""></p>
-<p>安装好以后进行测试</p>
-<p><img src="/images/machine/python-cmd.png" alt=""></p>
-<h2 id="配置类库numpy"><a href="#配置类库numpy" class="headerlink" title="配置类库numpy"></a>配置类库numpy</h2><p>安装Numpy我采用的方式是使用pip命令进行安装,命令如下：</p>
-<pre><code>pip install numpy
-</code></pre><p>安装过后的截图如下：</p>
-<p><img src="/images/machine/python-numpy.png" alt=""></p>
-<h2 id="配置类库Scipy"><a href="#配置类库Scipy" class="headerlink" title="配置类库Scipy"></a>配置类库Scipy</h2><p>在官方网站中下载对应的scipy版本的安装包,具体的采用的whl文件来进行安装的,下载地址为:</p>
-<pre><code>http://www.lfd.uci.edu/~gohlke/pythonlibs/#scipy    
-</code></pre><p>选择如图中对应的版本,我的Python是3.6版本,因此采用cp36.</p>
-<p><img src="/images/machine/scipy-path.png" alt=""></p>
-<p><img src="/images/machine/pyhton-scipy.png" alt=""></p>
-<h2 id="配置Matplotlib"><a href="#配置Matplotlib" class="headerlink" title="配置Matplotlib"></a>配置Matplotlib</h2><p>配置Matplotlib采用的也是命令行安装最新版本,具体的安装命令如下：</p>
-<pre><code>pip install matplotlib
-</code></pre><p><img src="/images/machine/python-matplotlib.png" alt=""></p>
+            <h1 id="Spring-Boot-Cache"><a href="#Spring-Boot-Cache" class="headerlink" title="Spring Boot Cache"></a>Spring Boot Cache</h1><p>Spring定义了CacheManager和Cache接口来统一不同的缓存技术。其中CacheManager是spring提供的各种缓存技术抽象接口,Cache接口包含了缓存的各种操作(增加,删除,获取缓存),一般情况下不会直接和这个接口打交道.</p>
+<p>Srping支持的CacheManager的列表如下：<br>|CacheManager|描述|<br>|:–:|:—:|<br>|SimpleCacheManager|使用简单的Collection来存储数据,主要用于测试用途|<br>|ConcurrentMapCacheManager|使用ConcurrentMap来存储缓存数据|<br>|NoOpCacheManager|仅用于测试,不会实际存储数据|<br>|EhCacheCacheManager|使用EhCache作为缓存技术|<br>|GuavaCacheManager|使用Google Guava作为缓存技术|<br>|HazelcastCacheManager|使用Hazelcast作为缓存技术|<br>|JCacheCacheManager|支持JCache的标准的实现作为缓存技术|<br>|RedisCacheManager|使用Redis作为缓存技术|</p>
+<h3 id="声明式缓存注解"><a href="#声明式缓存注解" class="headerlink" title="声明式缓存注解"></a>声明式缓存注解</h3><p>Spring提供了4个注解来声明缓存规则,声明式注解如下:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">注解</th>
+<th style="text-align:center">解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">@Cacheable</td>
+<td style="text-align:center">在执行方法之前,Spring会先查看缓存中是否有数据,如果有数据,则直接返回缓存数据,若没有,则调用方法,将数据查询出来后放进缓存</td>
+</tr>
+<tr>
+<td style="text-align:center">@CachePut</td>
+<td style="text-align:center">无论如何都会将方法的返回值放入到缓存中</td>
+</tr>
+<tr>
+<td style="text-align:center">@CacheEvict</td>
+<td style="text-align:center">将一条或则多条数据从缓存汇总删除</td>
+</tr>
+<tr>
+<td style="text-align:center">@Caching</td>
+<td style="text-align:center">可以通过@Caching注解组合多个注解策略在一个方法上</td>
+</tr>
+</tbody>
+</table>
+<p>声明式注解使用时配置内容为:</p>
+<pre><code># 可选generic,ehcache,hazelcast,infinispan,jcache,redis,simple,guava,none
+spring.cache.type= simple
+# 程序启动时常见缓存的名称
+spring.cache.cache-names=person
+# ehcache 配置文件地址,其他文件的配置内容差不多
+# spring.cache.ehcache.config=application.properties
+</code></pre><h3 id="声明式缓存实例"><a href="#声明式缓存实例" class="headerlink" title="声明式缓存实例"></a>声明式缓存实例</h3><p>例子是通过从接口传递过来的参数包装对象后插入到数据库中,同时又会缓存起来,下面在通过查询接口从数据库中根据主键查询这条数据,以及删除掉缓存以后再进行查询,整个过程中打印查询数据库的sql内容.具体的例子代码结构如下:</p>
+<p><img src="images/spring-boot/cache-1.png" alt=""></p>
+<h5 id="实体类对象"><a href="#实体类对象" class="headerlink" title="实体类对象"></a>实体类对象</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">@Entity</div><div class="line">public class Person &#123;</div><div class="line">    @Id</div><div class="line">//    @GeneratedValue</div><div class="line">    private Long id;</div><div class="line">    private String name;</div><div class="line">    private Integer age;</div><div class="line"></div><div class="line">    public Person()&#123;</div><div class="line">        super();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public Person(String name, Integer age)&#123;</div><div class="line">        this.name = name;</div><div class="line">        this.age = age;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public Person(Long id, String name, Integer age)&#123;</div><div class="line">        this.id = id;</div><div class="line">        this.name = name;</div><div class="line">        this.age = age;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">   .....</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h5 id="controller"><a href="#controller" class="headerlink" title="controller"></a>controller</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">@RestController</div><div class="line">public class CacheController &#123;</div><div class="line">    @Autowired</div><div class="line">    private DemoService service;</div><div class="line"></div><div class="line">    @RequestMapping(&quot;/put&quot;)</div><div class="line">    public Person put(@RequestParam Long id,@RequestParam String name,@RequestParam int age)&#123;</div><div class="line">        return service.save(new Person(id,name,age));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @RequestMapping(&quot;/able&quot;)</div><div class="line">    public Person able(@RequestParam Long id)&#123;</div><div class="line">        return service.findOne(id);</div><div class="line">    &#125;</div><div class="line">    @RequestMapping(&quot;/evit&quot;)</div><div class="line">    public String evit(Long id)&#123;</div><div class="line">        service.remove(id);</div><div class="line">        return &quot;ok&quot;;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h5 id="数据库操作"><a href="#数据库操作" class="headerlink" title="数据库操作"></a>数据库操作</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">public interface PersonRepository extends JpaRepository&lt;Person,Long&gt; &#123;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h5 id="service"><a href="#service" class="headerlink" title="service"></a>service</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">@Service</div><div class="line">public class DemoService &#123;</div><div class="line">    @Autowired</div><div class="line">    private PersonRepository repository;</div><div class="line"></div><div class="line">    @CachePut(value = &quot;person&quot;, key = &quot;#person.id&quot;)</div><div class="line">    public Person save(Person person)&#123;</div><div class="line">        //保存数据</div><div class="line">        Person p = repository.save(person);</div><div class="line">        System.out.println(&quot;为id,key为:&quot; + p.getId() + &quot;数据做了缓存&quot;);</div><div class="line">        return p;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @CacheEvict(value = &quot;person&quot;)</div><div class="line">    public void remove(Long id)&#123;</div><div class="line">        System.out.println(&quot;删除了id,key为:&quot; + id + &quot;的数据缓存&quot;);</div><div class="line">//        repository.delete(id);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Cacheable(value = &quot;person&quot;, key = &quot;#id&quot;)</div><div class="line">    public Person findOne(long id)&#123;</div><div class="line">        Person p = repository.findOne(id);</div><div class="line">        System.out.println(&quot;为id,key为:&quot; + p.getId() + &quot;数据做了缓存&quot;);</div><div class="line">        return p;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h5 id="运行结果说明"><a href="#运行结果说明" class="headerlink" title="运行结果说明"></a>运行结果说明</h5><p>首先通过接口向数据库中插入一条数据,这条数据会缓存起来,然后在调用接口查询这条数据,会发现数据已经被缓存起来了,没有打印查询sql直接从缓存中将数据返回了,这个时候删除调用缓存,在通过查询接口将数据查询出来,查询的sql会被打印出来,也就是缓存中没有再去查询数据库。具体的执行结果截图如下：</p>
+<p><img src="images/spring-boot/cache-2.png" alt=""></p>
+<p>由于数据被缓存了,进行数据查询时时通过aop切面进行操作的,如果缓存中有数据,方法体实际是不执行的,这里就没有打印第二步的操作。</p>
 
           
         
@@ -367,8 +395,8 @@
             
               
                 
-                <a class="post-title-link" href="/2017/03/20/kafka-study001/" itemprop="url">
-                  kafka学习笔记(一) kafka伪分布式环境搭建
+                <a class="post-title-link" href="/2017/10/27/spring-boot-study012/" itemprop="url">
+                  Spring Boot基础学习(十二) 声明式事务
                 </a>
               
             
@@ -381,8 +409,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2017-03-20T11:55:55+08:00" content="2017-03-20">
-              2017-03-20
+            <time itemprop="dateCreated" datetime="2017-10-27T17:22:46+08:00" content="2017-10-27">
+              2017-10-27
             </time>
           </span>
 
@@ -395,8 +423,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/kafka/" itemprop="url" rel="index">
-                    <span itemprop="name">kafka</span>
+                  <a href="/categories/spring-boot/" itemprop="url" rel="index">
+                    <span itemprop="name">spring boot</span>
                   </a>
                 </span>
 
@@ -411,8 +439,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2017/03/20/kafka-study001/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/03/20/kafka-study001/" itemprop="commentsCount"></span>
+                <a href="/2017/10/27/spring-boot-study012/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/10/27/spring-boot-study012/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -437,42 +465,88 @@
       
         
           
-            <blockquote>
-<p>kafka是实时消息队列,主要的应用场景是做实时出具流，比如日志的收集等。</p>
-</blockquote>
-<h2 id="kafka安装"><a href="#kafka安装" class="headerlink" title="kafka安装"></a>kafka安装</h2><p>首先下载kafka，以及zookeeper</p>
-<p><img src="/images/kafka/kafka-downloader.png" alt=""></p>
-<p><img src="/images/kafka/zookeeper-downloader.png" alt=""></p>
-<h2 id="配置zookeeper服务"><a href="#配置zookeeper服务" class="headerlink" title="配置zookeeper服务"></a>配置zookeeper服务</h2><p>1 解压zookeeper3.4.9压缩包后修改主要配置如下<br>修改文件夹下的配置文件conf/zoo_sample.cfg 重命名为zoo.cfg<br>修改的主要内容如下:</p>
-<p><img src="/images/kafka/zookeeper-node.png" alt=""></p>
-<p>对应的参数：</p>
-<p>tickTime：这个参数主要是用来针对 ZooKeeper 服务端和客户端的会话控制，包括心跳控制，一般来说，会话超时时间是该值的两倍，它的单位是毫秒，我们设置为 2000 毫秒。</p>
-<p>dataDir：这个目录用来存放数据库的镜像和操作数据库的日志。注意，如果这个文件夹不存在，需要手动创建一个并赋予读写权限，我们设置为/data/zookeeper3.4.7/data，不用手动创建这个文件夹，系统运行后会自动创建或覆盖。</p>
-<p>clientPort：ZooKeeper 服务端监听客户端的端口，默认是 2181，这里沿用默认设置。</p>
-<p>initLimit：follower 对于 Leader 的初始化连接 timeout 时间；</p>
-<p>syncLimit：follower 对于 Leader 的同步 timeout 时间；</p>
-<p>timeout 的计算公式是 initLimit <em> tickTime，syncLimit </em> tickTime。</p>
-<p>server.A=B：C：D：其中 A 是一个数字，表示这个是第几号服务器；B 是这个服务器的 ip 地址；C 表示的是这个服务器与集群中的 Leader 服务器交换信息的端口；D 表示的是万一集群中的 Leader 服务器挂了，需要一个端口来重新进行选举，选出一个新的 Leader，而这个端口就是用来执行选举时服务器相互通信的端口。如果是伪集群的配置方式，由于 B 都是一样，所以不同的 Zookeeper 实例通信端口号不能一样，所以要给它们分配不同的端口号。</p>
-<p>2 在对应的机器中的data目录下创建相应的myid文件,该文件内容为对应的服务机器的id.</p>
-<p><img src="/images/kafka/zookeeper-myid.png" alt=""></p>
-<p>3 拷贝数据到相应的客户机上后重新建立myid文件，同时,修改zoo.cfg中的文件地址目录</p>
-<p><img src="/images/kafka/zookeeper-list.png" alt=""></p>
-<h2 id="启动服务"><a href="#启动服务" class="headerlink" title="启动服务"></a>启动服务</h2><p>1 接下来通过 bin 目录下面的 zkServer.sh 脚本启动 ZooKeeper 服务，如果不清楚具体参数，可以直接调用脚本查看输出，ZooKeeper 采用的是 Bourne Shell</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">localhost:bin sunxing$ ./zkServer.sh start</div><div class="line">ZooKeeper JMX enabled by default</div><div class="line">Using config: /usr/local/share/zookeeper3.4.7/bin/../conf/zoo.cfg</div><div class="line">Starting zookeeper ... STARTED</div></pre></td></tr></table></figure>
-<h2 id="解压配置kafka"><a href="#解压配置kafka" class="headerlink" title="解压配置kafka"></a>解压配置kafka</h2><p>kafka和zookeeper的部署过程相同,先解压压缩包,kafka的配置主要都在config中,其中主要的配置项为：service.properites</p>
-<p>该文件的内容为:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div></pre></td><td class="code"><pre><div class="line"># Licensed to the Apache Software Foundation (ASF) under one or more</div><div class="line"># contributor license agreements.  See the NOTICE file distributed with</div><div class="line"># this work for additional information regarding copyright ownership.</div><div class="line"># The ASF licenses this file to You under the Apache License, Version 2.0</div><div class="line"># (the &quot;License&quot;); you may not use this file except in compliance with</div><div class="line"># the License.  You may obtain a copy of the License at</div><div class="line">#</div><div class="line">#    http://www.apache.org/licenses/LICENSE-2.0</div><div class="line">#</div><div class="line"># Unless required by applicable law or agreed to in writing, software</div><div class="line"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</div><div class="line"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</div><div class="line"># See the License for the specific language governing permissions and</div><div class="line"># limitations under the License.</div><div class="line"></div><div class="line"># see kafka.server.KafkaConfig for additional details and defaults</div><div class="line"></div><div class="line">############################# Server Basics #############################</div><div class="line"></div><div class="line"># The id of the broker. This must be set to a unique integer for each broker.</div><div class="line">broker.id=1</div><div class="line"></div><div class="line"># Switch to enable topic deletion or not, default value is false</div><div class="line">delete.topic.enable=true</div><div class="line"></div><div class="line">############################# Socket Server Settings #############################</div><div class="line"></div><div class="line"># The address the socket server listens on. It will get the value returned from </div><div class="line"># java.net.InetAddress.getCanonicalHostName() if not configured.</div><div class="line">#   FORMAT:</div><div class="line">#     listeners = security_protocol://host_name:port</div><div class="line">#   EXAMPLE:</div><div class="line">#     listeners = PLAINTEXT://your.host.name:9092</div><div class="line">listeners=PLAINTEXT://sunx:9091</div><div class="line"></div><div class="line"># Hostname and port the broker will advertise to producers and consumers. If not set, </div><div class="line"># it uses the value for &quot;listeners&quot; if configured.  Otherwise, it will use the value</div><div class="line"># returned from java.net.InetAddress.getCanonicalHostName().</div><div class="line">advertised.listeners=PLAINTEXT://your.host.name:9092</div><div class="line"></div><div class="line"># The number of threads handling network requests</div><div class="line">num.network.threads=3</div><div class="line"></div><div class="line"># The number of threads doing disk I/O</div><div class="line">num.io.threads=8</div><div class="line"></div><div class="line"># The send buffer (SO_SNDBUF) used by the socket server</div><div class="line">socket.send.buffer.bytes=102400</div><div class="line"></div><div class="line"># The receive buffer (SO_RCVBUF) used by the socket server</div><div class="line">socket.receive.buffer.bytes=102400</div><div class="line"></div><div class="line"># The maximum size of a request that the socket server will accept (protection against OOM)</div><div class="line">socket.request.max.bytes=104857600</div><div class="line"></div><div class="line"></div><div class="line">############################# Log Basics #############################</div><div class="line"></div><div class="line"># A comma seperated list of directories under which to store log files</div><div class="line">log.dirs=/data/service/kafka/kafka-node1/data/</div><div class="line"></div><div class="line"># The default number of log partitions per topic. More partitions allow greater</div><div class="line"># parallelism for consumption, but this will also result in more files across</div><div class="line"># the brokers.</div><div class="line">num.partitions=20</div><div class="line"></div><div class="line"># The number of threads per data directory to be used for log recovery at startup and flushing at shutdown.</div><div class="line"># This value is recommended to be increased for installations with data dirs located in RAID array.</div><div class="line">num.recovery.threads.per.data.dir=1</div><div class="line"></div><div class="line">############################# Log Flush Policy #############################</div><div class="line"></div><div class="line"># Messages are immediately written to the filesystem but by default we only fsync() to sync</div><div class="line"># the OS cache lazily. The following configurations control the flush of data to disk.</div><div class="line"># There are a few important trade-offs here:</div><div class="line">#    1. Durability: Unflushed data may be lost if you are not using replication.</div><div class="line">#    2. Latency: Very large flush intervals may lead to latency spikes when the flush does occur as there will be a lot of data to </div><div class="line">flush.</div><div class="line">#    3. Throughput: The flush is generally the most expensive operation, and a small flush interval may lead to exceessive seeks.</div><div class="line"># The settings below allow one to configure the flush policy to flush data after a period of time or</div><div class="line"># every N messages (or both). This can be done globally and overridden on a per-topic basis.</div><div class="line"></div><div class="line"># The number of messages to accept before forcing a flush of data to disk</div><div class="line">#log.flush.interval.messages=10000</div><div class="line"></div><div class="line"># The maximum amount of time a message can sit in a log before we force a flush</div><div class="line">#log.flush.interval.ms=1000</div><div class="line"></div><div class="line">############################# Log Retention Policy #############################</div><div class="line"></div><div class="line"># The following configurations control the disposal of log segments. The policy can</div><div class="line"># be set to delete segments after a period of time, or after a given size has accumulated.</div><div class="line"># A segment will be deleted whenever *either* of these criteria are met. Deletion always happens</div><div class="line"># from the end of the log.</div><div class="line"></div><div class="line"># The minimum age of a log file to be eligible for deletion</div><div class="line">log.retention.hours=72</div><div class="line"></div><div class="line"># A size-based retention policy for logs. Segments are pruned from the log as long as the remaining</div><div class="line"># segments don&apos;t drop below log.retention.bytes.</div><div class="line">#log.retention.bytes=1073741824</div><div class="line"></div><div class="line"># The maximum size of a log segment file. When this size is reached a new log segment will be created.</div><div class="line">log.segment.bytes=1073741824</div><div class="line"></div><div class="line"># The interval at which log segments are checked to see if they can be deleted according</div><div class="line"># to the retention policies</div><div class="line">log.retention.check.interval.ms=300000</div><div class="line"></div><div class="line">############################# Zookeeper #############################</div><div class="line"></div><div class="line"># Zookeeper connection string (see zookeeper docs for details).</div><div class="line"># This is a comma separated host:port pairs, each corresponding to a zk</div><div class="line"># server. e.g. &quot;127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3002&quot;.</div><div class="line"># You can also append an optional chroot string to the urls to specify the</div><div class="line"># root directory for all kafka znodes.</div><div class="line">zookeeper.connect=sunx:2181,sunx:2182,sunx:2183</div><div class="line"></div><div class="line"># Timeout in ms for connecting to zookeeper</div><div class="line">zookeeper.connection.timeout.ms=6000</div></pre></td></tr></table></figure></p>
-<p>以上为主要的配置项,那么配置好以后，需要将kafka拷贝部署三个节点,修改其中主要的几个点:</p>
-<p>logs.dir: kafka中所有topic存储的目录<br>log.retention.hours：kafka中数据失效的时间,默认是小时为单位<br>num.partitions:每个topic的分区<br>advertised.listeners:对位给生产者和消费者提供的端口地址<br>delete.topic.enable:是否直接删除topic,如果为true,则删除topic时，直接删除并清掉该topic数据。</p>
-<p>同时对于服务需要监控日志,在日志中配置需要配置相应的日志存储的文件地址:</p>
-<pre><code>kafka.logs.dir=/data/service/kafka/kafka-node1/logs
-</code></pre><h2 id="启动kafka"><a href="#启动kafka" class="headerlink" title="启动kafka"></a>启动kafka</h2><p>启动zookeeper集群节点后,在启动kafka:</p>
-<p><img src="/images/kafka/kafka-start.png" alt=""></p>
-<h2 id="kafka常用命令"><a href="#kafka常用命令" class="headerlink" title="kafka常用命令"></a>kafka常用命令</h2><p>创建topic<br><img src="/images/kafka/kafka-create.png" alt=""></p>
-<p>查看是topic列表:<br><img src="/images/kafka/kafka-list.png" alt=""></p>
-<p>修改topic,增加topic的分区<br><img src="/images/kafka/kafka-alter.png" alt=""></p>
-<p>删除topic<br><img src="/images/kafka/kafka-delete.png" alt=""></p>
-<p>发送数据<br><img src="/images/kafka/kafka-producer.png" alt=""></p>
-<p>消费数据<br><img src="/images/kafka/kafka-consumer.png" alt=""></p>
+            <h1 id="Spring的事务机制"><a href="#Spring的事务机制" class="headerlink" title="Spring的事务机制"></a>Spring的事务机制</h1><p>Spring 的事务机制是统一的机制来处理的,针对不同的数据库访问方式,事务机制提供了一个PlatformTransactionmager接口,不同的数据库访问方式实现不同的接口实现.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">数据库访问技术</th>
+<th style="text-align:center">实现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">JDBC</td>
+<td style="text-align:center">DataSourceTransactionManager</td>
+</tr>
+<tr>
+<td style="text-align:center">JPA</td>
+<td style="text-align:center">JpaTransactionManager</td>
+</tr>
+<tr>
+<td style="text-align:center">Hibernate</td>
+<td style="text-align:center">HibernateTransactionManager</td>
+</tr>
+<tr>
+<td style="text-align:center">JDO</td>
+<td style="text-align:center">JdoTransactionManager</td>
+</tr>
+<tr>
+<td style="text-align:center">分布式事务</td>
+<td style="text-align:center">JtaTransactionManager</td>
+</tr>
+</tbody>
+</table>
+<p>在程序中定义事务管理器的代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">@Bean</div><div class="line">	public PlatformTransactionManager platformTransactionManager()&#123;</div><div class="line">		JpaTransactionManager manager = new JpaTransactionManager();</div><div class="line">		manager.setDataSource(null);</div><div class="line">		return manager;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<p>Spring支持生命是事务,也就是使用注解的形式来处理事务。主要是使用注解@Transactional.使用这个注解来表明这个方法是支持事务的,内部的操作是一个基于aop切面的方式来处理的,具体的可见如下的例子:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">@Transactional(rollbackFor = Test2Exception.class)</div><div class="line">    public User save(User user) throws Exception&#123;</div><div class="line">        User u = repository.save(user);</div><div class="line"></div><div class="line">        if(user.getId() &gt; 100)&#123;</div><div class="line">            throw new Test2Exception(&quot;测试-数据异常,数据回滚&quot;);</div><div class="line">        &#125;</div><div class="line">        return u;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>传递进来的用户名称为null,这个地方直接抛出异常,但是save方法已经执行过了,这里添加了注解@Transactional来处理事务,这个时候事务回滚是有条件的,根据rollbackFor的条件,也就是如果是空指针异常则回滚数据,否则掺入数据,具体的执行结果为:<br><img src="images/spring-boot/transaction-1.png" alt=""></p>
+<p><img src="images/spring-boot/transaction-2.png" alt=""></p>
+<p>这个时候修改对应的rollbackFor条件,在重新进行测试,具体的为:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">@Transactional(rollbackFor = Test2Exception.class)</div><div class="line">    public User save(User user) throws Exception&#123;</div><div class="line">        User u = repository.save(user);</div><div class="line"></div><div class="line">        if(user.getId() &gt; 100)&#123;</div><div class="line">            throw new TestException(&quot;测试-数据异常,数据回滚&quot;);</div><div class="line">        &#125;</div><div class="line">        return u;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>这个时候清空表,在执行请求插入数据:<br><img src="images/spring-boot/transaction-3.png" alt=""><br><img src="images/spring-boot/transaction-4.png" alt=""></p>
+<p>其实在代码中如果出现运行时异常,同样的会进行数据的回滚,如果不是运行时异常,回去比对rollbackFor如果一次相同,则数据进行回滚。</p>
+<p>声明式注解的属性值对应的意义：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">属性</th>
+<th style="text-align:left">含义</th>
+<th style="text-align:left">默认值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">propagationtion</td>
+<td style="text-align:left">定义了事务的声明周期,<br> REQUIRED: 方法A调用时没有事务,新建一个事务,如果方法A中调用了B方法,B方法沿用该事务,同时,如果B方法中发生异常需要数据回滚时,整个事务数据回滚。<br><br>REQUIRED_NEW:方法A,B不管有没有事务,都新建一个事务,这样B方法中发生异常需要回滚m不会影响到A方法<br><br> NESTED:和REQUIRED_NEW相同,但是支持JDBC,不支持jpa和hibernate<br><br> SUPPORTS:方法调用时,有事务就用,没有就不用。<br><br> NOT_SUPPORTED:强制方法不在事务中执行,若有事务,在方法调用到结束阶段,事务都将挂起。<br><br>NEVER:强制方法不在事务中执行,如果有则抛出一次。<br><br> MANDATORY: 强制方法在事务中执行,没有事务,则抛出一次</td>
+<td style="text-align:left">REQUIRED</td>
+</tr>
+<tr>
+<td style="text-align:left">isolation</td>
+<td style="text-align:left">Isolation(隔离)决定了事务的完整性,处理多事务对相同数据下的处理机制。<br><br> READ_UNCOMMITTED: 对于A事务里修改了一条记录,但是没有提交,B事务可以读取到修改以后的值。可导致脏读,不可重复读,以及幻读.<br><br> READ_COMMITTED: 在A事务中修改一条记录提交以后,B事务才可以读取到修改后的记录。阻止了脏读,但可能导致不可重复读和幻读。<br><br> REPEATABLE_READ: 不仅能实现READ_COMMITTED的功能,还能阻止A事务读取了一条记录,B事务将不允许修改这条记录,阻止了脏读和不可重复读,但是可能出现幻读.<br><br>DEFAULT: 当前数据库默认的数据隔离界. <br><br> SRIALZABLE: 此级别下,事务是顺序执行的,可以阻止上面的缺陷,但是开销非常大</td>
+<td style="text-align:left">DEFAULT</td>
+</tr>
+<tr>
+<td style="text-align:left">timeout</td>
+<td style="text-align:left">事务过期时间,默认为当前数据库的事务过期时间</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">readOnly</td>
+<td style="text-align:left">当前事务是否是只读事务</td>
+<td style="text-align:left">false</td>
+</tr>
+<tr>
+<td style="text-align:left">rollbackFor</td>
+<td style="text-align:left">指定哪些异常是可以引起事务回滚的</td>
+<td style="text-align:left">Throwable</td>
+</tr>
+<tr>
+<td style="text-align:left">noRollbackFor</td>
+<td style="text-align:left">指定哪些异常是不会引起事务回滚的</td>
+</tr>
+</tbody>
+</table>
 
           
         
@@ -522,8 +596,8 @@
             
               
                 
-                <a class="post-title-link" href="/2017/03/03/java-thread-study011/" itemprop="url">
-                  java并发编程学习(十一) ThreadFactory、ThreadLocal
+                <a class="post-title-link" href="/2017/10/27/spring-boot-study011/" itemprop="url">
+                  Spring Boot基础学习(十一) 相关配置
                 </a>
               
             
@@ -536,8 +610,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2017-03-03T15:22:46+08:00" content="2017-03-03">
-              2017-03-03
+            <time itemprop="dateCreated" datetime="2017-10-27T17:22:46+08:00" content="2017-10-27">
+              2017-10-27
             </time>
           </span>
 
@@ -550,8 +624,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
+                  <a href="/categories/spring-boot/" itemprop="url" rel="index">
+                    <span itemprop="name">spring boot</span>
                   </a>
                 </span>
 
@@ -566,8 +640,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2017/03/03/java-thread-study011/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/03/03/java-thread-study011/" itemprop="commentsCount"></span>
+                <a href="/2017/10/27/spring-boot-study011/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/10/27/spring-boot-study011/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -592,18 +666,178 @@
       
         
           
-            <h2 id="ThreadFactory"><a href="#ThreadFactory" class="headerlink" title="ThreadFactory"></a>ThreadFactory</h2><p>ThreadFactory主要是线程构造工厂类,具体的可以看下源代码:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * An object that creates new threads on demand.  Using thread factories</div><div class="line"> * removes hardwiring of calls to &#123;@link Thread#Thread(Runnable) new Thread&#125;,</div><div class="line"> * enabling applications to use special thread subclasses, priorities, etc.</div><div class="line"> *</div><div class="line"> * &lt;p&gt;</div><div class="line"> * The simplest implementation of this interface is just:</div><div class="line"> *  &lt;pre&gt; &#123;@code</div><div class="line"> * class SimpleThreadFactory implements ThreadFactory &#123;</div><div class="line"> *   public Thread newThread(Runnable r) &#123;</div><div class="line"> *     return new Thread(r);</div><div class="line"> *   &#125;</div><div class="line"> * &#125;&#125;&lt;/pre&gt;</div><div class="line"> *</div><div class="line"> * The &#123;@link Executors#defaultThreadFactory&#125; method provides a more</div><div class="line"> * useful simple implementation, that sets the created thread context</div><div class="line"> * to known values before returning it.</div><div class="line"> * @since 1.5</div><div class="line"> * @author Doug Lea</div><div class="line"> */</div><div class="line">public interface ThreadFactory &#123;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * Constructs a new &#123;@code Thread&#125;.  Implementations may also initialize</div><div class="line">     * priority, name, daemon status, &#123;@code ThreadGroup&#125;, etc.</div><div class="line">     *</div><div class="line">     * @param r a runnable to be executed by new thread instance</div><div class="line">     * @return constructed thread, or &#123;@code null&#125; if the request to</div><div class="line">     *         create a thread is rejected</div><div class="line">     */</div><div class="line">    Thread newThread(Runnable r);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>主要就是根据给定Runnable来构造一个Thread对象,当然具体的如何构造这个Thread可以自己定义。在jdk中构造线程连接池ThreadPoolExecutor时给定的一个参数就是ThreadFactory.具体的可以看线程连接池中的介绍。在Executors中给定了一个默认的ThreadFactory的实现类,如果想自己实现只要继承ThreadFactory就可以了,下面给出一个简单地小例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">@org.junit.Test</div><div class="line">    public void test()&#123;</div><div class="line">        ThreadFactory factory = new ThreadFactory() &#123;</div><div class="line">            @Override</div><div class="line">            public Thread newThread(Runnable r) &#123;</div><div class="line">                return new Thread(r);</div><div class="line">            &#125;</div><div class="line">        &#125;;</div><div class="line"></div><div class="line">        Thread test = factory.newThread(new Runnable() &#123;</div><div class="line">            @Override</div><div class="line">            public void run() &#123;</div><div class="line">                while(true)&#123;</div><div class="line">                    try&#123;</div><div class="line">                        System.out.println(&quot;current =&gt; &quot; + System.currentTimeMillis());</div><div class="line"></div><div class="line">                        Thread.sleep(1000);</div><div class="line">                    &#125;catch (Exception e)&#123;</div><div class="line">                        e.printStackTrace();</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line"></div><div class="line">        test.start();</div><div class="line">        while(true)&#123;</div><div class="line">            try&#123;</div><div class="line">                Thread.sleep(1000);</div><div class="line">            &#125;catch (Exception e)&#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
-<h2 id="ThreadLocal"><a href="#ThreadLocal" class="headerlink" title="ThreadLocal"></a>ThreadLocal</h2><p>ThreadLoacl主要是用来做线程间共享但又不关联的共享变量的存储。也就是多个线程共用同一个共享变量,同样的，某一个线程不依赖与上一个线程改动改共享变量的值。也就是只是共用这个变量以及该变量的初始值,线程互相之间不影响。具体的可以先看下下面的例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">public void test()&#123;</div><div class="line">        ThreadLocal&lt;Integer&gt; local = new ThreadLocal&lt;Integer&gt;()&#123;</div><div class="line">            @Override</div><div class="line">            protected Integer initialValue() &#123;</div><div class="line">                return 0;</div><div class="line">            &#125;</div><div class="line">        &#125;;</div><div class="line"></div><div class="line">        ExecutorService service = Executors.newFixedThreadPool(3);</div><div class="line">        for(int i=0;i&lt;3;i++)&#123;</div><div class="line">            service.execute(new Runnable() &#123;</div><div class="line">                @Override</div><div class="line">                public void run() &#123;</div><div class="line">                    while(true)&#123;</div><div class="line">                        Integer num = local.get();</div><div class="line"></div><div class="line">                        System.out.println(&quot;当前线程为:&quot; + Thread.currentThread().getName() + &quot;,结果数据为:&quot; + num);</div><div class="line"></div><div class="line">                        if(num &lt;= 3)&#123;</div><div class="line">                            local.set(num + 1);</div><div class="line">                            continue;</div><div class="line">                        &#125;</div><div class="line">                        break;</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;);</div><div class="line">        &#125;</div><div class="line">		service.shutdown();</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
-<p>每个线程对local中的值进行累加,同样的往里面进行设置内容。看下执行的结果：<br><img src="/images/thread/thread-local-test.png" alt=""></p>
-<p>下面开始看下ThreadLoacl是怎么实现这个功能的,ThreadLocal的源码介绍如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * Creates a thread local variable.</div><div class="line"> * @see #withInitial(java.util.function.Supplier)</div><div class="line"> */</div><div class="line">public ThreadLocal() &#123;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>可见构造函数其实什么都没有做，那么具体的值得内容是怎么赋值的呢或者初始化的呢？从上面的简单例子可以看到,构造好对象以后就执行了方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Integer num = local.get();</div></pre></td></tr></table></figure></p>
-<p>这样就可以获得值了，而且是0,也就是说在get的时候进行了初始化操作。具体的操作流程如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">     * Returns the value in the current thread&apos;s copy of this</div><div class="line">     * thread-local variable.  If the variable has no value for the</div><div class="line">     * current thread, it is first initialized to the value returned</div><div class="line">     * by an invocation of the &#123;@link #initialValue&#125; method.</div><div class="line">     *</div><div class="line">     * @return the current thread&apos;s value of this thread-local</div><div class="line">     */</div><div class="line">    public T get() &#123;</div><div class="line">        Thread t = Thread.currentThread();</div><div class="line">        ThreadLocalMap map = getMap(t);</div><div class="line">        if (map != null) &#123;</div><div class="line">            ThreadLocalMap.Entry e = map.getEntry(this);</div><div class="line">            if (e != null) &#123;</div><div class="line">                @SuppressWarnings(&quot;unchecked&quot;)</div><div class="line">                T result = (T)e.value;</div><div class="line">                return result;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        return setInitialValue();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * Variant of set() to establish initialValue. Used instead</div><div class="line">     * of set() in case user has overridden the set() method.</div><div class="line">     *</div><div class="line">     * @return the initial value</div><div class="line">     */</div><div class="line">    private T setInitialValue() &#123;</div><div class="line">        T value = initialValue();</div><div class="line">        Thread t = Thread.currentThread();</div><div class="line">        ThreadLocalMap map = getMap(t);</div><div class="line">        if (map != null)</div><div class="line">            map.set(this, value);</div><div class="line">        else</div><div class="line">            createMap(t, value);</div><div class="line">        return value;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">     * Create the map associated with a ThreadLocal. Overridden in</div><div class="line">     * InheritableThreadLocal.</div><div class="line">     *</div><div class="line">     * @param t the current thread</div><div class="line">     * @param firstValue value for the initial entry of the map</div><div class="line">     */</div><div class="line">    void createMap(Thread t, T firstValue) &#123;</div><div class="line">        t.threadLocals = new ThreadLocalMap(this, firstValue);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>其中this表示当前的TreadLoacl对象实例,firstValue是调用init方法后获取到的值,也可以看到,如果从当前线程中获取ThreadLoacl的值，如果为空,就执行初始化,初始化的逻辑是执行initialValue()方法来进行初始化。那么这样说一开始ThreadLoacl在Thread中初始化值为空,具体的可以看下Thread的构造函数。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">/**</div><div class="line">     * Initializes a Thread.</div><div class="line">     *</div><div class="line">     * @param g the Thread group</div><div class="line">     * @param target the object whose run() method gets called</div><div class="line">     * @param name the name of the new Thread</div><div class="line">     * @param stackSize the desired stack size for the new thread, or</div><div class="line">     *        zero to indicate that this parameter is to be ignored.</div><div class="line">     * @param acc the AccessControlContext to inherit, or</div><div class="line">     *            AccessController.getContext() if null</div><div class="line">     */</div><div class="line">    private void init(ThreadGroup g, Runnable target, String name,</div><div class="line">                      long stackSize, AccessControlContext acc) &#123;</div><div class="line">        if (name == null) &#123;</div><div class="line">            throw new NullPointerException(&quot;name cannot be null&quot;);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        this.name = name.toCharArray();</div><div class="line"></div><div class="line">        Thread parent = currentThread();</div><div class="line">        SecurityManager security = System.getSecurityManager();</div><div class="line">        if (g == null) &#123;</div><div class="line">            /* Determine if it&apos;s an applet or not */</div><div class="line"></div><div class="line">            /* If there is a security manager, ask the security manager</div><div class="line">               what to do. */</div><div class="line">            if (security != null) &#123;</div><div class="line">                g = security.getThreadGroup();</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            /* If the security doesn&apos;t have a strong opinion of the matter</div><div class="line">               use the parent thread group. */</div><div class="line">            if (g == null) &#123;</div><div class="line">                g = parent.getThreadGroup();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        /* checkAccess regardless of whether or not threadgroup is</div><div class="line">           explicitly passed in. */</div><div class="line">        g.checkAccess();</div><div class="line"></div><div class="line">        /*</div><div class="line">         * Do we have the required permissions?</div><div class="line">         */</div><div class="line">        if (security != null) &#123;</div><div class="line">            if (isCCLOverridden(getClass())) &#123;</div><div class="line">                security.checkPermission(SUBCLASS_IMPLEMENTATION_PERMISSION);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        g.addUnstarted();</div><div class="line"></div><div class="line">        this.group = g;</div><div class="line">        this.daemon = parent.isDaemon();</div><div class="line">        this.priority = parent.getPriority();</div><div class="line">        if (security == null || isCCLOverridden(parent.getClass()))</div><div class="line">            this.contextClassLoader = parent.getContextClassLoader();</div><div class="line">        else</div><div class="line">            this.contextClassLoader = parent.contextClassLoader;</div><div class="line">        this.inheritedAccessControlContext =</div><div class="line">                acc != null ? acc : AccessController.getContext();</div><div class="line">        this.target = target;</div><div class="line">        setPriority(priority);</div><div class="line">        if (parent.inheritableThreadLocals != null)</div><div class="line">            this.inheritableThreadLocals =</div><div class="line">                ThreadLocal.createInheritedMap(parent.inheritableThreadLocals);</div><div class="line">        /* Stash the specified stack size in case the VM cares */</div><div class="line">        this.stackSize = stackSize;</div><div class="line"></div><div class="line">        /* Set thread ID */</div><div class="line">        tid = nextThreadID();</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>Thread中构造函数最终都会调用这个方法,这个方法中没有对参数ThreadLocal.ThreadLocalMap threadLocals进行初始化.同样的上面的查看源码已经知道如何往里面设置数据的,赋值的代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">     * Sets the current thread&apos;s copy of this thread-local variable</div><div class="line">     * to the specified value.  Most subclasses will have no need to</div><div class="line">     * override this method, relying solely on the &#123;@link #initialValue&#125;</div><div class="line">     * method to set the values of thread-locals.</div><div class="line">     *</div><div class="line">     * @param value the value to be stored in the current thread&apos;s copy of</div><div class="line">     *        this thread-local.</div><div class="line">     */</div><div class="line">    public void set(T value) &#123;</div><div class="line">        Thread t = Thread.currentThread();</div><div class="line">        ThreadLocalMap map = getMap(t);</div><div class="line">        if (map != null)</div><div class="line">            map.set(this, value);</div><div class="line">        else</div><div class="line">            createMap(t, value);</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
-<p>这里取得当前线程，然后根据当前的thradLocal实例取得其map。然后重新设置 map.set(this, value);设值后就改动了当前对应的副本值</p>
+            <h2 id="Web相关配置"><a href="#Web相关配置" class="headerlink" title="Web相关配置"></a>Web相关配置</h2><h4 id="自动配置ViewResolver"><a href="#自动配置ViewResolver" class="headerlink" title="自动配置ViewResolver"></a>自动配置ViewResolver</h4><p>在控制器中一个方法返回一个字符串(视图名称)会根据BeanNameViewResolver去查找Bean的名称为返回字符串的View来渲染视图。如：</p>
+<pre><code>@Bean
+public BeanNameViewResolver beanNameViewResolver(){
+    BeanNameViewResolver resolver = new BeanNameViewResolver();
+    return resolver;
+}
+</code></pre><p>定义一个View的Beanm名称为jsonView:</p>
+<pre><code>@Bean
+public MappingJackson2JsonView jsonView(){
+    MappingJackson2JsonView jsonView = new MappingJackson2JsonView();
+    jsonView.setExtractValueFromSingleKeyModel(true);
+    jsonView.addStaticAttribute(&quot;msg&quot;,&quot;hello world&quot;);
+    return jsonView;
+}
+</code></pre><p>这个时候,如果我在对应的请求中,返回字符串:jsonView,就会使用上面定义的这个MappingJackson2JsonView这个对象,来渲染视图,说白了就是使用这个对象来处理视图,将其中的内容填充到视图对应的网页中.这个我们来看下具体的请求接口:</p>
+<pre><code>@RequestMapping(
+        value = &quot;/test/json&quot;,
+        method = RequestMethod.GET,
+        produces = {MediaType.APPLICATION_JSON_VALUE}
+)
+public String testJosn(Model model){
+    User user = new User();
+    user.setName(&quot;sunx&quot;);
+
+    model.addAttribute(&quot;user&quot;,user);
+
+    return &quot;jsonView&quot;;
+}
+</code></pre><p>页面调用当前这个接口的结果为:<br><img src="images/spring-boot/config-web-1.png" alt=""></p>
+<p>可以通过这种形式,在视图的或则是接口的调用中增加一些版本信息,或则是额外的数据内容.</p>
+<h4 id="自动配置静态资源"><a href="#自动配置静态资源" class="headerlink" title="自动配置静态资源"></a>自动配置静态资源</h4><p>静态资源的配置,系统默认的配置路径地址为/static或是/public.具体的可以通过自动配置类中增加相应的配置,如:</p>
+<pre><code>@Configuration
+public class DemoWebMvcAutoConfiguration extends WebMvcConfigurerAdapter {
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler(&quot;/css/{filename:\\w+\\.css}&quot;);
+        registry.addResourceHandler(&quot;/css/**&quot;);
+    }
+}
+</code></pre><p>上面的列子中可以配置自定义的目录地址到系统中~或则是使用系统默认的路径地址~</p>
+<h4 id="自动配置Formatter"><a href="#自动配置Formatter" class="headerlink" title="自动配置Formatter"></a>自动配置Formatter</h4><p>自定义的格式化工具,首先需要基层Formatter接口,具体的如下,下面为在字符串前面增加内容:</p>
+<pre><code>public class StringFormatter implements Formatter&lt;String&gt; {
+        @Override
+    public String parse(String s, Locale locale) throws ParseException {
+        return &quot;__&quot; + s;
+    }
+
+    @Override
+    public String print(String s, Locale locale) {
+        return s;
+    }
+}
+</code></pre><p>自定义的格式化类定义好以后,下面需要将定义好的格式化类增加到spring-boot的系统中:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">@Configuration</div><div class="line">public class DemoWebMvcAutoConfiguration extends WebMvcConfigurerAdapter &#123;</div><div class="line">    @Override</div><div class="line">    public void addFormatters(FormatterRegistry registry) &#123;</div><div class="line">        registry.addFormatter(new StringFormatter());</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>将自定的formatter注册到系统中以后,通过浏览器调用接口,传递一个字符串过来,然后在包装一下返回回去,查看下是否已经经过了格式化,将字符串前面增加了两个下划线:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">@RequestMapping(</div><div class="line">			value = &quot;/test/json&quot;,</div><div class="line">			method = RequestMethod.GET,</div><div class="line">			produces = &#123;MediaType.APPLICATION_JSON_VALUE&#125;</div><div class="line">	)</div><div class="line">	public String testJosn(Model model)&#123;</div><div class="line">		User user = new User();</div><div class="line">		user.setName(&quot;sunx&quot;);</div><div class="line"></div><div class="line">		model.addAttribute(&quot;user&quot;,user);</div><div class="line"></div><div class="line">		return &quot;jsonView&quot;;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<p>执行截图为:<br><img src="images/spring-boot/config-web-2.png" alt=""></p>
+<p>这里由于定义格式化类Formatter时指定了类型,因此在调用接口的时候,就会去将参数的类型获取出来,然后找到对应的类型进行格式化。现在这个格式化的类时全局的,也就是所有的接口中涉及到的字符串都会进行格式化操作。</p>
+<h4 id="自动配置Converter"><a href="#自动配置Converter" class="headerlink" title="自动配置Converter"></a>自动配置Converter</h4><p>自动配置Converter,这个的具体的业务和Formatter相比来说功能类似,具体的如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">@Component</div><div class="line">public class String2UserConverter implements Converter&lt;String,User&gt; &#123;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public User convert(String s) &#123;</div><div class="line">        User user = new User();</div><div class="line">        user.setName(s);</div><div class="line"></div><div class="line">        return user;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里自定义的Conterver我增加了注解@Component,这样才会自动注入到spring mvc中。在上下的使用过程中和普通的注入类形式,只需要引用就可,具体如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">@Autowired</div><div class="line">	private String2UserConverter converter;</div><div class="line">	</div><div class="line">@RequestMapping(</div><div class="line">			value = &quot;/test/converter&quot;,</div><div class="line">			method = RequestMethod.GET,</div><div class="line">			produces = &#123;MediaType.APPLICATION_JSON_VALUE&#125;</div><div class="line">	)</div><div class="line">	public String testConverter(Model model,@RequestParam String test,@RequestParam String age)&#123;</div><div class="line">		User user = converter.convert(test);</div><div class="line">		model.addAttribute(&quot;user&quot;,user);</div><div class="line">		System.out.println(age);</div><div class="line">		return &quot;jsonView&quot;;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<h4 id="HttpMessageConverters配置"><a href="#HttpMessageConverters配置" class="headerlink" title="HttpMessageConverters配置"></a>HttpMessageConverters配置</h4><p>HttpMessageConverters这个是用来进行数据转化的,将接受到的请求报文转化为对应的java对象,同时将java对象转化为对应的相应报文内容,具体的流程为:<br><img src="images/spring-boot/config-message-1.png" alt=""></p>
+<p>有的消息转换器只支持多个数据类型，有的只支持多个输出格式，还有的两者兼备。例如：MappingJackson2HttpMessageConverter可以将Java对象转换为application/json，而ProtobufHttpMessageConverter仅支持com.google.protobuf.Message类型的输入，但是可以输出application/json、application/xml、text/plain和application/x-protobuf这么多格式。</p>
+<p>具体的下面介绍一个例子,通过postman调用接口传递参数过来,然后通过转换将消息的内容增加点内容,在写回前端.具体的如下:</p>
+<p>消息转换器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">public class DemoStringHttpMessageConverters implements HttpMessageConverter&lt;String&gt; &#123;</div><div class="line">    @Override</div><div class="line">    public boolean canRead(Class&lt;?&gt; aClass, MediaType mediaType) &#123;</div><div class="line">        return true;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public boolean canWrite(Class&lt;?&gt; aClass, MediaType mediaType) &#123;</div><div class="line">        return true;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public List&lt;MediaType&gt; getSupportedMediaTypes() &#123;</div><div class="line">        return Arrays.asList(MediaType.ALL);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public String read(Class&lt;? extends String&gt; aClass, HttpInputMessage httpInputMessage) throws IOException, HttpMessageNotReadableException &#123;</div><div class="line">        InputStream is = httpInputMessage.getBody();</div><div class="line">        BufferedInputStream bis = new BufferedInputStream(is);</div><div class="line">        byte[] bytes = new byte[4096];</div><div class="line">        bis.read(bytes);</div><div class="line"></div><div class="line">        //将字节内容转化为字符串内容</div><div class="line">        String param = new String(bytes).trim();</div><div class="line"></div><div class="line">        return &quot;reader data from web,data = &quot; + param;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void write(String s, MediaType mediaType, HttpOutputMessage httpOutputMessage) throws IOException, HttpMessageNotWritableException &#123;</div><div class="line">        PrintWriter pw = new PrintWriter(httpOutputMessage.getBody());</div><div class="line">        pw.write(&quot;writer data to web,data = &quot; + s);</div><div class="line">        pw.flush();</div><div class="line">        pw.close();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面的消息转换器定义好以后,将转换器添加到集合中,具体的为:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">@Configuration</div><div class="line">public class DemoWebMvcAutoConfiguration extends WebMvcConfigurerAdapter &#123;</div><div class="line">    @Override</div><div class="line">    public void configureMessageConverters(List&lt;HttpMessageConverter&lt;?&gt;&gt; converters) &#123;</div><div class="line">        converters.clear();</div><div class="line">        converters.add(new DemoStringHttpMessageConverters());</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>下面定义接口用来进行测试,具体的定义了3个测试接口:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">@RequestMapping(value = &quot;/rest/test&quot;)</div><div class="line">    public User test(@RequestBody User test)&#123;</div><div class="line">        test.setName(&quot;/rest/test -&gt; &quot; + test.getName());</div><div class="line">        return test;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @RequestMapping(value = &quot;/rest/test/1&quot;)</div><div class="line">    public String test1(@RequestBody String test)&#123;</div><div class="line">        return &quot;/rest/test -&gt; &quot; + test;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    @RequestMapping(value = &quot;/rest/test/2&quot;,method = RequestMethod.GET)</div><div class="line">    public String test2(@RequestParam String test)&#123;</div><div class="line">        return &quot;/rest/test -&gt; &quot; + test;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>针对每个测试接口进行测试,给出相应的结果:<br><img src="images/spring-boot/config-converter-1.png" alt=""></p>
+<p><img src="images/spring-boot/config-converter-2.png" alt=""></p>
+<p><img src="images/spring-boot/config-converter-3.png" alt=""></p>
+<p>由上面的操作可以总结出：</p>
+<pre><code>1 spring-boot消息转化器是组合操作,根据方法的参数类型来定,上面的代码中将集合中的消息转换器清空了(清空了集合)后添加了一个字符串的转化方式,调用测试接口传递一个对象过来时就无法转化抛异常
+2 调用测试接口3时,使用的注解是@RequestParam来读取采纳数的,这个时候没有做消息转换器,使用@RequestBody来注解参数时,会走消息转换器转化,可见除了需要指定SupportedMediaType(在消息转换器中有getSupportedMediaTypes()这个方法)外,不同的注解消息转换器的方式不一样,消息转换器不支持@RequestParam.
+3 @RequestParam只适用于处理基础类型的数据以及字符串类型的数据,同时常用与Get请求中的基础参数的获取或则是表单提交时的基础类型的参数取值。@RequestBody则用于请求体的处理,基本将整个请求的内容当成一个整体进行处理。
+</code></pre><p><img src="images/spring-boot/config-converter-4.png" alt=""></p>
+<h4 id="注册servlet"><a href="#注册servlet" class="headerlink" title="注册servlet"></a>注册servlet</h4><p>自定义servlet主要有两个方式,使用注解的方式来实现,或则是标记后增加到servlet集合中.具体的为：</p>
+<pre><code>第一种情况:
+    @Bean
+public ServletRegistrationBean servletRegistrationBean() {
+    return new ServletRegistrationBean(new TestServlet(), &quot;/sx/*&quot;);
+}
+
+第二种情况:
+    @WebServlet(urlPatterns = &quot;/sx/*&quot;)
+    public class TestServlet extends HttpServlet{
+        ....
+    }
+
+    @ServletComponentScan
+    public class SpringBootWebApplication {
+        ...
+    }
+</code></pre><p>具体的执行结果如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">@WebServlet(urlPatterns = &quot;/sx/*&quot;)</div><div class="line">public class TestServlet extends HttpServlet&#123;</div><div class="line">    @Override</div><div class="line">    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException &#123;</div><div class="line">        resp.setContentType(&quot;text/html&quot;);</div><div class="line">        PrintWriter out = resp.getWriter();</div><div class="line">        out.write(&quot;test content&quot;);</div><div class="line">        out.flush();</div><div class="line">        out.close();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException &#123;</div><div class="line">        doPost(req,resp);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><img src="images/spring-boot/config-servlet-1.png" alt=""></p>
+<h4 id="注册Filter"><a href="#注册Filter" class="headerlink" title="注册Filter"></a>注册Filter</h4><p>注册Filter的例子如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">public class TestFilter implements Filter &#123;</div><div class="line">    @Override</div><div class="line">    public void init(FilterConfig filterConfig) throws ServletException &#123;</div><div class="line">        System.out.println(&quot;init&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException &#123;</div><div class="line">        System.out.println(&quot;do&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void destroy() &#123;</div><div class="line">        System.out.println(&quot;destroy&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>需要将这个过滤器添加到spring boot中,添加的代码如下:</p>
+<pre><code>@Bean
+public FilterRegistrationBean filterRegistrationBean(){
+    FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
+    filterRegistrationBean.setFilter(new TestFilter());
+    filterRegistrationBean.addUrlPatterns(&quot;/*&quot;);
+    filterRegistrationBean.setOrder(1);
+    return filterRegistrationBean;
+}
+</code></pre><h4 id="注册Listener"><a href="#注册Listener" class="headerlink" title="注册Listener"></a>注册Listener</h4><p>自定义的Listener的内容为:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">public class TestListener implements ApplicationListener&lt;ContextRefreshedEvent&gt; &#123;</div><div class="line">    @Override</div><div class="line">    public void onApplicationEvent(ContextRefreshedEvent event) &#123;</div><div class="line">        System.out.println(&quot;加载中...&quot;);</div><div class="line">        if(event.getApplicationContext().getParent() == null)&#123;</div><div class="line">            //服务加载完成以后,会初始化执行的方法</div><div class="line">            System.out.println(&quot;服务加载完成...&quot;);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>定义好监听器以后,将该监听器绑定到系统中,操作为:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">public static void main(String[] args) &#123;</div><div class="line">		SpringApplication application = new SpringApplication(SpringBootWebApplication.class);</div><div class="line"></div><div class="line">		//添加监听器</div><div class="line">		application.addListeners(new TestListener());</div><div class="line"></div><div class="line">		application.run(args);</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<h2 id="Tomcat相关配置"><a href="#Tomcat相关配置" class="headerlink" title="Tomcat相关配置"></a>Tomcat相关配置</h2><p>toomcat常用的配置内容:</p>
+<pre><code>server.port= # 服务监听的端口
+server.session-timeout= # 用户的默认回话超时时间
+server.context-path= # 配置访问路径,默认的为 /
+server.tomcat.uri-encoding= # 配置tomcat的编码格式,默认为UTF-8
+server.tomcat.compression= # tomcat是否开启压缩,默认为关闭状态
+</code></pre><p>使用代码来控制相应的配置内容:</p>
+<pre><code>public class SpringBootWebApplication implements EmbeddedServletContainerCustomizer{
+    @Override
+    public void customize(ConfigurableEmbeddedServletContainer container) {
+        //设置端口
+        container.setPort(9090);
+        //设置session的过期时间
+        container.setSessionTimeout(1000 * 60 * 60);
+    }
+}
+</code></pre><p>替换tomcat为jetty:</p>
+<pre><code>&lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+        &lt;exclusions&gt;
+            &lt;exclusion&gt;
+                &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+                &lt;artifactId&gt;spring-boot-starter-tomcat&lt;/artifactId&gt;
+            &lt;/exclusion&gt;
+        &lt;/exclusions&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-jetty&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+</code></pre><p>SSL配置:<br>使用java自带的工具生产相应的ssl证书,具体的过程为:<br><img src="images/spring-boot/config-ssl-1.png" alt=""></p>
+<p>具体的参数意义为:</p>
+<pre><code>-alias test(别名) 
+-keypass ***(别名密码) 
+-keyalg RSA(算法) 
+-keysize 1024(密钥长度) 
+-validity 365(有效期，天单位) 
+-keystore /data/study/key/test.keystore(指定生成证书的位置和证书名称) 
+-storepass(获取keystore信息的密码)    
+</code></pre><p>使用openssl来生成认证证书</p>
+<pre><code>openssl genrsa -des3 -passout pass:x -out server.pass.key 2048
+openssl rsa -passin pass:x -in server.pass.key -out server.key
+rm server.pass.key
+openssl req -new -key server.key -out server.csr
+openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
+</code></pre><p>这里采用openssl生成的证书,这个证书是中间证书,需要转化为java中可以识别的证书格式,具体转化过程为:</p>
+<pre><code>openssl pkcs12 -export -name server -in server.crt -inkey private.key -out keystore.p12
+keytool -importkeystore -destkeystore keystore.jks -srckeystore keystore.p12 -srcstoretype pkcs12 -alias server
+</code></pre><p>spring boot配置ssl:</p>
+<pre><code># 配置ssl
+server.port = 9443
+server.ssl.enabled = true
+server.ssl.key-store = classpath:key/keystore.jks
+server.ssl.key-store-password = sunxing
+server.ssl.key-store-type = JKS
+</code></pre><p>启动服务,调用接口地址,查看结果：<br><img src="images/spring-boot/config-ssl-2.png" alt=""><br><img src="images/spring-boot/config-ssl-3.png" alt=""></p>
+<p>这个结果使用了上面介绍的自定义的servlet,所以返回的结果内容为test content。</p>
 
           
         
@@ -653,8 +887,8 @@
             
               
                 
-                <a class="post-title-link" href="/2017/03/02/java-thread-study010/" itemprop="url">
-                  java并发编程学习(十) ThreadGroup线程组应用
+                <a class="post-title-link" href="/2017/10/25/spring-boot-study010/" itemprop="url">
+                  Spring Boot基础学习(十) 安全
                 </a>
               
             
@@ -667,8 +901,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2017-03-02T15:22:46+08:00" content="2017-03-02">
-              2017-03-02
+            <time itemprop="dateCreated" datetime="2017-10-25T17:22:46+08:00" content="2017-10-25">
+              2017-10-25
             </time>
           </span>
 
@@ -681,8 +915,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
+                  <a href="/categories/spring-boot/" itemprop="url" rel="index">
+                    <span itemprop="name">spring boot</span>
                   </a>
                 </span>
 
@@ -697,8 +931,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2017/03/02/java-thread-study010/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/03/02/java-thread-study010/" itemprop="commentsCount"></span>
+                <a href="/2017/10/25/spring-boot-study010/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/10/25/spring-boot-study010/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -723,29 +957,76 @@
       
         
           
-            <h2 id="1-ThreadGroup说明"><a href="#1-ThreadGroup说明" class="headerlink" title="1 ThreadGroup说明"></a>1 ThreadGroup说明</h2><pre><code>1 ThreadGroup线程组表示一组线程的集合
-2 当前线程组可以包含其他的线程组,这样就可以看成一个节点可以包含其他节点,其实这个点和树形结构差不多了
-3 每个线程都属于一个线程组
-4 每一个线程产生时，都会被归入某个线程组，线程在那个线程组中生成就属于那个线程组。如果没有指定，则归入产生该子线程的线程所在的线程组中。
-5 可以自行制定线程属于那个线程组，线程一旦制定线程组,就不能切换线程组。
-</code></pre><h3 id="1-1-ThreadGroup线程组的成员变量"><a href="#1-1-ThreadGroup线程组的成员变量" class="headerlink" title="1.1 ThreadGroup线程组的成员变量"></a>1.1 ThreadGroup线程组的成员变量</h3><p><img src="/images/thread/thread-group.png" alt=""></p>
-<p>成员变量说明：</p>
-<pre><code>parent:             当前的线程组的父线程组。
-name:                当前线程组的名词
-maxPriority:         当前线程组内的线程最大的优先级
-destroyed:            是否被销毁掉
-daemon:                是否是守护线程
-vmAllowSuspension:    是否可以被中断
+            <h2 id="Spring-Security的使用"><a href="#Spring-Security的使用" class="headerlink" title="Spring-Security的使用"></a>Spring-Security的使用</h2><p>sprign-security用来做权限控制和接口访问限制等操作,下面介绍一下简单的使用,首先需要加入相应的依赖：</p>
+<pre><code>&lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-security&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+</code></pre><p>依赖添加以后,下面介绍一个简单的例子,首先编写相应的security的配置类:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div></pre></td><td class="code"><pre><div class="line">@Configuration</div><div class="line">@EnableWebSecurity</div><div class="line">public class WebSecurityConfig extends WebSecurityConfigurerAdapter &#123;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    protected void configure(HttpSecurity http) throws Exception &#123;</div><div class="line">        //认证所有的请求地址</div><div class="line">        http</div><div class="line">                //禁用CSRF保护</div><div class="line">                .csrf().disable()</div><div class="line">                .authorizeRequests()</div><div class="line">                    //针对满足规则的地址(/,/home)路径地址不需要认证用户</div><div class="line">                    .antMatchers(&quot;/&quot;,&quot;/home&quot;)</div><div class="line">                    .permitAll()</div><div class="line">//                    .and()</div><div class="line">             //给予token,不需要session的设置</div><div class="line">//             .sessionManagement()</div><div class="line">//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)</div><div class="line">//                .and()</div><div class="line">//             .authorizeRequests()</div><div class="line">//                .antMatchers(HttpMethod.OPTIONS,&quot;/**&quot;)</div><div class="line">//                .permitAll()</div><div class="line">             //允许对静态资源的无授权访问</div><div class="line">             .antMatchers(</div><div class="line">                     HttpMethod.GET,</div><div class="line">                     &quot;/*.html&quot;,</div><div class="line">                     &quot;/**/*.js&quot;,</div><div class="line">                     &quot;/**/*.html&quot;).permitAll()</div><div class="line">             //其他的地址规则,都需要认证</div><div class="line">             .anyRequest()</div><div class="line">                .authenticated()</div><div class="line">                .and()</div><div class="line">             .formLogin()</div><div class="line">                .loginPage(&quot;/login&quot;)</div><div class="line">                .successForwardUrl(&quot;/ht&quot;)</div><div class="line">                .permitAll()</div><div class="line">                .and()</div><div class="line">             .logout()</div><div class="line">                .permitAll()</div><div class="line">        ;</div><div class="line">        //禁止缓存</div><div class="line">        http.headers().cacheControl();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    protected void configure(AuthenticationManagerBuilder auth) throws Exception &#123;</div><div class="line">        auth.inMemoryAuthentication()</div><div class="line">                .withUser(&quot;sunx&quot;)</div><div class="line">                .password(&quot;123&quot;)</div><div class="line">                .roles(&quot;USER&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面中静态资源的访问时不设置限制的,指定路径不设限制,其他的请求头需要认证后才可访问,其他的具体的接口信息为:<br><img src="images/spring-boot/security-1.png" alt=""></p>
+<p>上面的代码中使用了方法successForwardUrl()方法,如果不添加这个方法指定成功后跳转的接口地址,默认跳转为/路径。</p>
+<p>这边查看下具体的接口地址：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">@RestController</div><div class="line">@SpringBootApplication</div><div class="line">public class SpringBootSecurityApplication &#123;</div><div class="line"></div><div class="line">	public static void main(String[] args) &#123;</div><div class="line">		SpringApplication.run(SpringBootSecurityApplication.class, args);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	@RequestMapping(value = &quot;/test&quot;)</div><div class="line">	public String test()&#123;</div><div class="line">		return &quot;sunx&quot;;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	//有ROLE_USER权限的用户可以访问这个接口</div><div class="line">	@PreAuthorize(&quot;hasRole(&apos;USER&apos;)&quot;)</div><div class="line">	@RequestMapping(value = &quot;/&quot;)</div><div class="line">	public String test1()&#123;</div><div class="line">		return &quot;test-1 /&quot;;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	@RequestMapping(value = &quot;/home&quot;)</div><div class="line">	public String test2()&#123;</div><div class="line">		return &quot;test-2 /home&quot;;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	@PreAuthorize(&quot;hasRole(&apos;USER&apos;)&quot;)</div><div class="line">	@RequestMapping(value = &quot;/ht&quot;)</div><div class="line">	public String test3()&#123;</div><div class="line">		return &quot;test-3 /ht&quot;;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>其中@PreAuthorize注解只是用来标记对应的角色的用户才能访问这个接口。这里可以看到首先进行登录获取登录后给定的session,然后就可以调用相应的接口地址,如果换浏览器来直接调接口就访问不了,具体的为:</p>
+<p><img src="images/spring-boot/security-2.png" alt=""></p>
+<p>上图中访问登录地址(这里没有实际的接口,只是在security中配置了一个用来验证内存用户的地址)验证用户成功以后,跳转到我们successForwardUrl()方法中指定的地址。</p>
+<p>这个时候已经可以访问其他的接口了:<br><img src="images/spring-boot/security-3.png" alt=""></p>
+<p>使用浏览器来调用/test接口(无登录状态):<br><img src="images/spring-boot/security-4.png" alt=""></p>
+<p>浏览器访问失败以后,默认跳转到了login登录页面~这个是框架默认的模式.</p>
+<p>上面的代码中antMatchers(“/“,”/home”)匹配当前这个路径规则,紧接着使用了方法permitAll(),这个方法表示无认证访问,这里在浏览器中调用看下：<br><img src="images/spring-boot/security-5.png" alt=""></p>
+<p>也就是前端传递过来的用户可以通过框架自己自动验证,当然可以自定义,也可以通过数据库来操作等等~</p>
+<p>也可以通过简单的配置实现接口访问的限制,spring-boot-security主要的配置为:</p>
+<pre><code>spring security是springboot支持的权限控制系统。
 
-nUnstartedThreads:  还未启动的线程数
-nthreads            ThreadGroup中线程数目
-threads[]            ThreadGroup中的线程
-ngroups                线程组数目
-groups[]            线程组数组
-</code></pre><h3 id="1-2-ThreadGroup常用的方法"><a href="#1-2-ThreadGroup常用的方法" class="headerlink" title="1.2 ThreadGroup常用的方法"></a>1.2 ThreadGroup常用的方法</h3><p>ThreadGroup常用方法如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">public int activeCount()								当前线程组中活动的线程数</div><div class="line">public int enumerate(Thread list[])						拷贝当前线程集合中的数据到线程组中</div><div class="line">public int enumerate(Thread list[], boolean recurse)	拷贝当前线程集合中线程到线程组中,同时遍历所有子线程组拷贝到当前线程组中</div><div class="line"></div><div class="line">public final void interrupt()							打断所有线程</div><div class="line">private boolean stopOrSuspend(boolean suspend)			停止或则暂停线程,如果参数为true,表示暂停</div><div class="line">public final void destroy()								销毁线程组,以及其所有子线程组</div></pre></td></tr></table></figure></p>
-<h2 id="2-ThreadGroup的简单使用例子"><a href="#2-ThreadGroup的简单使用例子" class="headerlink" title="2 ThreadGroup的简单使用例子"></a>2 ThreadGroup的简单使用例子</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">@org.junit.Test</div><div class="line">    public void testThreadGroup() throws Exception&#123;</div><div class="line">        ThreadGroup group = new ThreadGroup(&quot;测试线程组&quot;);</div><div class="line">        Thread[] threads = new Thread[3];</div><div class="line">        for(int i=0;i&lt;3;i++)&#123;</div><div class="line">            threads[i] = new Thread(group,new Thread(new Runnable() &#123;</div><div class="line">                @Override</div><div class="line">                public void run() &#123;</div><div class="line">                    while(true)&#123;</div><div class="line">                        try&#123;</div><div class="line">                            System.out.println(Thread.currentThread().getName() + &quot;\t&quot; + System.currentTimeMillis());</div><div class="line"></div><div class="line">                            Thread.sleep(1000);</div><div class="line">                        &#125;catch (Exception e)&#123;</div><div class="line">                            e.printStackTrace();</div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;,&quot;thread-&quot; + i));</div><div class="line">            threads[i].start();</div><div class="line">        &#125;</div><div class="line">        //该方法是打印线程信息,通常用于调试</div><div class="line">        group.list();</div><div class="line">        Thread.sleep(1000);</div><div class="line">        System.out.println(group.activeCount());</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>下面是具体的执行结果的截图<br><img src="/images/thread/thread-group-list.png" alt=""></p>
-
+security.basic.authorize-mode要使用权限控制模式.
+security.basic.enabled是否开启基本的鉴权，默认为true
+security.basic.path需要鉴权的path，多个的话以逗号分隔，默认为[/**]
+security.basic.realmHTTP basic realm 的名字，默认为Spring
+security.enable-csrf是否开启cross-site request forgery校验，默认为false.
+security.filter-orderSecurity filter chain的order，默认为0
+security.headers.cache是否开启http头部的cache控制，默认为false.
+security.headers.content-type是否开启X-Content-Type-Options头部，默认为false.
+security.headers.frame是否开启X-Frame-Options头部，默认为false.
+security.headers.hsts指定HTTP Strict Transport Security (HSTS)模式(none, domain, all).
+security.headers.xss是否开启cross-site scripting (XSS) 保护，默认为false.
+security.ignored指定不鉴权的路径，多个的话以逗号分隔.
+security.oauth2.client.access-token-uri指定获取access token的URI.
+security.oauth2.client.access-token-validity-seconds指定access token失效时长.
+security.oauth2.client.additional-information.[key]设定要添加的额外信息.
+security.oauth2.client.authentication-scheme指定传输不记名令牌(bearer token)的方式(form, header, none,query)，默认为header
+security.oauth2.client.authorities指定授予客户端的权限.
+security.oauth2.client.authorized-grant-types指定客户端允许的grant types.
+security.oauth2.client.auto-approve-scopes对客户端自动授权的scope.
+security.oauth2.client.client-authentication-scheme传输authentication credentials的方式(form, header, none, query)，默认为header方式
+security.oauth2.client.client-id指定OAuth2 client ID.
+security.oauth2.client.client-secret指定OAuth2 client secret. 默认是一个随机的secret.
+security.oauth2.client.grant-type指定获取资源的access token的授权类型.
+security.oauth2.client.id指定应用的client ID.
+security.oauth2.client.pre-established-redirect-uri服务端pre-established的跳转URI.
+security.oauth2.client.refresh-token-validity-seconds指定refresh token的有效期.
+security.oauth2.client.registered-redirect-uri指定客户端跳转URI，多个以逗号分隔.
+security.oauth2.client.resource-ids指定客户端相关的资源id，多个以逗号分隔.
+security.oauth2.client.scopeclient的scope
+security.oauth2.client.token-name指定token的名称
+security.oauth2.client.use-current-uri是否优先使用请求中URI，再使用pre-established的跳转URI. 默认为true
+security.oauth2.client.user-authorization-uri用户跳转去获取access token的URI.
+security.oauth2.resource.id指定resource的唯一标识.
+security.oauth2.resource.jwt.key-uriJWT token的URI. 当key为公钥时，或者value不指定时指定.
+security.oauth2.resource.jwt.key-valueJWT token验证的value. 可以是对称加密或者PEMencoded RSA公钥. 可以使用URI作为value.
+security.oauth2.resource.prefer-token-info是否使用token info，默认为true
+security.oauth2.resource.service-id指定service ID，默认为resource.
+security.oauth2.resource.token-info-uritoken解码的URI.
+security.oauth2.resource.token-type指定当使用userInfoUri时，发送的token类型.
+security.oauth2.resource.user-info-uri指定user info的URI
+security.oauth2.sso.filter-order如果没有显示提供WebSecurityConfigurerAdapter时指定的Filter order.
+security.oauth2.sso.login-path跳转到SSO的登录路径默认为/login.
+security.require-ssl是否对所有请求开启SSL，默认为false.
+security.sessions指定Session的创建策略(always, never, if_required, stateless).
+security.user.name指定默认的用户名，默认为user.
+security.user.password默认的用户密码.
+security.user.role默认用户的授权角色.
+</code></pre>
           
         
       
@@ -794,8 +1075,8 @@ groups[]            线程组数组
             
               
                 
-                <a class="post-title-link" href="/2017/03/01/java-thread-study009/" itemprop="url">
-                  java并发编程学习(九) Callable、Future、FutureTask、CompletionService、RunnableFuture
+                <a class="post-title-link" href="/2017/10/23/spring-boot-study009/" itemprop="url">
+                  Spring Boot基础学习(九) websocket
                 </a>
               
             
@@ -808,8 +1089,8 @@ groups[]            线程组数组
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2017-03-01T15:22:46+08:00" content="2017-03-01">
-              2017-03-01
+            <time itemprop="dateCreated" datetime="2017-10-23T17:22:46+08:00" content="2017-10-23">
+              2017-10-23
             </time>
           </span>
 
@@ -822,8 +1103,8 @@ groups[]            线程组数组
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
+                  <a href="/categories/spring-boot/" itemprop="url" rel="index">
+                    <span itemprop="name">spring boot</span>
                   </a>
                 </span>
 
@@ -838,8 +1119,8 @@ groups[]            线程组数组
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2017/03/01/java-thread-study009/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/03/01/java-thread-study009/" itemprop="commentsCount"></span>
+                <a href="/2017/10/23/spring-boot-study009/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/10/23/spring-boot-study009/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -864,30 +1145,55 @@ groups[]            线程组数组
       
         
           
-            <h2 id="Callable"><a href="#Callable" class="headerlink" title="Callable"></a>Callable</h2><p>Callable是类似于Runnable的接口，实现Callable接口的类和实现Runnable的类都是可被其他线程执行的任务。简单的例子如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">public void test() throws Exception&#123;</div><div class="line">    Callable&lt;String&gt; callable = new Callable&lt;String&gt;() &#123;</div><div class="line">        @Override</div><div class="line">        public String call() throws Exception &#123;</div><div class="line">            return System.currentTimeMillis() +&quot;&quot;;</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line">    ExecutorService service = Executors.newFixedThreadPool(1);</div><div class="line">    Future&lt;String&gt; future = service.submit(callable);</div><div class="line"></div><div class="line">    String result = future.get();</div><div class="line">    System.out.println(result);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>执行的结果如下：<br><img src="/images/thread/thread-call.png" alt=""></p>
-<p>Callable其实和Runnable的模式差不多,一直执行的是run方法一个是call方式，主要是Callable是可以获取到相应的返回值,同时可以对外抛出异常.Callable的结果返回时通过Future来获取的。Future的具体接口下面说道的时候在开始进行说明。</p>
-<h2 id="Future"><a href="#Future" class="headerlink" title="Future"></a>Future</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">A &#123;@code Future&#125; represents the result of an asynchronous</div><div class="line"> * computation.  Methods are provided to check if the computation is</div><div class="line"> * complete, to wait for its completion, and to retrieve the result of</div><div class="line"> * the computation.  The result can only be retrieved using method</div><div class="line"> * &#123;@code get&#125; when the computation has completed, blocking if</div><div class="line"> * necessary until it is ready.  Cancellation is performed by the</div><div class="line"> * &#123;@code cancel&#125; method.  Additional methods are provided to</div><div class="line"> * determine if the task completed normally or was cancelled. Once a</div><div class="line"> * computation has completed, the computation cannot be cancelled.</div><div class="line"> * If you would like to use a &#123;@code Future&#125; for the sake</div><div class="line"> * of cancellability but not provide a usable result, you can</div><div class="line"> * declare types of the form &#123;@code Future&lt;?&gt;&#125; and</div><div class="line"> * return &#123;@code null&#125; as a result of the underlying task.</div><div class="line"> ....</div></pre></td></tr></table></figure>
-<p>上面是Future对应的jdk源码中的注释,其中可以看出Future是用来表示异步结果的接口,对异步操作的接口提供一些方法用于检测任务是否完成以及任务的状态等。</p>
-<p>下面为Future的接口源码:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div></pre></td><td class="code"><pre><div class="line">public interface Future&lt;V&gt; &#123;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * Attempts to cancel execution of this task.  This attempt will</div><div class="line">     * fail if the task has already completed, has already been cancelled,</div><div class="line">     * or could not be cancelled for some other reason. If successful,</div><div class="line">     * and this task has not started when &#123;@code cancel&#125; is called,</div><div class="line">     * this task should never run.  If the task has already started,</div><div class="line">     * then the &#123;@code mayInterruptIfRunning&#125; parameter determines</div><div class="line">     * whether the thread executing this task should be interrupted in</div><div class="line">     * an attempt to stop the task.</div><div class="line">     *</div><div class="line">     * &lt;p&gt;After this method returns, subsequent calls to &#123;@link #isDone&#125; will</div><div class="line">     * always return &#123;@code true&#125;.  Subsequent calls to &#123;@link #isCancelled&#125;</div><div class="line">     * will always return &#123;@code true&#125; if this method returned &#123;@code true&#125;.</div><div class="line">     *</div><div class="line">     * @param mayInterruptIfRunning &#123;@code true&#125; if the thread executing this</div><div class="line">     * task should be interrupted; otherwise, in-progress tasks are allowed</div><div class="line">     * to complete</div><div class="line">     * @return &#123;@code false&#125; if the task could not be cancelled,</div><div class="line">     * typically because it has already completed normally;</div><div class="line">     * &#123;@code true&#125; otherwise</div><div class="line">     */</div><div class="line">    boolean cancel(boolean mayInterruptIfRunning);</div><div class="line"></div><div class="line">    /**</div><div class="line">     * Returns &#123;@code true&#125; if this task was cancelled before it completed</div><div class="line">     * normally.</div><div class="line">     *</div><div class="line">     * @return &#123;@code true&#125; if this task was cancelled before it completed</div><div class="line">     */</div><div class="line">    boolean isCancelled();</div><div class="line"></div><div class="line">    /**</div><div class="line">     * Returns &#123;@code true&#125; if this task completed.</div><div class="line">     *</div><div class="line">     * Completion may be due to normal termination, an exception, or</div><div class="line">     * cancellation -- in all of these cases, this method will return</div><div class="line">     * &#123;@code true&#125;.</div><div class="line">     *</div><div class="line">     * @return &#123;@code true&#125; if this task completed</div><div class="line">     */</div><div class="line">    boolean isDone();</div><div class="line"></div><div class="line">    /**</div><div class="line">     * Waits if necessary for the computation to complete, and then</div><div class="line">     * retrieves its result.</div><div class="line">     *</div><div class="line">     * @return the computed result</div><div class="line">     * @throws CancellationException if the computation was cancelled</div><div class="line">     * @throws ExecutionException if the computation threw an</div><div class="line">     * exception</div><div class="line">     * @throws InterruptedException if the current thread was interrupted</div><div class="line">     * while waiting</div><div class="line">     */</div><div class="line">    V get() throws InterruptedException, ExecutionException;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * Waits if necessary for at most the given time for the computation</div><div class="line">     * to complete, and then retrieves its result, if available.</div><div class="line">     *</div><div class="line">     * @param timeout the maximum time to wait</div><div class="line">     * @param unit the time unit of the timeout argument</div><div class="line">     * @return the computed result</div><div class="line">     * @throws CancellationException if the computation was cancelled</div><div class="line">     * @throws ExecutionException if the computation threw an</div><div class="line">     * exception</div><div class="line">     * @throws InterruptedException if the current thread was interrupted</div><div class="line">     * while waiting</div><div class="line">     * @throws TimeoutException if the wait timed out</div><div class="line">     */</div><div class="line">    V get(long timeout, TimeUnit unit)</div><div class="line">        throws InterruptedException, ExecutionException, TimeoutException;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>方法解析：<br>V get() ：获取异步执行的结果，如果没有结果可用，此方法会阻塞直到异步计算完成。<br>V get(Long timeout , TimeUnit unit) ：获取异步执行结果，如果没有结果可用，此方法会阻塞，但是会有时间限制，如果阻塞时间超过设定的timeout时间，该方法将返回null。<br>boolean isDone() ：如果任务执行结束，无论是正常结束或是中途取消还是发生异常，都返回true。<br>boolean isCancelled() ：如果任务完成前被取消，则返回true。<br>boolean cancel(boolean mayInterruptRunning) ：如果任务还没开始，执行cancel(…)方法将返回false；如果任务已经启动，执行cancel(true)方法将以中断执行此任务线程的方式来试图停止任务，如果停止成功，返回true；当任务已经启动，执行cancel(false)方法将不会对正在执行的任务线程产生影响(让线程正常执行到完成)，此时返回false；当任务已经完成，执行cancel(…)方法将返回false。mayInterruptRunning参数表示是否中断执行中的线程。<br>通过方法分析我们也知道实际上Future提供了3种功能：（1）能够中断执行中的任务（2）判断任务是否执行完成（3）获取任务执行完成后额结果。</p>
-<p>具体的例子可以看Callable的例子。</p>
-<h2 id="RunnableFuture"><a href="#RunnableFuture" class="headerlink" title="RunnableFuture"></a>RunnableFuture</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * A &#123;@link Future&#125; that is &#123;@link Runnable&#125;. Successful execution of</div><div class="line"> * the &#123;@code run&#125; method causes completion of the &#123;@code Future&#125;</div><div class="line"> * and allows access to its results.</div><div class="line"> * @see FutureTask</div><div class="line"> * @see Executor</div><div class="line"> * @since 1.6</div><div class="line"> * @author Doug Lea</div><div class="line"> * @param &lt;V&gt; The result type returned by this Future&apos;s &#123;@code get&#125; method</div><div class="line"> */</div><div class="line">public interface RunnableFuture&lt;V&gt; extends Runnable, Future&lt;V&gt; &#123;</div><div class="line">    /**</div><div class="line">     * Sets this Future to the result of its computation</div><div class="line">     * unless it has been cancelled.</div><div class="line">     */</div><div class="line">    void run();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="FutureTask"><a href="#FutureTask" class="headerlink" title="FutureTask"></a>FutureTask</h2><p>FutureTask一个可取消的异步计算，FutureTask 实现了Future的基本方法.Executor框架利用FutureTask来完成异步任务，并可以用来进行任何潜在的耗时的计算<br>FutureTask的应用场景主要是：</p>
-<pre><code>Future用于异步获取执行结果或者取消任务。
-在高并发场景下确保任务只执行一次。
-</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">@org.junit.Test</div><div class="line">    public void test() throws Exception&#123;</div><div class="line">        FutureTask&lt;String&gt; futureTask = new FutureTask&lt;&gt;(new Callable&lt;String&gt;() &#123;</div><div class="line">            @Override</div><div class="line">            public String call() throws Exception &#123;</div><div class="line">                return System.currentTimeMillis() + &quot;&quot;;</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line"></div><div class="line">        ExecutorService service = Executors.newFixedThreadPool(1);</div><div class="line">        service.submit(futureTask);</div><div class="line"></div><div class="line">        System.out.println(futureTask.get());</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>也就是相当于自己会将执行过后的结果带回来.那么看下他是怎么讲结果带回来的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">     * @throws CancellationException &#123;@inheritDoc&#125;</div><div class="line">     */</div><div class="line">    public V get() throws InterruptedException, ExecutionException &#123;</div><div class="line">        int s = state;</div><div class="line">        if (s &lt;= COMPLETING)</div><div class="line">            s = awaitDone(false, 0L);</div><div class="line">        return report(s);</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
-<p>get()方法获取结果数据的时候,监测当前的状态,如果当前的状态是完成状态，则代用report()方法返回结果数据,那么结果到底是在完成的监测是获取到的还是怎么处理的呢？<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">     * Returns result or throws exception for completed task.</div><div class="line">     *</div><div class="line">     * @param s completed state value</div><div class="line">     */</div><div class="line">    @SuppressWarnings(&quot;unchecked&quot;)</div><div class="line">    private V report(int s) throws ExecutionException &#123;</div><div class="line">        Object x = outcome;</div><div class="line">        if (s == NORMAL)</div><div class="line">            return (V)x;</div><div class="line">        if (s &gt;= CANCELLED)</div><div class="line">            throw new CancellationException();</div><div class="line">        throw new ExecutionException((Throwable)x);</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
-<p>report()方法只是将outcome的值当成结果传递回去了,那么outcome是在哪里赋值的呢？,提交数据以后,就直接等待,然后获取数据,可见这个值是在线程执行完以后自己赋值的,应该在run方法中的某处赋值的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">public void run() &#123;</div><div class="line">        if (state != NEW ||</div><div class="line">            !UNSAFE.compareAndSwapObject(this, runnerOffset,</div><div class="line">                                         null, Thread.currentThread()))</div><div class="line">            return;</div><div class="line">        try &#123;</div><div class="line">            Callable&lt;V&gt; c = callable;</div><div class="line">            if (c != null &amp;&amp; state == NEW) &#123;</div><div class="line">                V result;</div><div class="line">                boolean ran;</div><div class="line">                try &#123;</div><div class="line">                    result = c.call();</div><div class="line">                    ran = true;</div><div class="line">                &#125; catch (Throwable ex) &#123;</div><div class="line">                    result = null;</div><div class="line">                    ran = false;</div><div class="line">                    setException(ex);</div><div class="line">                &#125;</div><div class="line">                if (ran)</div><div class="line">                    set(result);</div><div class="line">            &#125;</div><div class="line">        &#125; finally &#123;</div><div class="line">            // runner must be non-null until state is settled to</div><div class="line">            // prevent concurrent calls to run()</div><div class="line">            runner = null;</div><div class="line">            // state must be re-read after nulling runner to prevent</div><div class="line">            // leaked interrupts</div><div class="line">            int s = state;</div><div class="line">            if (s &gt;= INTERRUPTING)</div><div class="line">                handlePossibleCancellationInterrupt(s);</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
-<p>上面是具体的线程跑的run方法,具体的值可以看到将result设置到outcome中了。因此其实这就是一个包装器,将callable包装起来,然后执行获取结果。</p>
-<h2 id="CompletionService"><a href="#CompletionService" class="headerlink" title="CompletionService"></a>CompletionService</h2><p>CompletionService主要是用来进行批量任务的处理逻辑的。同样的如果你想执行一组任务后在任务执行完后获取到这一组任务中每个结果。那么如果通过使用Future来处理也行,每次调用Future的get方法来获取任务完成后的结果,那么这样做其实是很有问题的，如果数据太多的话，我需要一个一个判断，如果能够批量判断就可以了，只要都完成了，告诉我都完成了，然后我就可以遍历结果了。那么CompletionService就是这么做的。</p>
-<p>首先如果不使用CompletionService的话,实现批量执行任务。具体的如下:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">public class TestCall implements Callable&lt;Integer&gt;&#123;</div><div class="line">        private Integer a;</div><div class="line"></div><div class="line">        public TestCall(int a)&#123;</div><div class="line">            this.a = a;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public Integer call() throws Exception &#123;</div><div class="line">            try&#123;</div><div class="line">                Thread.sleep(100 * a);</div><div class="line">            &#125;catch (Exception e)&#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125;</div><div class="line">            return a;</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
-<p>编写好对应的Callable接口以后,下面开始实现具体的批量执行任务：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">public void testCompletionService()&#123;</div><div class="line">        int poolNum = 3;</div><div class="line">        ExecutorService executor = Executors.newFixedThreadPool(poolNum);</div><div class="line">        List&lt;Future&lt;Integer&gt;&gt; list = new ArrayList&lt;Future&lt;Integer&gt;&gt;();</div><div class="line"></div><div class="line">        for(int i=0;i&lt;poolNum;i++)&#123;</div><div class="line">            Future&lt;Integer&gt; future = executor.submit(new TestCall(i + 1));</div><div class="line">            list.add(future);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        //遍历数据,获取到相应的结果数据</div><div class="line">        int finish = 0;</div><div class="line">        while(finish &lt; poolNum)&#123;</div><div class="line">            for(Future&lt;Integer&gt; future : list)&#123;</div><div class="line">                try&#123;</div><div class="line">                    if(future.isDone())&#123;</div><div class="line">                        finish += 1;</div><div class="line">                        System.out.println(future.get());</div><div class="line">                        list.remove(future);</div><div class="line">                        break;</div><div class="line">                    &#125;</div><div class="line">                &#125;catch (Exception e)&#123;</div><div class="line">                    e.printStackTrace();</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
-<p>执行结果如下：</p>
-<p><img src="/images/thread/thread-completionService-1.png" alt=""></p>
-<p>上面的代码中需要有一个循环去监测任务是否完成,如果完成了在进行后面的处理,如果能将这些代码封装起来就好了。那么CompletionService的使用例子如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">@org.junit.Test</div><div class="line">    public void testCompletionService1()&#123;</div><div class="line">        int poolNum = 3;</div><div class="line">        ExecutorService service = Executors.newFixedThreadPool(poolNum);</div><div class="line">        CompletionService&lt;Integer&gt; completion = new ExecutorCompletionService&lt;Integer&gt;(service);</div><div class="line">        for(int i = 0;i&lt;poolNum;i++) &#123;</div><div class="line">            completion.submit(new TestCall(i + 1));</div><div class="line">        &#125;</div><div class="line">        for(int i=0;i&lt;poolNum;i++)&#123;</div><div class="line">            try&#123;</div><div class="line">                int result = completion.take().get();</div><div class="line">                System.out.println(result);</div><div class="line">            &#125;catch (Exception e)&#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">		service.shutdown();</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+            <h2 id="Spring-Boot-WebSocket"><a href="#Spring-Boot-WebSocket" class="headerlink" title="Spring Boot WebSocket"></a>Spring Boot WebSocket</h2><p>websocket为浏览器和服务端提供了双工异步通信的功能,浏览器可以向服务端发送消息,服务端也可以向浏览器发送消息.websocket是通过soket来实现双工异步通信能力的,但是直接使用WebSocket协议来开发程序比较繁琐,这里使用它的自协议STOMP.</p>
+<h3 id="广播式"><a href="#广播式" class="headerlink" title="广播式"></a>广播式</h3><p>广播式也就是服务端有消息时,会将消息发送给所有的链接了当前endpoint的浏览器.具体的配置很简单,需要先引入相应的依赖包:</p>
+<pre><code>&lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-websocket&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre><p>依赖包添加好以后,需要配置相应的websocket的配置,具体的构建对应的配置类:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">@Configuration</div><div class="line">@EnableWebSocketMessageBroker //注解开始使用STOMP协议来传输给予代理的消息,这里</div><div class="line">public class WebSocketConfiguration extends AbstractWebSocketMessageBrokerConfigurer &#123;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void registerStompEndpoints(StompEndpointRegistry registry) &#123;</div><div class="line">        //注册STOMP协议的节点(endpoint),并映射的制定的URL,并指定使用的SockJS协议</div><div class="line">        registry.addEndpoint(&quot;/socket&quot;).withSockJS();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里配置好以后,需要使用构造相应的controller,具体的如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">@RestController</div><div class="line">@SpringBootApplication</div><div class="line">public class SpringBootSocketApplication &#123;</div><div class="line">	public static void main(String[] args) &#123;</div><div class="line">		SpringApplication.run(SpringBootSocketApplication.class, args);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	@Autowired</div><div class="line">	private SimpMessagingTemplate template;</div><div class="line"></div><div class="line">	@RequestMapping(value = &quot;/message&quot;)</div><div class="line">	public void send(@RequestParam String name)&#123;</div><div class="line">		template.convertAndSend(&quot;/message&quot;,name);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	@MessageMapping(value = &quot;/message/1&quot;)</div><div class="line">	@SendTo(value = &quot;/message/view&quot;)</div><div class="line">	public String send1(@RequestParam String name)&#123;</div><div class="line">		return &quot;Hello &quot; + name;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在编写的过程中有两种方式可以选择:</p>
+<pre><code>1 使用SimpMessagingTemplate来发送消息
+2 使用@MessageMapping和@SendTo注解来标记
+</code></pre><p>两种方式中使用第二种更加简单,具体的@MessageMapping的用法和@RequestMapping相同。</p>
+<pre><code>1 当浏览器想服务端发送消息时,会映射到@MessageMapping对应的value地址中
+2 当服务端想浏览器发送消息时,会映射到@SendTo对应地址中,这个地址在js中会有引用。
+</code></pre><p>下面看下两种不同方式下的对应的页面：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">&lt;!-- test.html --&gt;</div><div class="line">&lt;html&gt;</div><div class="line">&lt;script src=&quot;js/sockjs.min.js&quot;&gt;&lt;/script&gt;</div><div class="line">&lt;script src=&quot;js/stomp.js&quot;&gt;&lt;/script&gt;</div><div class="line">&lt;script type=&quot;text/javascript&quot;&gt;</div><div class="line">    var socket = new SockJS(&apos;/socket&apos;);</div><div class="line">    var stompClient = Stomp.over(socket);</div><div class="line">    stompClient.connect(&#123;&#125;, function() &#123;</div><div class="line">        stompClient.subscribe(&apos;/message&apos;, function(txt) &#123;</div><div class="line">            alert(txt);</div><div class="line">        &#125;);</div><div class="line">    &#125;);</div><div class="line"></div><div class="line">    function send(txt) &#123;</div><div class="line">        stompClient.send(&quot;/message&quot;, &#123;&#125;, txt);</div><div class="line">    &#125;</div><div class="line">&lt;/script&gt;</div><div class="line">&lt;a href=&quot;javascript:send(&apos;test&apos;)&quot;&gt;测试&lt;/a&gt;</div><div class="line">&lt;/html&gt;</div><div class="line"></div><div class="line"></div><div class="line">&lt;!-- test-1.html --&gt;</div><div class="line">&lt;html&gt;</div><div class="line">&lt;script src=&quot;js/sockjs.min.js&quot;&gt;&lt;/script&gt;</div><div class="line">&lt;script src=&quot;js/stomp.js&quot;&gt;&lt;/script&gt;</div><div class="line">&lt;script type=&quot;text/javascript&quot;&gt;</div><div class="line">    var socket = new SockJS(&apos;/socket&apos;);</div><div class="line">    var stompClient = Stomp.over(socket);</div><div class="line">    stompClient.connect(&#123;&#125;, function() &#123;</div><div class="line">        stompClient.subscribe(&apos;/message/view&apos;, function(txt) &#123;</div><div class="line">            alert(txt);</div><div class="line">        &#125;);</div><div class="line">    &#125;);</div><div class="line"></div><div class="line">    function send(txt) &#123;</div><div class="line">        stompClient.send(&quot;/message/1&quot;, &#123;&#125;, txt);</div><div class="line">    &#125;</div><div class="line">&lt;/script&gt;</div><div class="line">&lt;a href=&quot;javascript:send(&apos;test-1&apos;)&quot;&gt;测试&lt;/a&gt;</div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure>
+<p>执行结果为:<br><img src="images/spring-boot/socket-1.png" alt=""><br><img src="images/spring-boot/socket-2.png" alt=""></p>
+<h3 id="点对点的方式"><a href="#点对点的方式" class="headerlink" title="点对点的方式"></a>点对点的方式</h3><p>点对点的测试其实也比较简单,用到的主要的接口为:</p>
+<pre><code>public void convertAndSendToUser(String user, String destination, Object payload)
+</code></pre><p>下面介绍一个简单的例子用来测试点对点的发送数据内容,具体的用到了Security模块和前端页面的整合,首先需要配置这些模块:</p>
+<p>1 首先编写权限的管理类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line">@Configuration</div><div class="line">@EnableWebSecurity</div><div class="line">public class WebSecurityConfig extends WebSecurityConfigurerAdapter &#123;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 配置访问路径</div><div class="line">     * @param http</div><div class="line">     * @throws Exception</div><div class="line">     */</div><div class="line">    @Override</div><div class="line">    protected void configure(HttpSecurity http) throws Exception &#123;</div><div class="line">        http.authorizeRequests()</div><div class="line">                //设置Spring boot 对/和/login路径不拦截</div><div class="line">                .antMatchers(&quot;/&quot;,&quot;/login&quot;)</div><div class="line">                .permitAll()</div><div class="line">                .anyRequest()</div><div class="line">                .authenticated()</div><div class="line">                .and()</div><div class="line">                .formLogin()</div><div class="line">                .loginPage(&quot;/login&quot;)//指定登录页面</div><div class="line">                .defaultSuccessUrl(&quot;/chat&quot;)//登录成功后跳转的页面</div><div class="line">                .permitAll()</div><div class="line">                .and()</div><div class="line">                .logout()</div><div class="line">                .permitAll();</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    protected void configure(AuthenticationManagerBuilder auth) throws Exception &#123;</div><div class="line">        //指定用户名和密码以及其对应的角色</div><div class="line">        auth.inMemoryAuthentication()</div><div class="line">                .withUser(&quot;sunx&quot;).password(&quot;123&quot;).roles(&quot;USER&quot;)</div><div class="line">                .and()</div><div class="line">                .withUser(&quot;xing&quot;).password(&quot;456&quot;).roles(&quot;USER&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void configure(WebSecurity web) throws Exception &#123;</div><div class="line">        web.ignoring().antMatchers(&quot;/resources/static/**&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>权限管理类主要是用来区分用户的同时初始化内存用户,用来登录验证的。以及静态资源的指定。用到了secruity模块,需要引用相应的依赖:</p>
+<pre><code>&lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-security&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+</code></pre><p>2 创建socket的配置管理类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">@Configuration</div><div class="line">@EnableWebSocketMessageBroker //注解开始使用STOMP协议来传输给予代理的消息,这里</div><div class="line">public class WebSocketConfiguration extends AbstractWebSocketMessageBrokerConfigurer &#123;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void registerStompEndpoints(StompEndpointRegistry registry) &#123;</div><div class="line">        //注册STOMP协议的节点(endpoint),并映射的制定的URL,并指定使用的SockJS协议</div><div class="line">        registry.addEndpoint(&quot;/socket&quot;).withSockJS();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void configureMessageBroker(MessageBrokerRegistry registry) &#123;</div><div class="line">        //配置消息代理(Message Broker)</div><div class="line">        registry.enableSimpleBroker(&quot;/topic&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>3 配置前端页面的mvc模式:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">@Configuration</div><div class="line">public class WebMvcConfig extends WebMvcConfigurerAdapter &#123;</div><div class="line">    @Override</div><div class="line">    public void addViewControllers(ViewControllerRegistry registry) &#123;</div><div class="line">        registry.addViewController(&quot;/login&quot;).setViewName(&quot;/login&quot;);</div><div class="line">        registry.addViewController(&quot;/chat&quot;).setViewName(&quot;/chat&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里引用了模板模式,因此需要引用相应的依赖：</p>
+<pre><code>&lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-thymeleaf&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+</code></pre><p>4 编写相应的controller操作前端消息的发送</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">@Controller</div><div class="line">public class PointController &#123;</div><div class="line">    @Autowired</div><div class="line">    private SimpMessagingTemplate template;</div><div class="line"></div><div class="line">    @MessageMapping(&quot;/chat&quot;)</div><div class="line">    public void handleChat(Principal principal,String msg)&#123;</div><div class="line">        if(principal.getName().equals(&quot;sunx&quot;))&#123;</div><div class="line">            template.convertAndSendToUser(</div><div class="line">                    &quot;xing&quot;,</div><div class="line">                    &quot;/topic/notifications&quot;,</div><div class="line">                    principal.getName() + &quot;-send:&quot; + msg);</div><div class="line">        &#125;else&#123;</div><div class="line">            template.convertAndSendToUser(</div><div class="line">                    &quot;sunx&quot;,</div><div class="line">                    &quot;/topic/notifications&quot;,</div><div class="line">                    principal.getName() + &quot;-send:&quot; + msg</div><div class="line">            );</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里使用了这个接口,可以通过这个将对应的消息发送到指定的用户中。如果是涉及到多个用户,可以通过前端将需要发送给那个用户标记传过来,这样就不用这么麻烦判断了~不过需要前端通过接口获取到当前的用户列表,将msg包装为json格式的内容,读取出其中的目标用户,在将消息发送出去~</p>
+<p>5 编写相应的前端页面</p>
+<p>由于使用了模板的模式,因此需要将静态的网页源码存储在/resources/templates下,将静态资源(引用的js,css等)存储在Security的配置文件中指定的/resources/static下,保证资源文件可以获取到~</p>
+<p>登录页面为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&lt;!DOCTYPE html&gt;</div><div class="line">&lt;!--注意这里使用了thymeleaf，具体的语法规则有兴趣的可以自己找一找相关的资料--&gt;</div><div class="line">&lt;html lang=&quot;en&quot; xmlns=&quot;http://www.w3.org/1999/xhtml&quot;</div><div class="line">      xmlns:th=&quot;http://www.thymeleaf.org&quot;</div><div class="line">      xmlns:sec=&quot;http://www.thymeleaf.org/thymeleaf-extras-springsecurity3&quot;&gt;</div><div class="line">&lt;head&gt;</div><div class="line">    &lt;meta charset=&quot;UTF-8&quot; /&gt;</div><div class="line">    &lt;title&gt;登录页面&lt;/title&gt;</div><div class="line">&lt;/head&gt;</div><div class="line">&lt;body&gt;</div><div class="line">&lt;div th:if=&quot;$&#123;param.error&#125;&quot;&gt;</div><div class="line">    无效的账号和密码</div><div class="line">&lt;/div&gt;</div><div class="line">&lt;div th:if=&quot;$&#123;param.logout&#125;&quot;&gt;</div><div class="line">    你已注销</div><div class="line">&lt;/div&gt;</div><div class="line">&lt;form th:action=&quot;@&#123;/login&#125;&quot; method=&quot;post&quot;&gt;</div><div class="line">    &lt;div&gt;&lt;label&gt;账号：&lt;input type=&quot;text&quot; name=&quot;username&quot;/&gt;&lt;/label&gt;&lt;/div&gt;</div><div class="line">    &lt;div&gt;&lt;label&gt;密码：&lt;input type=&quot;password&quot; name=&quot;password&quot;/&gt;&lt;/label&gt;&lt;/div&gt;</div><div class="line">    &lt;div&gt;&lt;input type=&quot;submit&quot; th:value=&quot;登录&quot;/&gt;&lt;/div&gt;</div><div class="line">&lt;/form&gt;</div><div class="line">&lt;/body&gt;</div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure>
+<p>聊天页面为:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div></pre></td><td class="code"><pre><div class="line">&lt;!DOCTYPE html&gt;</div><div class="line">&lt;!--注意这里使用了thymeleaf，具体的语法规则有兴趣的可以自己找一找相关的资料--&gt;</div><div class="line">&lt;html lang=&quot;en&quot; xmlns:th=&quot;http://www.thymeleaf.org&quot;&gt;</div><div class="line">&lt;head&gt;</div><div class="line">    &lt;meta charset=&quot;UTF-8&quot; /&gt;</div><div class="line">    &lt;script th:src=&quot;@&#123;sockjs.min.js&#125;&quot;&gt;&lt;/script&gt;</div><div class="line">    &lt;script th:src=&quot;@&#123;stomp.js&#125;&quot;&gt;&lt;/script&gt;</div><div class="line">    &lt;script th:src=&quot;@&#123;jquery.js&#125;&quot;&gt;&lt;/script&gt;</div><div class="line">    &lt;title&gt;聊天室&lt;/title&gt;</div><div class="line">&lt;/head&gt;</div><div class="line">&lt;body&gt;</div><div class="line">&lt;p&gt;聊天室&lt;/p&gt;</div><div class="line">&lt;form id=&quot;minuorForm&quot;&gt;</div><div class="line">    &lt;textarea rows=&quot;4&quot; cols=&quot;60&quot; name=&quot;text&quot;&gt;&lt;/textarea&gt;&lt;br /&gt;</div><div class="line">    &lt;input type=&quot;submit&quot; th:value=&quot;发送&quot;/&gt;</div><div class="line">&lt;/form&gt;</div><div class="line">&lt;button id=&quot;stop&quot;&gt;退出&lt;/button&gt;</div><div class="line">&lt;div id=&quot;output&quot;&gt;&lt;/div&gt;</div><div class="line">&lt;script th:inline=&quot;javascript&quot;&gt;</div><div class="line">    //重写form表单提交方法</div><div class="line">    $(&quot;#minuorForm&quot;).submit(function(e)&#123;</div><div class="line">        e.preventDefault();</div><div class="line">        var text = $(&quot;#minuorForm&quot;).find(&quot;textarea[name=&apos;text&apos;]&quot;).val();</div><div class="line">        sendSpittle(text);</div><div class="line">    &#125;);</div><div class="line">    //创建消息客户端，并连接服务端</div><div class="line">    var sock = new SockJS(&quot;/socket&quot;);</div><div class="line">    var stompClient = Stomp.over(sock);</div><div class="line">    stompClient.connect(&quot;guest&quot;,&quot;guest&quot;,function(frame)&#123;</div><div class="line">        stompClient.subscribe(&quot;/user/topic/notifications&quot;,handleNotification);</div><div class="line">    &#125;);</div><div class="line"></div><div class="line">    //显示消息内容</div><div class="line">    function handleNotification(message)&#123;</div><div class="line">        $(&quot;#output&quot;).append(&quot;&lt;b&gt;&quot; + message.body + &quot;&lt;/b&gt;&lt;br/&gt;&quot;)</div><div class="line">    &#125;</div><div class="line">    //发送消息</div><div class="line">    function sendSpittle(text)&#123;</div><div class="line">        stompClient.send(&quot;/chat&quot;,&#123;&#125;,text);</div><div class="line">    &#125;</div><div class="line">    //关闭消息接收</div><div class="line">    $(&quot;#stop&quot;).click(function()&#123;</div><div class="line">        sock.close();</div><div class="line">    &#125;);</div><div class="line">&lt;/script&gt;</div><div class="line">&lt;/body&gt;</div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure>
+<p>先访问<a href="http://localhost:8080/login进行登录,登录后可以进行数据发送了,测试的结果为：" target="_blank" rel="external">http://localhost:8080/login进行登录,登录后可以进行数据发送了,测试的结果为：</a><br><img src="images/spring-boot/socket-point-1.png" alt=""></p>
+<p><img src="images/spring-boot/socket-point-2.png" alt=""></p>
 
           
         
@@ -920,7 +1226,7 @@ groups[]            线程组数组
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -993,7 +1299,7 @@ var duoshuoQuery = {short_name:"sunxing"};
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">65</span>
+              <span class="site-state-item-count">78</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -1001,7 +1307,7 @@ var duoshuoQuery = {short_name:"sunxing"};
           
             <div class="site-state-item site-state-categories">
               
-                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-count">13</span>
                 <span class="site-state-item-name">分类</span>
               
             </div>
@@ -1010,7 +1316,7 @@ var duoshuoQuery = {short_name:"sunxing"};
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

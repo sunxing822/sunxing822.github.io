@@ -231,8 +231,8 @@
             
               
                 
-                <a class="post-title-link" href="/2016/06/07/hbase-study003/" itemprop="url">
-                  HBase学习笔记(三) HBase的shell操作
+                <a class="post-title-link" href="/2016/07/04/spider-study004/" itemprop="url">
+                  网络爬虫学习笔记(四) 数据去重
                 </a>
               
             
@@ -245,8 +245,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-06-07T11:55:55+08:00" content="2016-06-07">
-              2016-06-07
+            <time itemprop="dateCreated" datetime="2016-07-04T11:55:55+08:00" content="2016-07-04">
+              2016-07-04
             </time>
           </span>
 
@@ -259,8 +259,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/hbase/" itemprop="url" rel="index">
-                    <span itemprop="name">hbase</span>
+                  <a href="/categories/爬虫/" itemprop="url" rel="index">
+                    <span itemprop="name">爬虫</span>
                   </a>
                 </span>
 
@@ -275,8 +275,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/06/07/hbase-study003/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/07/hbase-study003/" itemprop="commentsCount"></span>
+                <a href="/2016/07/04/spider-study004/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/04/spider-study004/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -301,33 +301,23 @@
       
         
           
-            <p>1 查看表</p>
-<p><img src="/images/hbase/hbase-list-shell.png" alt=""></p>
-<p>2 创建表,查看表,插入数据</p>
-<p><img src="/images/hbase/hbase-shell.png" alt=""></p>
-<p>3 查询数据</p>
-<p><img src="/images/hbase/hbase-get.png" alt=""></p>
-<p>get命令操作的主要顺序是:表名称,行名称,列名称,如果有其他的调教在用花括号加上,具体的代码如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">hbase&gt; get ‘t1′, ‘r1′ </div><div class="line">hbase&gt; get ‘t1′, ‘r1′, &#123;TIMERANGE =&gt; [ts1, ts2]&#125; </div><div class="line">hbase&gt; get ‘t1′, ‘r1′, &#123;COLUMN =&gt; ‘c1′&#125; </div><div class="line">hbase&gt; get ‘t1′, ‘r1′, &#123;COLUMN =&gt; [&apos;c1&apos;, &apos;c2&apos;, &apos;c3&apos;]&#125; </div><div class="line">hbase&gt; get ‘t1′, ‘r1′, &#123;COLUMN =&gt; ‘c1′, TIMESTAMP =&gt; ts1&#125; </div><div class="line">hbase&gt; get ‘t1′, ‘r1′, &#123;COLUMN =&gt; ‘c1′, TIMERANGE =&gt; [ts1, ts2], VERSIONS =&gt; 4&#125; </div><div class="line">hbase&gt; get ‘t1′, ‘r1′, &#123;COLUMN =&gt; ‘c1′, TIMESTAMP =&gt; ts1, VERSIONS =&gt; 4&#125; </div><div class="line">hbase&gt; get ‘t1′, ‘r1′, ‘c1′ </div><div class="line">hbase&gt; get ‘t1′, ‘r1′, ‘c1′, ‘c2′ </div><div class="line">hbase&gt; get ‘t1′, ‘r1′, [&apos;c1&apos;, &apos;c2&apos;]</div></pre></td></tr></table></figure>
-<p>scan 命令查询表数据</p>
-<p>这个命令主要是扫描表数据,可根据给定的条件进行数据查询并展示.</p>
-<p><img src="/images/hbase/hbase-scan-example.png" alt=""></p>
-<p>4 删除数据</p>
-<p><img src="/images/hbase/hbase-delete.png" alt=""></p>
-<p>如果需要进行全表删除操作，就使用truncate命令，其实没有直接的全表删除命令，这个命令也是disable，drop，create三个命令组合出来的</p>
-<p>5 修改表</p>
-<p>增加一个列簇:</p>
-<p><img src="/images/hbase/hbase-alter.png" alt=""></p>
-<p>删除一个列簇：</p>
-<p><img src="/images/hbase/hbase-alter-delete.png" alt=""></p>
-<p>执行多个修改动作</p>
-<p><img src="/images/hbase/hbase-alter-mult.png" alt=""></p>
-<p>6 统计数据</p>
-<p>统计表中数据的函数,根据指定条件查询</p>
-<p><img src="/images/hbase/hbase-count.png" alt=""></p>
-<p>count一般会比较耗时，使用mapreduce进行统计，统计结果会缓存，默认是10行。统计间隔默认的是1000行（INTERVAL）</p>
-<p>7 表的可用和隐藏</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">//隐藏表</div><div class="line">disable tableName</div><div class="line"></div><div class="line">//表可用</div><div class="line">enbale tableName</div></pre></td></tr></table></figure>
+            <h2 id="1-常见去重方式"><a href="#1-常见去重方式" class="headerlink" title="1 常见去重方式"></a>1 常见去重方式</h2><p>我抓取百度新闻首页的内容后,抽取到了很多超链接,那么我的需求肯定不是一个网站,我肯定监控着几十个上百个网站抓取新闻,那么肯定会出现如下情况：</p>
+<pre><code>a站点收录了一个新闻网页,b站点也收录了这个页面,且url相同。
+</code></pre><p>针对这个情况需要读抓到的链接进行去重,常见的去重方式如下：</p>
+<pre><code>1 数据库去重：每次拿url去数据库中验证一次
+2 缓存去重：同样的那url去缓存中验证，常见的分布式缓存如redis
+</code></pre><p>大都是将历史数据存储起来进行验证的。那么问题来了,采用上面两种的话我需要安装一些额外的工具,比如redis,我还需要安装一台redis,同样的,我还需要去维护这个redis。</p>
+<p>同样的历史数据存储这一块,如果我拿到一个url就直接插入到缓存中,或者是数据库中,那么就会占用大量的存储以及内存资源。简单的方法是简化url，常见的简化方式如下：</p>
+<pre><code>1 加密(如MD5)
+2 设定规则简化(剔除http://,站点表示_页面表示等)
+</code></pre><h2 id="2-布隆过滤去重"><a href="#2-布隆过滤去重" class="headerlink" title="2 布隆过滤去重"></a>2 布隆过滤去重</h2><p>通过上面的方式都可以进行验证,下面介绍另外一种验证方式:布隆过滤器</p>
+<p>布隆过滤器：</p>
+<p><img src="/images/spider/spider-bulong.png" alt=""></p>
+<p>（Bloom Filter）是由布隆（Burton Howard Bloom）在1970年提出的。它实际上是由一个很长的二进制向量和一系列随机映射函数组成，布隆过滤器可以用于检索一个元素是否在一个集合中。它的优点是空间效率和查询时间都远远超过一般的算法，缺点是有一定的误识别率（假正例False positives，即Bloom Filter报告某一元素存在于某集合中，但是实际上该元素并不在集合中）和删除困难，但是没有识别错误的情形（即假反例False negatives，如果某个元素确实没有在该集合中，那么Bloom Filter 是不会报告该元素存在于集合中的，所以不会漏报）。</p>
+<p>假 定我们存储一亿个电子邮件地址，我们先建立一个十六亿二进制（比特），即两亿字节的向量，然后将这十六亿个二进制全部设置为零。对于每一个电子邮件地址 X，我们用八个不同的随机数产生器（F1,F2, …,F8） 产生八个信息指纹（f1, f2, …, f8）。再用一个随机数产生器 G 把这八个信息指纹映射到 1 到十六亿中的八个自然数 g1, g2, …,g8。现在我们把这八个位置的二进制全部设置为一。当我们对这一亿个 email 地址都进行这样的处理后。一个针对这些 email 地址的布隆过滤器就建成了。（见下图）</p>
+<p><img src="/images/spider/spider-bulong-2.jpg" alt=""></p>
+<p>现 在，让我们看看如何用布隆过滤器来检测一个可疑的电子邮件地址 Y 是否在黑名单中。我们用相同的八个随机数产生器（F1, F2, …, F8）对这个地址产生八个信息指纹 s1,s2,…,s8，然后将这八个指纹对应到布隆过滤器的八个二进制位，分别是 t1,t2,…,t8。如果 Y 在黑名单中，显然，t1,t2,..,t8 对应的八个二进制一定是一。这样在遇到任何在黑名单中的电子邮件地址，我们都能准确地发现。</p>
+<h2 id="3-布隆过滤器的代码实现"><a href="#3-布隆过滤器的代码实现" class="headerlink" title="3 布隆过滤器的代码实现"></a>3 布隆过滤器的代码实现</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div></pre></td><td class="code"><pre><div class="line">public class BloomFilter &#123;</div><div class="line">	private static BloomFilter filter = new BloomFilter();</div><div class="line">	</div><div class="line">	// 构造函数</div><div class="line">	private BloomFilter() &#123;</div><div class="line">//		初始化布隆过滤器</div><div class="line">		init();</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	public static BloomFilter getInstance()&#123;</div><div class="line">		return filter;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	// DEFAULT_SIZE为2的28次方</div><div class="line">	private final int DEFAULT_SIZE = 2 &lt;&lt; 28;</div><div class="line">	/* 不同哈希函数的种子，一般应取质数,seeds数据共有7个值，则代表采用8种不同的HASH算法 */</div><div class="line">	private final int[] seeds = new int[] &#123; 5, 7, 11, 13, 31, 37, 61 &#125;;</div><div class="line"></div><div class="line">	// BitSet实际是由“二进制位”构成的一个Vector。假如希望高效率地保存大量“开－关”信息，就应使用BitSet.</div><div class="line">	// BitSet的最小长度是一个长整数（Long）的长度：64位</div><div class="line">	private BitSet bits = new BitSet(DEFAULT_SIZE);</div><div class="line"></div><div class="line">	/* 哈希函数对象 */</div><div class="line">	private SimpleHash[] func = new SimpleHash[seeds.length];</div><div class="line"></div><div class="line">	// 将字符串标记到bits中，即设置字符串的8个hash值函数为1</div><div class="line">	public synchronized void insert(String value) &#123;</div><div class="line">		for (SimpleHash f : func) &#123;</div><div class="line">			bits.set(f.hash(value), true);</div><div class="line">		&#125;</div><div class="line"></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	// 判断字符串是否已经被bits标记</div><div class="line">	public synchronized boolean contains(String value) &#123;</div><div class="line">		// 确保传入的不是空值</div><div class="line">		if (value == null) &#123;</div><div class="line">			return false;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		// 计算7种hash算法下各自对应的hash值，并判断</div><div class="line">		for (SimpleHash f : func) &#123;</div><div class="line">			if (!bits.get(f.hash(value)))</div><div class="line">				return false;</div><div class="line">		&#125;</div><div class="line">		return true;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public void init() &#123;</div><div class="line"></div><div class="line">		for (int i = 0; i &lt; seeds.length; i++) &#123;</div><div class="line">			// 给出所有的hash值，共计seeds.length个hash值。共8位。</div><div class="line">			// 通过调用SimpleHash.hash(),可以得到根据7种hash函数计算得出的hash值。</div><div class="line">			// 传入DEFAULT_SIZE(最终字符串的长度），seeds[i](一个指定的质数)即可得到需要的那个hash值的位置。</div><div class="line">			func[i] = new SimpleHash(DEFAULT_SIZE, seeds[i]);</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		InputStream is = null;</div><div class="line">		BufferedReader br = null;</div><div class="line">		try &#123;</div><div class="line">			is = new FileInputStream(Constant.BLOOM_FILTER_FILE);</div><div class="line">			br = new BufferedReader(new InputStreamReader(is,</div><div class="line">					Constant.CHARSET_UTF8));</div><div class="line">			String line = null;</div><div class="line">			while ((line = br.readLine()) != null) &#123;</div><div class="line">				if (!&quot;&quot;.equals(line)) &#123;</div><div class="line">					insert(line.trim());</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125; catch (FileNotFoundException e) &#123;</div><div class="line">//			布隆配置文件未加载到</div><div class="line">//			需要记录日志</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125; catch (IOException e) &#123;</div><div class="line">			e.printStackTrace();</div><div class="line">		&#125; finally&#123;</div><div class="line">			Common.closeStream(is, null, br, null);</div><div class="line">		&#125;</div><div class="line"></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	/* 哈希函数类 */</div><div class="line">	public static class SimpleHash &#123;</div><div class="line">		// cap为DEFAULT_SIZE的值，即用于结果的最大的字符串长度。</div><div class="line">		// seed为计算hash值的一个给定key，具体对应上面定义的seeds数组</div><div class="line">		private int cap;</div><div class="line">		private int seed;</div><div class="line"></div><div class="line">		public SimpleHash(int cap, int seed) &#123;</div><div class="line">			this.cap = cap;</div><div class="line">			this.seed = seed;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		public int hash(String value) &#123;</div><div class="line">			int result = 0;</div><div class="line">			int len = value.length();</div><div class="line">			for (int i = 0; i &lt; len; i++) &#123;</div><div class="line">				result = seed * result + value.charAt(i);</div><div class="line">			&#125;</div><div class="line">			return (cap - 1) &amp; result;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
           
         
       
@@ -376,8 +366,8 @@
             
               
                 
-                <a class="post-title-link" href="/2016/06/01/hbase-study001/" itemprop="url">
-                  HBase学习笔记(一) HBase的集群环境搭建
+                <a class="post-title-link" href="/2016/07/03/spider-study003/" itemprop="url">
+                  网络爬虫学习笔记(三) 自动抽取算法
                 </a>
               
             
@@ -390,8 +380,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-06-01T18:55:55+08:00" content="2016-06-01">
-              2016-06-01
+            <time itemprop="dateCreated" datetime="2016-07-03T11:55:55+08:00" content="2016-07-03">
+              2016-07-03
             </time>
           </span>
 
@@ -404,8 +394,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/hbase/" itemprop="url" rel="index">
-                    <span itemprop="name">hbase</span>
+                  <a href="/categories/爬虫/" itemprop="url" rel="index">
+                    <span itemprop="name">爬虫</span>
                   </a>
                 </span>
 
@@ -420,8 +410,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/06/01/hbase-study001/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/01/hbase-study001/" itemprop="commentsCount"></span>
+                <a href="/2016/07/03/spider-study003/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/03/spider-study003/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -446,51 +436,28 @@
       
         
           
-            <h2 id="1-集群环境部署"><a href="#1-集群环境部署" class="headerlink" title="1 集群环境部署"></a>1 集群环境部署</h2><p>hbase集群环境是通过zookeeper来进行协调管理调度的,也就是说搭建集群环境需要有zookeeper,在hbase中集成了zookeeper,可以通过配置文件中的参数来实现控制,参数的详细说明如下:</p>
-<p><img src="/images/hbase/hbase-zk-config.png" alt=""></p>
-<p>这个参数在hbase-env.sh中,由上面的注释可知这个是告诉hbase应该去管理哪一个zk实例。</p>
-<h2 id="2-zookeeper的配置安装"><a href="#2-zookeeper的配置安装" class="headerlink" title="2 zookeeper的配置安装"></a>2 zookeeper的配置安装</h2><p>1 下载zookeeper的安装包</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">wget http://mirrors.cnnic.cn/apache/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz</div><div class="line"></div><div class="line">tar -zxvf zookeeper-3.4.8.tar.gz</div></pre></td></tr></table></figure>
-<p>2 修改zookeeper的配置：</p>
-<p><img src="/images/hbase/zookeeper-conf.png" alt=""></p>
-<p>3 给每个节点增加对应的id编号,并且和配置文件中对应</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cat &quot;1&quot; &gt;&gt; data/myid</div></pre></td></tr></table></figure>
-<p>在不同的节点上修改不同的id参数,配置信息。</p>
-<p>4 将配置好的zookeeper迁移到其他机器上去</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">scp zookeeper3.4.8 root@hadoop-slave:/data/</div></pre></td></tr></table></figure>
-<p>5 启动相应的zookeeper</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">cd /data/zookeeper3.4.8</div><div class="line"></div><div class="line">./bin/zkServer.sh start</div></pre></td></tr></table></figure>
-<h2 id="3-hbase的安装"><a href="#3-hbase的安装" class="headerlink" title="3 hbase的安装"></a>3 hbase的安装</h2><p>hbase-site.xml的配置信息如下:</p>
-<p><img src="/images/hbase/hbase-site.png" alt=""></p>
-<p>将配置好的hbase拷贝到多台机器上去</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">scp hbase1.2.0 root@hadoop-slave:/data/</div></pre></td></tr></table></figure>
-<p>启动hbase:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">cd /data/hbase1.2.0</div><div class="line"></div><div class="line">./bin/start-hbase.sh</div></pre></td></tr></table></figure>
-<p>hbase运行起来后的进程如下:</p>
-<p>主节进程如下:</p>
-<p><img src="/images/hbase/hbase-master.png" alt=""></p>
-<p>从节点的进程如下:</p>
-<p><img src="/images/hbase/hbase-node.png" alt=""></p>
-<p>由于测试环境在跑数据，所以会有一些yarn的进程在。hbase运行正常的话,在主节点有进程:HMaster,从节点会有:HRegionServer。</p>
-<h2 id="4-安装过程遇到的问题"><a href="#4-安装过程遇到的问题" class="headerlink" title="4 安装过程遇到的问题"></a>4 安装过程遇到的问题</h2><p>1 时间同步问题</p>
-<p>异常截图如下：</p>
-<p><img src="/images/hbase/hbase-error-clock.png" alt=""></p>
-<p>主要原因是因为hbase集群中各个节点中时间不同步,解决方案如下:</p>
-<pre><code>a 允许各个节点间时间存在差异,指定差异的大小,设定方式如：
-&lt;property&gt;
-    &lt;name&gt;hbase.master.maxclockskew&lt;/name&gt;
-    &lt;value&gt;180000&lt;/value&gt;
-    &lt;description&gt;Time difference of regionserver from master&lt;/description&gt;
-&lt;/property&gt;
-
-b 或者同步各个节点的数据
-
- 安装工具
- yum install ntp
- 安装后执行
- ntpdate cn.pool.ntp.org
- 即可同步国际时间..
-</code></pre>
+            <h2 id="1-抓取新闻正文页"><a href="#1-抓取新闻正文页" class="headerlink" title="1 抓取新闻正文页"></a>1 抓取新闻正文页</h2><p>仿造上一篇博客中的代码,做如下调整：<br>Downloader.java:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">public class DownLoader &#123;</div><div class="line">    /**</div><div class="line">     * 给定一个链接地址进行下载</div><div class="line">     * @param link</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public static String down(String link,String charset) throws Exception&#123;</div><div class="line">        //常见url对象</div><div class="line">        URL url = new URL(link);</div><div class="line">        //链接服务端</div><div class="line">        HttpURLConnection conn = (HttpURLConnection)url.openConnection();</div><div class="line">        //设置一些参数</div><div class="line">        conn.setRequestMethod(&quot;GET&quot;);</div><div class="line">        conn.setRequestProperty(&quot;Content-Type&quot;,&quot;text/html&quot;);</div><div class="line"></div><div class="line">        //握手</div><div class="line">        conn.connect();</div><div class="line"></div><div class="line">        //获取返回的结果流</div><div class="line">        InputStream is = conn.getInputStream();</div><div class="line">        //获取返回回来的网页内容</div><div class="line">        InputStreamReader isr = new InputStreamReader(is,charset);</div><div class="line">        BufferedReader reader = new BufferedReader(isr);</div><div class="line"></div><div class="line">        StringBuffer buffer = new StringBuffer();</div><div class="line">        //遍历输入流,将网页源码写入到buffer中</div><div class="line">        reader.lines().forEach(new Consumer&lt;String&gt;() &#123;</div><div class="line">            @Override</div><div class="line">            public void accept(String s) &#123;</div><div class="line">                buffer.append(s);</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line">        return buffer.toString();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>Utils.java</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">public class Utils &#123;</div><div class="line">    /**</div><div class="line">     *</div><div class="line">     * @param atag</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public static String getUrl(String atag)&#123;</div><div class="line">        //抽取a标签的正则</div><div class="line">        String regex = &quot;(?:href=\&quot;)(.*?)(?:\&quot;)&quot;;</div><div class="line">        //抽取数据</div><div class="line">        Pattern pattern = Pattern.compile(regex);</div><div class="line">        Matcher matcher = pattern.matcher(atag);</div><div class="line">        if(matcher.find())return matcher.group(1);</div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>抓取的过程一样,通过种子url(<a href="http://news.baidu.com)开始,抓取该页面中所有的页面url,找到我们想要的url,进行下载抽取正文。具体的代码如下" target="_blank" rel="external">http://news.baidu.com)开始,抓取该页面中所有的页面url,找到我们想要的url,进行下载抽取正文。具体的代码如下</a>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div></pre></td><td class="code"><pre><div class="line">public class NewSpiderContent &#123;</div><div class="line">    //百度新闻首页</div><div class="line">    private static String ZEED_URL = &quot;http://news.baidu.com/&quot;;</div><div class="line">    //满足一下规则的超链接才是我们想要的</div><div class="line">    private static String REGEX_RULE = &quot;c_\\d+&quot;;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 解析新闻首页</div><div class="line">     * @param html</div><div class="line">     */</div><div class="line">    public void parseList(String html) throws Exception&#123;</div><div class="line">        //抽取a标签的正则</div><div class="line">        String regex = &quot;&lt;a.*?&lt;/a&gt;&quot;;</div><div class="line">        //抽取数据</div><div class="line">        Pattern pattern = Pattern.compile(regex);</div><div class="line">        Matcher matcher = pattern.matcher(html);</div><div class="line">        //遍历</div><div class="line">        while(matcher.find())&#123;</div><div class="line">            String tag = matcher.group();</div><div class="line">            String url = Utils.getUrl(tag);</div><div class="line"></div><div class="line">            if(url == null)continue;</div><div class="line">            //验证是否是我们需要的</div><div class="line">            if(url.replaceAll(REGEX_RULE,&quot;&quot;).length() &lt; url.length())&#123;</div><div class="line">                String title = tag.replaceAll(&quot;&lt;.*?&gt;&quot;,&quot;&quot;);</div><div class="line"></div><div class="line">                //下载该网页并解析器内容</div><div class="line">                String src = DownLoader.down(url,&quot;UTF-8&quot;);</div><div class="line">                String content = getContent(src);</div><div class="line"></div><div class="line">                System.out.println(&quot;------------------------------------------&quot;);</div><div class="line">                System.out.println(url + &quot;\t&quot; + title + &quot;\n&quot; + content);</div><div class="line">                System.out.println(&quot;------------------------------------------&quot;);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 获取网页源码内容</div><div class="line">     * @param src</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public String getContent(String src)&#123;</div><div class="line">        String regex = &quot;&lt;p.*?&lt;/p&gt;&quot;;</div><div class="line"></div><div class="line">        //抽取数据</div><div class="line">        Pattern pattern = Pattern.compile(regex);</div><div class="line">        Matcher matcher = pattern.matcher(src);</div><div class="line"></div><div class="line">        if(matcher.find())return matcher.group().replaceAll(&quot;&lt;.*?&gt;&quot;,&quot;&quot;);</div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * main函数</div><div class="line">     * @param args</div><div class="line">     */</div><div class="line">    public static void main(String[] args) throws Exception&#123;</div><div class="line">        NewSpiderContent nsc = new NewSpiderContent();</div><div class="line">        nsc.parseList(DownLoader.down(ZEED_URL,&quot;gb2312&quot;));</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>从代码中可以看到,我们想要看的正文是：超链接中满足正则(c_\d+)的。而抽取正文的过程是复杂的,使用的是正则,因为我这里演示,所以直接使用的是p标签(虽然大部分的正文都会放在p标签中),针对这个过程我们可以看到如果抽取正文,可以通过配置标签的形式来进行抽取。</p>
+<p>也就是针对每一个网站配置一个解析文件,根据抽取到的链接获取应该使用哪个配置文件进行解析这个网站的正文内容。</p>
+<h2 id="2-思考"><a href="#2-思考" class="headerlink" title="2 思考"></a>2 思考</h2><p>那么问题来了：如果我需要抓取1000个网站,10000个网站呢？针对搜索引擎,不会是这样做的。也就是说可以使用自动识别的方式抽取到正文,而不是每个站点配置相应的配置文件。</p>
+<p>针对新闻类型的文档来说如何自动找到一个网页中正文内容？网格中的正文和其他的内容的区别是什么？</p>
+<p>通过观察可以看出：针对新闻类型的数据,更多的是文本密度的不同,也就是如果剔除掉html标签后,文字越多的地方越可能是正文。因此有了如下假设：</p>
+<pre><code>正文文本内容密度一定大于非正文文本密度
+</code></pre><p>当然这个假设的成立时有很多限制的：比如有的新闻站点的正文内容并不多,很多时候是图片。</p>
+<p>算法的具体步骤如下：</p>
+<pre><code>1 删除文本中一定不会是正文内容的标签,如header,select,button等
+2 删除标签内容,如&lt;a ...&gt;
+3 去除script,css等,以及转义字符的处理
+4 每8行统计一次有多少字符串,加入到数组中
+5 设定一个阈值,遍历统计好的数组,当超过这个阈值,就是正文的开始
+6 当小于这个阈值的时候就是正文的结束
+</code></pre><p>算法的具体的实现代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div><div class="line">205</div><div class="line">206</div><div class="line">207</div><div class="line">208</div><div class="line">209</div><div class="line">210</div><div class="line">211</div><div class="line">212</div><div class="line">213</div><div class="line">214</div><div class="line">215</div><div class="line">216</div><div class="line">217</div><div class="line">218</div><div class="line">219</div><div class="line">220</div><div class="line">221</div><div class="line">222</div><div class="line">223</div><div class="line">224</div><div class="line">225</div><div class="line">226</div><div class="line">227</div><div class="line">228</div><div class="line">229</div><div class="line">230</div><div class="line">231</div><div class="line">232</div><div class="line">233</div><div class="line">234</div><div class="line">235</div><div class="line">236</div><div class="line">237</div><div class="line">238</div><div class="line">239</div><div class="line">240</div><div class="line">241</div><div class="line">242</div><div class="line">243</div><div class="line">244</div><div class="line">245</div><div class="line">246</div><div class="line">247</div><div class="line">248</div><div class="line">249</div><div class="line">250</div><div class="line">251</div><div class="line">252</div><div class="line">253</div><div class="line">254</div><div class="line">255</div><div class="line">256</div><div class="line">257</div><div class="line">258</div><div class="line">259</div><div class="line">260</div><div class="line">261</div><div class="line">262</div><div class="line">263</div><div class="line">264</div><div class="line">265</div><div class="line">266</div><div class="line">267</div><div class="line">268</div><div class="line">269</div><div class="line">270</div><div class="line">271</div><div class="line">272</div><div class="line">273</div><div class="line">274</div><div class="line">275</div><div class="line">276</div><div class="line">277</div><div class="line">278</div><div class="line">279</div><div class="line">280</div><div class="line">281</div><div class="line">282</div><div class="line">283</div><div class="line">284</div><div class="line">285</div><div class="line">286</div><div class="line">287</div><div class="line">288</div><div class="line">289</div><div class="line">290</div><div class="line">291</div><div class="line">292</div></pre></td><td class="code"><pre><div class="line">public class SimpleExcForNews &#123;</div><div class="line">	</div><div class="line">	private static Pattern aPattern = Pattern.compile(&quot;&lt;a .*?&gt;[\\s\\S]+?&lt;/a&gt;&quot;,Pattern.CASE_INSENSITIVE);</div><div class="line">	private static Pattern imgPattern = Pattern.compile(&quot;&lt;img[\\s\\S]*?/&gt;&quot;,Pattern.CASE_INSENSITIVE);</div><div class="line">	</div><div class="line">	public String clearAs(String html)&#123;</div><div class="line">		HashMap&lt;String, ArrayList&lt;String&gt;&gt; replaces = new HashMap&lt;String, ArrayList&lt;String&gt;&gt;();</div><div class="line">		Matcher matcher = aPattern.matcher(html);</div><div class="line">		while(matcher.find())&#123;</div><div class="line">			String cur = matcher.group();</div><div class="line">			Matcher temp = imgPattern.matcher(cur);</div><div class="line">			ArrayList&lt;String&gt; temps = new ArrayList&lt;String&gt;();</div><div class="line">			while(temp.find())&#123;</div><div class="line">				temps.add(temp.group());</div><div class="line">			&#125;</div><div class="line">			replaces.put(cur, temps);</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		for(String cur:replaces.keySet())&#123;</div><div class="line">			ArrayList&lt;String&gt; temps = replaces.get(cur);</div><div class="line">			String reStr = &quot;&quot;;</div><div class="line">			for(String cc:temps)&#123;</div><div class="line">				reStr += cc.replaceAll(&quot;\\s+&quot;, &quot; &quot;);</div><div class="line">			&#125;</div><div class="line">			html = html.replace(cur, reStr);</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		Matcher imgs = imgPattern.matcher(html);</div><div class="line">		HashMap&lt;String, String&gt; replacess = new HashMap&lt;String, String&gt;();</div><div class="line">		while(imgs.find())&#123;</div><div class="line">			replacess.put(imgs.group(), imgs.group().replaceAll(&quot;\\s+&quot;, &quot; &quot;));</div><div class="line">		&#125;</div><div class="line">		for(String cur:replacess.keySet())&#123;</div><div class="line">			html = html.replace(cur, replacess.get(cur));</div><div class="line">		&#125;</div><div class="line">		return html;</div><div class="line">		</div><div class="line">	&#125;</div><div class="line">	public String preProcess(String html) &#123;</div><div class="line">		html = html.replaceAll(&quot;&amp;amp;&quot;, &quot;&amp;&quot;); </div><div class="line">		html = html.replaceAll(&quot;&amp;lt;&quot;, &quot;&lt;&quot;); </div><div class="line">		html = html.replaceAll(&quot;&amp;gt;&quot;, &quot;&gt;&quot;); </div><div class="line">		html = html.replaceAll(&quot;&amp;quot;&quot;, &quot;\&quot;&quot;); </div><div class="line">		html = html.replaceAll(&quot;&amp;nbsp;&quot;, &quot; &quot;); </div><div class="line">		</div><div class="line">		html = html.replaceAll(&quot;&lt;!DOCTYPE[\\s\\S]*?&gt;&quot;, &quot;&quot;); //去头</div><div class="line">		html = html.replaceAll(&quot;&lt;!--[\\s\\S]*?--&gt;&quot;, &quot;&quot;); //去注释</div><div class="line">		html = html.replaceAll(&quot;&lt;script.*?&gt;[\\s\\S]*?&lt;/script&gt;&quot;, &quot;&quot;); //去script</div><div class="line">		html = html.replaceAll(&quot;&lt;style.*?&gt;[\\s\\S]*?&lt;/style&gt;&quot;, &quot;&quot;); //去css</div><div class="line">		html = html.replaceAll(&quot;&amp;.&#123;2,6&#125;;|&amp;#.&#123;2,6&#125;;&quot;, &quot; &quot;); //去特殊字符</div><div class="line">		html = html.replaceAll(&quot;&lt;(?!img)[\\s\\S]*?&gt;&quot;, &quot;&quot;); //去特殊字符</div><div class="line">		</div><div class="line">		return html;</div><div class="line">	&#125;</div><div class="line">	private static int THRESHOLD = 125; //阙值 和取text准确度相关</div><div class="line">	</div><div class="line">	private Pattern title = Pattern.compile(&quot;&lt;title&gt;([\\s\\S]*?)&lt;/title&gt;&quot;,Pattern.CASE_INSENSITIVE);</div><div class="line">	</div><div class="line">	public String getTitle(String html)&#123;</div><div class="line">		Matcher matcher = title.matcher(html);</div><div class="line">		if(matcher.find())&#123;</div><div class="line">			return matcher.group(1);</div><div class="line">		&#125;</div><div class="line">		return &quot;&quot;;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	/**</div><div class="line">	 * 这里有一个问题 应该是先处理A 然后A内的img处理掉</div><div class="line">	 * */</div><div class="line">	private boolean clearA(Element e)&#123;</div><div class="line">		Elements aeles = e.getElementsByTag(&quot;a&quot;);</div><div class="line">		int asize = aeles.size();</div><div class="line">		if(aeles.select(&quot;img&quot;).size()==0)&#123;</div><div class="line">			aeles.remove();</div><div class="line">		&#125;else&#123;</div><div class="line">			Elements es = aeles.get(0).children();</div><div class="line">			for(Element cur:es)&#123;</div><div class="line">				</div><div class="line">				if(!cur.tagName().equals(&quot;img&quot;))</div><div class="line">					cur.remove();</div><div class="line">			&#125;</div><div class="line"></div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		if(asize&gt;5 &amp; e.text().length()&lt;20) return true;</div><div class="line">		return false;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	public static String[] copyRight = &#123;&quot;来源&quot;,&quot;愤怒&quot;,&quot;高兴&quot;,&quot;路过&quot;,&quot;搞笑&quot;,&quot;难过&quot;,&quot;同情&quot;,&quot;无聊&quot;,&quot;感动&quot;,&quot;感受&quot;,&quot;浏览&quot;,&quot;声明&quot;,&quot;搜索&quot;,&quot;阅读&quot;,&quot;发表&quot;,&quot;登录&quot;,&quot;分享&quot;,&quot;评论&quot;,&quot;转载&quot;,&quot;申明&quot;,&quot;版权&quot;,&quot;复制&quot;,&quot;Copyright&quot;,&quot;All Rights Reserved&quot;,&quot;法律&quot;,&quot;备&quot;,&quot;本网&quot;,&quot;看法&quot;,&quot;投稿&quot;,&quot;授权&quot;,&quot;注明&quot;,&quot;转载&quot;,&quot;镜像&quot;,&quot;侵权&quot;,&quot;法律责任&quot;&#125;;</div><div class="line"></div><div class="line">	private void clearCopy(Document e)&#123;</div><div class="line">		for(String cur:copyRight)&#123;</div><div class="line">			Elements aeles = e.getElementsMatchingOwnText(cur);</div><div class="line">			if(aeles.size()&gt;0 &amp;&amp; aeles.text().length()&lt;100)&#123;</div><div class="line">				aeles.remove();</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	private boolean needParse(String str)&#123;</div><div class="line">		str = str.replaceAll(&quot;&lt;.*?&gt;&quot;, &quot;&quot;);</div><div class="line">		for(String cur:copyRight)&#123;</div><div class="line">			if(str.contains(cur) &amp;&amp; str.length()&lt;200) return true;</div><div class="line">		&#125;</div><div class="line">		return false;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	public static String[] junkSpan1 = &#123;&quot;right&quot;,&quot;left&quot;&#125;;</div><div class="line">	private void clearJunkSpan1(Document  e)&#123;</div><div class="line">		for(String cur:junkSpan1)&#123;</div><div class="line">			Elements aeles = e.getElementsByAttributeValueMatching(&quot;id&quot;,cur);</div><div class="line">			if(aeles.size()&gt;0 &amp;&amp; aeles.text().length()&lt;255)&#123;</div><div class="line">				aeles.remove();</div><div class="line">			&#125;</div><div class="line">			aeles = e.getElementsByAttributeValueMatching(&quot;name&quot;,cur);</div><div class="line">			if(aeles.size()&gt;0 &amp;&amp; aeles.text().length()&lt;255)&#123;</div><div class="line">				aeles.remove();</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	public static String[] junkSpan2 = &#123;&quot;law&quot;,&quot;comment&quot;,&quot;footer&quot;,&quot;tuinews&quot;,&quot;sideMenu&quot;,&quot;logo&quot;,&quot;copyright&quot;,&quot;small&quot;&#125;;</div><div class="line">	private void clearJunkSpan2(Document  e)&#123;</div><div class="line">		for(String cur:junkSpan2)&#123;</div><div class="line">			Elements aeles = e.getElementsByAttributeValueMatching(&quot;id&quot;,cur);</div><div class="line">			if(aeles.size()&gt;0)&#123;</div><div class="line">				aeles.remove();</div><div class="line">			&#125;</div><div class="line">			aeles = e.getElementsByAttributeValueMatching(&quot;name&quot;,cur);</div><div class="line">			if(aeles.size()&gt;0)&#123;</div><div class="line">				aeles.remove();</div><div class="line">			&#125;</div><div class="line">			aeles = e.getElementsByAttributeValueMatching(&quot;class&quot;,cur);</div><div class="line">			if(aeles.size()&gt;0)&#123;</div><div class="line">				aeles.remove();</div><div class="line">			&#125;</div><div class="line">			aeles = e.getElementsByAttributeValueMatching(&quot;style&quot;,cur);</div><div class="line">			if(aeles.size()&gt;0)&#123;</div><div class="line">				aeles.remove();</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	public static String[] junkStyle = &#123;&quot;display:none&quot;&#125;;</div><div class="line">	private void clearJunkStyle(Document  e)&#123;</div><div class="line">		for(String cur:junkStyle)&#123;</div><div class="line">			Elements aeles = e.getElementsByAttributeValueMatching(&quot;style&quot;,cur);</div><div class="line">			if(aeles.size()&gt;0 &amp;&amp; aeles.text().length() &lt; 500)&#123;</div><div class="line">				aeles.remove();</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	public static String[] junkTag = &#123;&quot;style&quot;,&quot;meta&quot;,&quot;input&quot;,&quot;button&quot;,&quot;select&quot;,&quot;br&quot;,&quot;footer&quot;,&quot;header&quot;,&quot;script&quot;&#125;;</div><div class="line">	private void clearTag(Document doc)&#123;</div><div class="line">		for(String tag : junkTag)&#123;</div><div class="line">			Elements eles = doc.getElementsByTag(tag);</div><div class="line">			for(Element cur:eles)&#123;</div><div class="line">				cur.remove();</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	public void get(int id,Document d)&#123;</div><div class="line">		System.err.println(id + &quot;\r\n&quot; + d.select(&quot;div#Cnt-Main-Article-QQ&quot;).text());</div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	Document doc = null;</div><div class="line">	public String getText(String html,int foreign) &#123;</div><div class="line"></div><div class="line">		html = html.replaceAll(&quot;&lt;!--[\\s\\S]*?--&gt;&quot;, &quot;&quot;);</div><div class="line">		doc = Jsoup.parse(html);</div><div class="line">		</div><div class="line">		clearTag(doc);</div><div class="line">		clearJunkSpan1(doc);</div><div class="line">		clearJunkSpan2(doc);</div><div class="line">		clearJunkStyle(doc);</div><div class="line">		clearCopy(doc);</div><div class="line">		</div><div class="line">		Elements eles = doc.getElementsByTag(&quot;a&quot;);</div><div class="line">		for(Element cur:eles)&#123;</div><div class="line">			Element e = cur.parent();</div><div class="line">			if(e!=null)&#123;</div><div class="line">				clearA(e);</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		ArrayList&lt;Integer&gt; indexDistribution = new ArrayList&lt;Integer&gt;();</div><div class="line">		</div><div class="line">		html = preProcess(doc.html());</div><div class="line">		</div><div class="line">		List&lt;String&gt; lines = Arrays.asList(html.split(&quot;\n+?&quot;));</div><div class="line">		//以10行为一块检测最大行的单词数</div><div class="line">		int BL_BLOCK = 8;</div><div class="line">		for (int i = 0; i &lt; lines.size() - BL_BLOCK; i++) &#123;</div><div class="line">			int wordsNum = 0;</div><div class="line">			if(i==241)&#123;</div><div class="line">				System.out.print(&quot;&quot;);</div><div class="line">			&#125;</div><div class="line">			for (int j = i; j &lt; i + BL_BLOCK; j++) &#123;</div><div class="line">//				lines.set(j, lines.get(j).trim());//.replaceAll(&quot;\\s+&quot;, &quot;&quot;));</div><div class="line">				String x = lines.get(j).trim();</div><div class="line">				String t = getLine(x,foreign);</div><div class="line">				lines.set(j, t);//.replaceAll(&quot;\\s+&quot;, &quot;&quot;));</div><div class="line">				wordsNum += lines.get(j).replaceAll(&quot;&lt;[\\s\\S]*?&gt;&quot;, &quot;&quot;).trim().length();</div><div class="line">			&#125;</div><div class="line">			indexDistribution.add(wordsNum);</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		int start = -1, end = -1;</div><div class="line">		boolean boolstart = false, boolend = false;</div><div class="line">		StringBuilder text = new StringBuilder();</div><div class="line">		int indexDistributionSize = indexDistribution.size();</div><div class="line">		//以给定的阙值来获取正文,正文长度需要比阙值大</div><div class="line">		for (int i = 0; i &lt; indexDistribution.size() - 3; i++) &#123;</div><div class="line">			//查找文本的开始点</div><div class="line">			if (indexDistribution.get(i) &gt; THRESHOLD &amp;&amp; !boolstart) &#123;</div><div class="line">				if (indexDistribution.get(i + 1).intValue() &gt;10</div><div class="line">						|| indexDistribution.get(i + 2).intValue() &gt;10</div><div class="line">						|| indexDistribution.get(i + 3).intValue() &gt;10) &#123;</div><div class="line">					boolstart = true;</div><div class="line">					start = i;</div><div class="line">					continue;</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">			//查找文本呢文件的结束点</div><div class="line">			</div><div class="line">			if (boolstart) &#123;</div><div class="line">				if (indexDistribution.get(i).intValue() &lt;10</div><div class="line">						|| indexDistribution.get(i + 1).intValue() &lt; 10) &#123;</div><div class="line">					end = i;</div><div class="line">					boolend = true;</div><div class="line">				&#125; else if(i == (indexDistributionSize-2))&#123;</div><div class="line">					/*</div><div class="line">					 * 当判断到最后没有结果的时候，让结束点等于最后的长度点</div><div class="line">					 * add zhouyh</div><div class="line">					 */</div><div class="line">					end = i+1;</div><div class="line">					boolend = true;</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">			//获取正文</div><div class="line">			if (boolend) &#123;</div><div class="line">				StringBuilder tmp = new StringBuilder();</div><div class="line">				for (int ii = start; ii &lt;= end; ii++) &#123;</div><div class="line">					if (lines.get(ii).length() &lt; 5)</div><div class="line">						continue;</div><div class="line">					tmp.append(lines.get(ii) + &quot;\n&quot;);</div><div class="line">				&#125;</div><div class="line">				String str = tmp.toString();</div><div class="line">				//过滤&quot;Copyright&quot;,&quot;版权所有&quot;信息</div><div class="line">				if (needParse(str))</div><div class="line">					continue;</div><div class="line">				str = str.replaceAll(&quot;&lt;.*?&gt;&quot;, &quot;&quot;);</div><div class="line">				text.append(str);</div><div class="line">				boolstart = boolend = false;</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">		doc = null;</div><div class="line">		return text.toString();</div><div class="line">	&#125;</div><div class="line">	/**</div><div class="line">	 * 方法名：getLine</div><div class="line">	 * 描述：</div><div class="line">	 * @param line</div><div class="line">	 * @return</div><div class="line">	 */</div><div class="line">	public String getLine(String line,int foreign)&#123;</div><div class="line">		if(line.trim().length() &lt;= 0)return &quot;&quot;;</div><div class="line">		if(line.contains(&quot;function&quot;))return &quot;&quot;;</div><div class="line">		if(line.length() - line.replaceAll(&quot;&gt;&quot;, &quot;&quot;).trim().length() &gt;= 4)return &quot;&quot;;</div><div class="line">		if(line.contains(&quot;-----&quot;))return &quot;&quot;;</div><div class="line">		if(line.contains(&quot;*****&quot;))return &quot;&quot;;</div><div class="line">		if(line.contains(&quot;====&quot;))return &quot;&quot;;</div><div class="line">		if(line.contains(&quot;IE\\s\\d]&quot;))return &quot;&quot;;</div><div class="line">		if(line.contains(&quot;[if !IE]&quot;) || line.contains(&quot;document.domain&quot;))return &quot;&quot;;</div><div class="line">		if(line.contains(&quot;正文已结束&quot;))return &quot;&quot;;</div><div class="line">		if(line.contains(&quot;window.location.hostname&quot;) || line.contains(&quot;ARTICLE_INFO&quot;) || line.contains(&quot;|xGv&quot;))return &quot;&quot;;</div><div class="line">		if(line.contains(&quot;|&quot;))return line.replaceAll(&quot;|&quot;, &quot;&quot;);</div><div class="line">		if(foreign == 0)&#123;</div><div class="line">			if(!isContainsChineseWord(line))return &quot;&quot;;</div><div class="line">		&#125;</div><div class="line">		return line;</div><div class="line">	&#125;</div><div class="line">	public boolean isContainsChineseWord(String line)&#123;</div><div class="line">//		[\u4e00-\u9fa5]</div><div class="line">		int chineseWordNum = line.trim().length() - line.trim().replaceAll(&quot;[\u4e00-\u9fa5]&quot;, &quot;&quot;).length();</div><div class="line">		int otherWordNum = line.trim().length() - chineseWordNum;</div><div class="line">//		如果不含有中文,或者是中文字符小于非中文字符数,则删除这一行</div><div class="line">		if(chineseWordNum == 0 || chineseWordNum &lt; otherWordNum)return false;</div><div class="line">		return true;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
           
         
       
@@ -539,8 +506,8 @@ b 或者同步各个节点的数据
             
               
                 
-                <a class="post-title-link" href="/2016/06/01/hbase-study002/" itemprop="url">
-                  HBase学习笔记(二) HBase的简单介绍(转)
+                <a class="post-title-link" href="/2016/07/02/spider-study002/" itemprop="url">
+                  网络爬虫学习笔记(二) 如何开发一个简单的爬虫
                 </a>
               
             
@@ -553,8 +520,8 @@ b 或者同步各个节点的数据
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-06-01T18:55:55+08:00" content="2016-06-01">
-              2016-06-01
+            <time itemprop="dateCreated" datetime="2016-07-02T11:55:55+08:00" content="2016-07-02">
+              2016-07-02
             </time>
           </span>
 
@@ -567,8 +534,8 @@ b 或者同步各个节点的数据
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/hbase/" itemprop="url" rel="index">
-                    <span itemprop="name">hbase</span>
+                  <a href="/categories/爬虫/" itemprop="url" rel="index">
+                    <span itemprop="name">爬虫</span>
                   </a>
                 </span>
 
@@ -583,8 +550,8 @@ b 或者同步各个节点的数据
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/06/01/hbase-study002/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/01/hbase-study002/" itemprop="commentsCount"></span>
+                <a href="/2016/07/02/spider-study002/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/02/spider-study002/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -609,60 +576,19 @@ b 或者同步各个节点的数据
       
         
           
-            <h2 id="1-表-行-列和单元格"><a href="#1-表-行-列和单元格" class="headerlink" title="1 表,行,列和单元格"></a>1 表,行,列和单元格</h2><p>hbase中最基本的单位是单元格,其中一张表中有多行,一行可以有多个列族,一个列族由多个列组成，具体的结构图如下:</p>
-<p><img src="/images/hbase/hbase-table.png" alt=""></p>
-<p>1) RowKey: 行键，可理解成MySQL中的主键列。</p>
-<p>2) Column: 列，可理解成MySQL列。</p>
-<p>3) ColumnFamily: 列族, HBase引入的概念：<br>    将多个列聚合成一个列族。<br>    可以理解成MySQL的垂直分区（将一张宽表，切分成几张不那么宽的表）。<br>    此机制引入的原因，是因为HBase相信，查询可能并不需要将一整行的所有列数据全部返回。（就像我们往往在写SQL时不    太会写select all一样）<br>    对应到文件存储结构（不同的ColumnFamily会写入不同的文件）。</p>
-<p>4) TimeStamp：在每次跟新数据时，用以标识一行数据的不同版本（事实上，TimeStamp是与列绑定的。）</p>
-<h2 id="2-hbase系统架构图"><a href="#2-hbase系统架构图" class="headerlink" title="2 hbase系统架构图"></a>2 hbase系统架构图</h2><p><img src="/images/hbase/hbase-jiagou.jpg" alt=""></p>
-<p>组成部件说明</p>
-<p>Client:</p>
-<pre><code>使用HBase RPC机制与HMaster和HRegionServer进行通信 
-Client与HMaster进行通信进行管理类操作 
-Client与HRegionServer进行数据读写类操作 
-</code></pre><p>Zookeeper： </p>
-<pre><code>Zookeeper Quorum存储-ROOT-表地址、HMaster地址 
-HRegionServer把自己以Ephedral方式注册到Zookeeper中，HMaster随时感知各个HRegionServer的健康状况 
-Zookeeper避免HMaster单点问题 
-</code></pre><p>HMaster： </p>
-<pre><code>HMaster没有单点问题，HBase中可以启动多个HMaster，通过Zookeeper的Master Election机制保证总有一个Master在运行 
-主要负责Table和Region的管理工作： 
-    1 管理用户对表的增删改查操作 
-    2 管理HRegionServer的负载均衡，调整Region分布 
-    3 Region Split后，负责新Region的分布 
-    4 在HRegionServer停机后，负责失效HRegionServer上Region迁移 
-</code></pre><p>HRegionServer： </p>
-<pre><code>HBase中最核心的模块，主要负责响应用户I/O请求，向HDFS文件系统中读写数据
-</code></pre><p><img src="/images/hbase/hbase-region.jpg" alt=""></p>
-<p>自动分区:</p>
-<p>HBase中负责扩张和负载均衡的基本单元成为region,region本质上是以行键排序的连续存储的分区,</p>
-<p>如果region太大,系统就会自动的进行拆分,相反的,如果region太小的话,系统就会进行合并,以减少数据的存储文件数量。</p>
-<p>一张表初始化的时候只有一个region,当用户向其中插入数据的时候,系统会自动检测这个region的大小是否超过配置的最大值,如果超过这个限制,系统会在中间键(region中间哪一行)处将这个region拆分两个等大小的子region。</p>
-<p>HRegionServer:</p>
-<pre><code>每个HRegion对应Table中一个Region，HRegion由多个HStore组成； 
-每个HStore对应Table中一个Column Family的存储； 
-Column Family就是一个集中的存储单元，故将具有相同IO特性的Column放在一个Column Family会更高效
-</code></pre><p>HStore</p>
-<pre><code>HBase存储的核心,由MemStore和StoreFile组成
-MemStore是Sorted Memory Buffer，由用户写入数据的流程
-</code></pre><p><img src="/images/hbase/hbase-hstore.gif" alt=""></p>
-<p>Client写入 -&gt; 存入MemStore，一直到MemStore满 -&gt; Flush成一个StoreFile，直至增长到一定阈值 -&gt; 出发Compact合并操作 -&gt; 多个StoreFile合并成一个StoreFile，同时进行版本合并和数据删除 -&gt; 当StoreFiles Compact后，逐步形成越来越大的StoreFile -&gt; 单个StoreFile大小超过一定阈值后，触发Split操作，把当前Region Split成2个Region，Region会下线，新Split出的2个孩子Region会被HMaster分配到相应的HRegionServer上，使得原先1个Region的压力得以分流到2个Region上</p>
-<p>由此过程可知，HBase只是增加数据，有所得更新和删除操作，都是在Compact阶段做的，所以，用户写操作只需要进入到内存即可立即返回，从而保证I/O高性能。</p>
-<p>HLog</p>
-<p>引入HLog原因：</p>
-<p>在分布式系统环境中，无法避免系统出错或者宕机，一旦HRegionServer以外退出，MemStore中的内存数据就会丢失，引入HLog就是防止这种情况</p>
-<p>工作机制：<br>每个HRegionServer中都会有一个HLog对象，HLog是一个实现Write Ahead Log的类，每次用户操作写入Memstore的同时，也会写一份数据到HLog文件，HLog文件定期会滚动出新，并删除旧的文件(已持久化到StoreFile中的数据)。当HRegionServer意外终止后，HMaster会通过Zookeeper感知，HMaster首先处理遗留的HLog文件，将不同region的log数据拆分，分别放到相应region目录下，然后再将失效的region重新分配，领取到这些region的HRegionServer在Load Region的过程中，会发现有历史HLog需要处理，因此会Replay HLog中的数据到MemStore中，然后flush到StoreFiles，完成数据恢复。</p>
-<p>HBase存储格式</p>
-<p>HBase中的所有数据文件都存储在Hadoop HDFS文件系统上，格式主要有两种：</p>
-<p>1 HFile HBase中KeyValue数据的存储格式，HFile是Hadoop的二进制格式文件，实际上StoreFile就是对HFile做了轻量级包装，即StoreFile底层就是HFile</p>
-<p>2 HLog File，HBase中WAL（Write Ahead Log） 的存储格式，物理上是Hadoop的Sequence Filed<br>I<br><img src="/images/hbase/hbase-hfile.jpg" alt=""></p>
-<p>图片解释：<br>HFile文件不定长，长度固定的块只有两个：Trailer和FileInfo<br><br>Trailer中指针指向其他数据块的起始点<br><br>File Info中记录了文件的一些Meta信息，例如：AVG_KEY_LEN, AVG_VALUE_LEN, LAST_KEY, COMPARATOR, MAX_SEQ_ID_KEY等<br><br>Data Index和Meta Index块记录了每个Data块和Meta块的起始点<br><br>Data Block是HBase I/O的基本单元，为了提高效率，HRegionServer中有基于LRU的Block Cache机制<br><br>每个Data块的大小可以在创建一个Table的时候通过参数指定，大号的Block有利于顺序Scan，小号Block利于随机查询<br><br>每个Data块除了开头的Magic以外就是一个个KeyValue对拼接而成, Magic内容就是一些随机数字，目的是防止数据损坏<br></p>
-<p>HFile里面的每个KeyValue对就是一个简单的byte数组。这个byte数组里面包含了很多项，并且有固定的结构</p>
-<p><img src="/images/hbase/hbase-hf.jpg" alt=""></p>
-<p>KeyLength和ValueLength：两个固定的长度，分别代表Key和Value的长度<br><br>Key部分：Row Length是固定长度的数值，表示RowKey的长度，Row 就是RowKey<br><br>Column Family Length是固定长度的数值，表示Family的长度<br><br>接着就是Column Family，再接着是Qualifier，然后是两个固定长度的数值，表示Time Stamp和Key Type（Put/Delete）<br><br>Value部分没有这么复杂的结构，就是纯粹的二进制数据<br></p>
-<p><img src="/images/hbase/hbase-hlog.jpg" alt=""></p>
-<p>HLog文件就是一个普通的Hadoop Sequence File，Sequence File 的Key是HLogKey对象，HLogKey中记录了写入数据的归属信息，除了table和region名字外，同时还包括 sequence number和timestamp，timestamp是“写入时间”，sequence number的起始值为0，或者是最近一次存入文件系统中sequence number。<br>HLog Sequece File的Value是HBase的KeyValue对象，即对应HFile中的KeyValue</p>
+            <p>首先基本的爬虫开发,一般涉及到抓包工具的使用,比如抓取一下带有请求参数的链接,需要知道参数的字段名称等,每个字段是否加密,现在介绍一个简单的例子,抓取百度新闻。</p>
+<p>1 下载页面(使用jdk自带的下载工具包)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">    * 给定一个链接地址进行下载</div><div class="line">    * @param link</div><div class="line">    * @return</div><div class="line">    */</div><div class="line">   public String down(String link) throws Exception&#123;</div><div class="line">       //常见url对象</div><div class="line">       URL url = new URL(link);</div><div class="line">       //链接服务端</div><div class="line">       HttpURLConnection conn = (HttpURLConnection)url.openConnection();</div><div class="line">       //设置一些参数</div><div class="line">       conn.setRequestMethod(&quot;GET&quot;);</div><div class="line">       conn.setRequestProperty(&quot;Content-Type&quot;,&quot;text/html&quot;);</div><div class="line"></div><div class="line">       //握手</div><div class="line">       conn.connect();</div><div class="line"></div><div class="line">       //获取返回的结果流</div><div class="line">       InputStream is = conn.getInputStream();</div><div class="line">       //获取返回回来的网页内容</div><div class="line">       InputStreamReader isr = new InputStreamReader(is,CHARSET);</div><div class="line">       BufferedReader reader = new BufferedReader(isr);</div><div class="line"></div><div class="line">       StringBuffer buffer = new StringBuffer();</div><div class="line">       //遍历输入流,将网页源码写入到buffer中</div><div class="line">       reader.lines().forEach(new Consumer&lt;String&gt;() &#123;</div><div class="line">           @Override</div><div class="line">           public void accept(String s) &#123;</div><div class="line">               buffer.append(s);</div><div class="line">           &#125;</div><div class="line">       &#125;);</div><div class="line">       return buffer.toString();</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<p>2 针对下载到的网页进行解析</p>
+<p>解析使用的是正则抽取,代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">     * 解析</div><div class="line">     * @param html</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public void parse(String html)&#123;</div><div class="line">        //抽取a标签的正则</div><div class="line">        String regex = &quot;&lt;a.*?&lt;/a&gt;&quot;;</div><div class="line">        //抽取数据</div><div class="line">        Pattern pattern = Pattern.compile(regex);</div><div class="line">        Matcher matcher = pattern.matcher(html);</div><div class="line"></div><div class="line">        //遍历</div><div class="line">        while(matcher.find())&#123;</div><div class="line">            String atag = matcher.group();</div><div class="line"></div><div class="line">            //url</div><div class="line">            String url = getUrl(atag);</div><div class="line">            //title</div><div class="line">            String title = atag.replaceAll(&quot;&lt;.*?&gt;&quot;,&quot;&quot;);</div><div class="line"></div><div class="line">            //打印数据</div><div class="line">            System.out.println(url + &quot;\t&quot; + title);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     *</div><div class="line">     * @param atag</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public String getUrl(String atag)&#123;</div><div class="line">        //抽取a标签的正则</div><div class="line">        String regex = &quot;(?:href=\&quot;)(.*?)(?:\&quot;)&quot;;</div><div class="line">        //抽取数据</div><div class="line">        Pattern pattern = Pattern.compile(regex);</div><div class="line">        Matcher matcher = pattern.matcher(atag);</div><div class="line">        if(matcher.find())return matcher.group(1);</div><div class="line">        return null;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>下載百度新聞首頁,并解析其中的超連接和對應的文本內容執行結果如下:</p>
+<p><img src="/images/spider/spider-news-1.png" alt=""></p>
+<p>上面这个就是爬虫的一个简单的抓取过程,爬虫一共应该分3个阶段：</p>
+<pre><code>1 下载
+2 解析
+3 存储
+</code></pre><p>上面主要介绍了下载和解析的过程,上面这个解析好的是超链接,对于我们来说没有任何用处,我们想看的是新闻正文的内容，因此只要将这些链接放入到缓存中,在依次取出经过上面的过程在进行下载解析。下载到的页面就是正文内容了，具体的过程和代码看下一节博客。</p>
 
           
         
@@ -712,8 +638,8 @@ MemStore是Sorted Memory Buffer，由用户写入数据的流程
             
               
                 
-                <a class="post-title-link" href="/2016/05/27/hive-study005/" itemprop="url">
-                  Hive学习笔记(五) Hive自定义函数开发
+                <a class="post-title-link" href="/2016/07/01/spider-study001/" itemprop="url">
+                  网络爬虫学习笔记(一) 网络爬虫概述
                 </a>
               
             
@@ -726,8 +652,8 @@ MemStore是Sorted Memory Buffer，由用户写入数据的流程
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-05-27T18:55:55+08:00" content="2016-05-27">
-              2016-05-27
+            <time itemprop="dateCreated" datetime="2016-07-01T11:55:55+08:00" content="2016-07-01">
+              2016-07-01
             </time>
           </span>
 
@@ -740,8 +666,8 @@ MemStore是Sorted Memory Buffer，由用户写入数据的流程
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/hive/" itemprop="url" rel="index">
-                    <span itemprop="name">hive</span>
+                  <a href="/categories/爬虫/" itemprop="url" rel="index">
+                    <span itemprop="name">爬虫</span>
                   </a>
                 </span>
 
@@ -756,8 +682,8 @@ MemStore是Sorted Memory Buffer，由用户写入数据的流程
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/05/27/hive-study005/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/27/hive-study005/" itemprop="commentsCount"></span>
+                <a href="/2016/07/01/spider-study001/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/01/spider-study001/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -782,63 +708,38 @@ MemStore是Sorted Memory Buffer，由用户写入数据的流程
       
         
           
-            <h2 id="1-UDF函数的编写"><a href="#1-UDF函数的编写" class="headerlink" title="1 UDF函数的编写"></a>1 UDF函数的编写</h2><p>主要是在解析数据的时候可能我们拿到的数据是一个json,当然在hive中有解析json的内置函数,但是我们的数据不是很规范而且还是json嵌套json的格式,因此想实现一个给定一个路径,也就是我需要抽取那个路径下的数据的字段对应的字比如：</p>
-<pre><code>{
-    &quot;a&quot;:[
-        {
-            &quot;age&quot;:1
-        },
-        {
-            &quot;age&quot;:2
-        }
-    ],
-    &quot;b&quot;:&quot;test&quot;
-}
-</code></pre><p>这个是乱写的测试数据,如果我想获取指定的数据如： a.0.age,这个是表示age:1的那个值,也就是获取的结果应该为1.主要的做法就是解析json.</p>
-<p>具体的代码如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div></pre></td><td class="code"><pre><div class="line">import org.apache.hadoop.hive.ql.exec.UDF;</div><div class="line">import org.apache.hadoop.io.Text;</div><div class="line">import org.json.JSONArray;</div><div class="line">import org.json.JSONObject;</div><div class="line"></div><div class="line">public class UDFTool extends UDF &#123;</div><div class="line">    /**</div><div class="line">     * 格式化抽取数据</div><div class="line">     *</div><div class="line">     * @param s</div><div class="line">     * @param parrent</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public String evaluate(final Text s, String parrent) &#123;</div><div class="line">        //数据判断</div><div class="line">        if (s == null) return null;</div><div class="line">        try &#123;</div><div class="line">            //格式化数据为json对象</div><div class="line">            JSONObject bean = new JSONObject(s.toString());</div><div class="line"></div><div class="line">            return UDFTool.cast(bean, parrent.toString().split(&quot;\\.&quot;), 0).toString();</div><div class="line">        &#125; catch (Exception e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 格式化抽取字符串数组</div><div class="line">     *</div><div class="line">     * @param s</div><div class="line">     * @param path</div><div class="line">     * @param split</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public String evaluate(final Text s, final String path, String split) &#123;</div><div class="line">        //数据判断</div><div class="line">        if (s == null) return null;</div><div class="line">        try &#123;</div><div class="line">            //格式化数据为json对象</div><div class="line">            JSONObject bean = new JSONObject(s.toString());</div><div class="line"></div><div class="line">            //获取json字符串的值</div><div class="line">            String array = UDFTool.cast(bean, path.toString().split(&quot;\\.&quot;), 0).toString();</div><div class="line"></div><div class="line">            //格式化为jsonarray</div><div class="line">            JSONArray arr = new JSONArray(array);</div><div class="line"></div><div class="line">            //遍历jsonarray</div><div class="line">            StringBuffer buffer = new StringBuffer();</div><div class="line">            for (int i = 0; i &lt; arr.length(); i++) &#123;</div><div class="line">                buffer.append(arr.get(i).toString());</div><div class="line">                if (i + 1 &lt; arr.length()) &#123;</div><div class="line">                    buffer.append(split);</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            return buffer.toString();</div><div class="line">        &#125; catch (Exception e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    /**</div><div class="line">     * 格式化数据格式</div><div class="line">     *</div><div class="line">     * @param bean</div><div class="line">     * @param key</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public static Object cast(Object bean, String key) &#123;</div><div class="line">        try&#123;</div><div class="line">            if (bean instanceof JSONObject) &#123;</div><div class="line">                if (((JSONObject) bean).has(key)) &#123;</div><div class="line">                    return ((JSONObject) bean).get(key);</div><div class="line">                &#125;</div><div class="line">                return null;</div><div class="line">            &#125; else if (bean instanceof JSONArray) &#123;</div><div class="line">                JSONArray ar = (JSONArray) bean;</div><div class="line">                int index = -1;</div><div class="line">                try &#123;</div><div class="line">                    index = Integer.parseInt(key);</div><div class="line">                &#125; catch (Exception e) &#123;</div><div class="line">                    index = -1;</div><div class="line">                &#125;</div><div class="line">                if (index &lt; 0 || index &gt; ar.length() - 1) return null;</div><div class="line">                return ar.get(index);</div><div class="line">            &#125; else &#123;</div><div class="line">                return bean;</div><div class="line">            &#125;</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 根据给定的格式解析json</div><div class="line">     *</div><div class="line">     * @param bean</div><div class="line">     * @param key</div><div class="line">     * @param index</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public static Object cast(Object bean, String[] key, int index) &#123;</div><div class="line">        if (index == key.length - 1) return cast(bean, key[index]);</div><div class="line">        return cast(cast(bean, key[index]), key, index + 1);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="2-UDAF"><a href="#2-UDAF" class="headerlink" title="2 UDAF"></a>2 UDAF</h2><pre><code>•Hive查询数据时，有些聚类函数在HQL没有自带，需要用户自定义实现
-•用户自定义聚合函数: Sum, Average…… n – 1
-•UDAF（User- Defined Aggregation Funcation） 
-</code></pre><p>用法</p>
-<pre><code>•一下两个包是必须的import org.apache.hadoop.hive.ql.exec.UDAF和org.apache.hadoop.hive.ql.exec.UDAFEvaluator
-</code></pre><p>开发步骤</p>
-<pre><code>•函数类需要继承UDAF类，内部类Evaluator实UDAFEvaluator接口
-•Evaluator需要实现 init、iterate、terminatePartial、merge、terminate这几个函数
-    a）init函数实现接口UDAFEvaluator的init函数。
-    b）iterate接收传入的参数，并进行内部的轮转。其返回类型为boolean。
-    c）terminatePartial无参数，其为iterate函数轮转结束后，返回轮转数据，terminatePartial类似于hadoop的Combiner。
-    d）merge接收terminatePartial的返回结果，进行数据merge操作，其返回类型为boolean。
-    e）terminate返回最终的聚集函数结果。
-</code></pre><p>执行步骤</p>
-<pre><code>•执行求平均数函数的步骤
-    a）将java文件编译成Avg_test.jar。
-    b）进入hive客户端添加jar包：
-        hive&gt;add jar /run/jar/Avg_test.jar。
-    c）创建临时函数：
-        hive&gt;create temporary function avg_test &apos;hive.udaf.Avg&apos;;
-    d）查询语句：
-        hive&gt;select avg_test(scores.math) from scores;
-    e）销毁临时函数：
-        hive&gt;drop temporary function avg_test;
-</code></pre><p>UDAF代码示例</p>
-<pre><code>public class MyAvg extends UDAF {
-
-public static class AvgEvaluator implements UDAFEvaluator {}
-public void init() {}
-public boolean iterate(Double o) {}
-public AvgState terminatePartial() {}
-public boolean terminatePartial(Double o) { }
-public Double terminate() {}}
-</code></pre><h2 id="3-UDTF"><a href="#3-UDTF" class="headerlink" title="3 UDTF"></a>3 UDTF</h2><p>开发步骤</p>
-<pre><code>•UDTF步骤：
-•必须继承org.apache.Hadoop.hive.ql.udf.generic.GenericUDTF
-•实现initialize, process, close三个方法
-•UDTF首先会
-•调用initialize方法，此方法返回UDTF的返回行的信息（返回个数，类型） 
-初始化完成后，会调用process方法，对传入的参数进行处理，可以通过forword()方法把结果返回
-•最后close()方法调用，对需要清理的方法进行清理
-</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div></pre></td><td class="code"><pre><div class="line">import org.apache.hadoop.hive.ql.exec.UDFArgumentException;</div><div class="line">import org.apache.hadoop.hive.ql.metadata.HiveException;</div><div class="line">import org.apache.hadoop.hive.ql.udf.generic.GenericUDTF;</div><div class="line">import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector;</div><div class="line">import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspectorFactory;</div><div class="line">import org.apache.hadoop.hive.serde2.objectinspector.PrimitiveObjectInspector;</div><div class="line">import org.apache.hadoop.hive.serde2.objectinspector.StructObjectInspector;</div><div class="line">import org.apache.hadoop.hive.serde2.objectinspector.primitive.PrimitiveObjectInspectorFactory;</div><div class="line"></div><div class="line">import java.util.ArrayList;</div><div class="line">import java.util.Iterator;</div><div class="line">import java.util.List;</div><div class="line"></div><div class="line">public class UDTFTool extends GenericUDTF &#123;</div><div class="line">    private PrimitiveObjectInspector stringOI = null;</div><div class="line">    private static final String SPLIT_STR = &quot;udtf_hive_tool&quot;;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public StructObjectInspector initialize(ObjectInspector[] args) throws UDFArgumentException &#123;</div><div class="line"></div><div class="line">        if (args.length != 1) &#123;</div><div class="line">            throw new UDFArgumentException(&quot;NameParserGenericUDTF() takes exactly one argument&quot;);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        if (args[0].getCategory() != ObjectInspector.Category.PRIMITIVE</div><div class="line">                &amp;&amp; ((PrimitiveObjectInspector) args[0]).getPrimitiveCategory() != PrimitiveObjectInspector.PrimitiveCategory.STRING) &#123;</div><div class="line">            throw new UDFArgumentException(&quot;NameParserGenericUDTF() takes a string as a parameter&quot;);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        // 输入格式（inspectors）</div><div class="line">        stringOI = (PrimitiveObjectInspector) args[0];</div><div class="line"></div><div class="line">        // 输出格式（inspectors） -- 有两个属性的对象</div><div class="line">        List&lt;String&gt; fieldNames = new ArrayList&lt;String&gt;();</div><div class="line">        List&lt;ObjectInspector&gt; fieldOIs = new ArrayList&lt;ObjectInspector&gt;();</div><div class="line">        fieldNames.add(&quot;value&quot;);</div><div class="line">        fieldOIs.add(PrimitiveObjectInspectorFactory.javaStringObjectInspector);</div><div class="line"></div><div class="line">        return ObjectInspectorFactory.getStandardStructObjectInspector(fieldNames, fieldOIs);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public ArrayList&lt;Object[]&gt; processInputRecord(String name)&#123;</div><div class="line">        ArrayList&lt;Object[]&gt; result = new ArrayList&lt;Object[]&gt;();</div><div class="line"></div><div class="line">        // 忽略null值与空值</div><div class="line">        if (name == null || name.isEmpty()) &#123;</div><div class="line">            return result;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        String[] tokens = name.split(SPLIT_STR);</div><div class="line"></div><div class="line">        if(tokens == null || tokens.length &lt;= 0)return result;</div><div class="line">        for(int i=0;i&lt;tokens.length;i++)&#123;</div><div class="line">            result.add(new Object[]&#123;tokens[i]&#125;);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        return result;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void process(Object[] record) throws HiveException &#123;</div><div class="line"></div><div class="line">        final String name = stringOI.getPrimitiveJavaObject(record[0]).toString();</div><div class="line"></div><div class="line">        ArrayList&lt;Object[]&gt; results = processInputRecord(name);</div><div class="line"></div><div class="line">        Iterator&lt;Object[]&gt; it = results.iterator();</div><div class="line"></div><div class="line">        while (it.hasNext())&#123;</div><div class="line">            Object[] r = it.next();</div><div class="line">            forward(r);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void close() throws HiveException &#123;</div><div class="line">        // do nothing</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+            <h2 id="1-什么是网络爬虫"><a href="#1-什么是网络爬虫" class="headerlink" title="1 什么是网络爬虫"></a>1 什么是网络爬虫</h2><blockquote>
+<p>网络爬虫（又被称为网页蜘蛛，网络机器人，在FOAF社区中间，更经常的称为网页追逐者），是一种按照一定的规则，自动地抓取万维网信息的程序或者脚本。另外一些不常使用的名字还有蚂蚁、自动索引、模拟程序或者蠕虫。</p>
+</blockquote>
+<p>上面是百度百科的定义,网络爬虫其实就是指,在现有的互联网中,各个终端设备间构造成了一个像蜘蛛网络一样的东西,程序通过一定的逻辑或者是自定义的方式访问每个节点的数据，这段程序被称作为网络爬虫。</p>
+<h2 id="2-网络爬虫的基本结构"><a href="#2-网络爬虫的基本结构" class="headerlink" title="2 网络爬虫的基本结构"></a>2 网络爬虫的基本结构</h2><p>爬虫的基本结构框架流程图如下：</p>
+<p><img src="/images/spider/spider-kuangjia.png" alt=""></p>
+<p>网络爬虫的基本框架如下:</p>
+<pre><code>1 首先需要一个已知的种子url库
+2 读取已知的种子url集合到带抓取集合中
+3 抓取线程读取带抓取集合中的种子url,进行抓取解析
+4 将解析到的结果存储到指定的位置中
+5 将抓取过的url插入到已抓取的队列中
+</code></pre><h2 id="3-网络爬虫的抓取策略"><a href="#3-网络爬虫的抓取策略" class="headerlink" title="3 网络爬虫的抓取策略"></a>3 网络爬虫的抓取策略</h2><p>1 宽度优先遍历策略</p>
+<p>宽度优先遍历策略是最简单的遍历方式,爬虫通过抓取种子url,解析到需要的链接地址后,将这个链接地址直接添加到带抓取的url队列中</p>
+<p><img src="/images/spider/spider-kuandu.jpg" alt=""></p>
+<p>具体的抓取顺序为: A -&gt; B -&gt; C -&gt; D -&gt; E -&gt; F</p>
+<p>2 深度优先遍历策略</p>
+<p>深度优先遍历策略主要是通过抓取种子url后,对新抓到的链接地址立即进行抓取,知道抓取到最深度,也就是没有在满足要求的链接地址为止。具体的抓取顺序如下：<br> A -&gt; B -&gt; D -&gt; E -&gt; C -&gt; F</p>
+<p>3 非完全PageRank页面</p>
+<p>PageRank算法是google提出来的,主要是用于分析页面的重要性上,页面重要性的衡量主表为:</p>
+<pre><code>1 入链的个数
+2 页面质量
+</code></pre><p>针对某个互联网网页A来说,该页面的PageRank的计算基于以下两个假设：</p>
+<pre><code>1 数量假设：如果一个页面节点接收到的其他页面的执行的入链数越多,那么这个页面越重要
+2 质量假设：指向页面A的入链的质量不同,质量高的页面通过连接其他页面传递质量,越是质量高的页面执行A,则A越重要
+</code></pre><p>通过以上两个假设,PageRank算法刚开始赋予每个页面相同的质量权重,通过迭代递归计算的方式,来更新每个页面的PageRank的得分,知道得分稳定为止。</p>
+<p>而PageRank是全局性算法,也就是当网页下载下来以后再计算是可靠的,在抓取过程中网页的数量在增加,每个页面的入链和质量都在改变,因此PageRank的值是不可能给出的。</p>
+<p>基于这个事实情况,做出了如下改动:如果定义一个阈值K,每当下载了K个页面,就重新计算一次PageRank的值。</p>
+<p>4 OPIC策略</p>
+<p>OPIC是指Online Page Importance Computation,也就是指在线页面重要新计算,可以看做是一种改进型的PageRank算法。基本的思想:在页面初始阶段给定每个页面相同的“现金”,每当下载某个页面P后,P将自己拥有的“现金”平均分给页面中包含的链接页面,同时把自己的“现金”清空。而对于链接页面,将根据每个页面的“现金”的多少进行排序,优先下载”现金“充裕的链接页面。</p>
+<p>5 大站优先策略</p>
+<p>以网站来衡量页面的重要性,根据对带抓取的链接url进行按照网站进行分类,如果那个网站等待下载的页面最多,则优先下载这些链接。</p>
 
           
         
@@ -888,8 +789,8 @@ public Double terminate() {}}
             
               
                 
-                <a class="post-title-link" href="/2016/05/27/hive-study004/" itemprop="url">
-                  Hive学习笔记(四) Hive参数
+                <a class="post-title-link" href="/2016/06/17/zookeeper-study004/" itemprop="url">
+                  Zookeeper学习笔记(四) zookeeper的java api
                 </a>
               
             
@@ -902,8 +803,8 @@ public Double terminate() {}}
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-05-27T16:31:55+08:00" content="2016-05-27">
-              2016-05-27
+            <time itemprop="dateCreated" datetime="2016-06-17T11:55:55+08:00" content="2016-06-17">
+              2016-06-17
             </time>
           </span>
 
@@ -916,8 +817,8 @@ public Double terminate() {}}
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/hive/" itemprop="url" rel="index">
-                    <span itemprop="name">hive</span>
+                  <a href="/categories/zookeeper/" itemprop="url" rel="index">
+                    <span itemprop="name">zookeeper</span>
                   </a>
                 </span>
 
@@ -932,8 +833,8 @@ public Double terminate() {}}
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/05/27/hive-study004/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/27/hive-study004/" itemprop="commentsCount"></span>
+                <a href="/2016/06/17/zookeeper-study004/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/17/zookeeper-study004/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -958,133 +859,10 @@ public Double terminate() {}}
       
         
           
-            <h2 id="Hive-参数"><a href="#Hive-参数" class="headerlink" title="Hive 参数"></a>Hive 参数</h2><p>hive.exec.max.created.files</p>
-<pre><code>•说明：所有hive运行的map与reduce任务可以产生的文件的和
-•默认值:100000 
-</code></pre><p>hive.exec.dynamic.partition</p>
-<pre><code>•说明：是否为自动分区
-•默认值：false
-</code></pre><p>hive.mapred.reduce.tasks.speculative.execution</p>
-<pre><code>•说明：是否打开推测执行
-•默认值：true
-</code></pre><p>hive.input.format</p>
-<pre><code>•说明：Hive默认的input format
-•默认值： org.apache.hadoop.hive.ql.io.CombineHiveInputFormat
-•如果有问题可以使用org.apache.hadoop.hive.ql.io.HiveInputFormat
-</code></pre><p>hive.exec.counters.pull.interval</p>
-<pre><code>•说明：Hive与JobTracker拉取counter信息的时间
-•默认值：1000ms 
-</code></pre><p>hive.script.recordreader</p>
-<pre><code>•说明：使用脚本时默认的读取类
-•默认值： org.apache.hadoop.hive.ql.exec.TextRecordReader
-</code></pre><p>hive.script.recordwriter</p>
-<pre><code>•说明：使用脚本时默认的数据写入类
-•默认值： org.apache.hadoop.hive.ql.exec.TextRecordWriter
-</code></pre><p>hive.mapjoin.check.memory.rows</p>
-<pre><code>•说明： 内存里可以存储数据的行数
-•默认值： 100000
-</code></pre><p>hive.mapjoin.smalltable.filesize</p>
-<pre><code>•说明：输入小表的文件大小的阀值，如果小于该值，就采用普通的join
-•默认值： 25000000
-</code></pre><p>hive.auto.convert.join</p>
-<pre><code>•说明：是不是依据输入文件的大小，将Join转成普通的Map Join
-•默认值： false
-</code></pre><p>hive.mapjoin.followby.gby.localtask.max.memory.usage</p>
-<pre><code>•说明：map join做group by 操作时，可以使用多大的内存来存储数据，如果数据太大，则不会保存在内存里
-•默认值：0.55
-</code></pre><p>hive.mapjoin.localtask.max.memory.usage</p>
-<pre><code>•说明：本地任务可以使用内存的百分比
-•默认值： 0.90
-</code></pre><p>hive.heartbeat.interval</p>
-<pre><code>•说明：在进行MapJoin与过滤操作时，发送心跳的时间
-•默认值1000
-</code></pre><p>hive.merge.size.per.task</p>
-<pre><code>•说明： 合并后文件的大小
-•默认值： 256000000
-</code></pre><p>hive.mergejob.maponly</p>
-<pre><code>•说明： 在只有Map任务的时候 合并输出结果
-•默认值： true
-</code></pre><p>hive.merge.mapredfiles</p>
-<pre><code>•默认值： 在作业结束的时候是否合并小文件
-•说明： false
-</code></pre><p>hive.merge.mapfiles</p>
-<pre><code>•说明：Map-Only Job是否合并小文件
-•默认值：true
-</code></pre><p>hive.hwi.listen.host</p>
-<pre><code>•说明：Hive UI 默认的host
-•默认值：0.0.0.0
-</code></pre><p>hive.hwi.listen.port</p>
-<pre><code>•说明：Ui监听端口
-•默认值：9999
-</code></pre><p>hive.exec.parallel.thread.number</p>
-<pre><code>•说明：hive可以并行处理Job的线程数
-•默认值：8
-</code></pre><p>hive.exec.parallel</p>
-<pre><code>•说明：是否并行提交任务
-•默认值：false
-</code></pre><p>hive.exec.compress.output</p>
-<pre><code>•说明：输出使用压缩
-•默认值： false
-</code></pre><p>hive.mapred.mode</p>
-<pre><code>•说明： MapReduce的操作的限制模式，操作的运行在该模式下没有什么限制
-•默认值： nonstrict
-</code></pre><p>hive.join.cache.size</p>
-<pre><code>•说明： join操作时，可以存在内存里的条数
-•默认值： 25000
-</code></pre><p>hive.mapjoin.cache.numrows</p>
-<pre><code>•说明： mapjoin 存在内存里的数据量
-•默认值：25000
-</code></pre><p>hive.join.emit.interval</p>
-<pre><code>•说明： 有连接时Hive在输出前，缓存的时间
-•默认值： 1000
-</code></pre><p>hive.optimize.groupby</p>
-<pre><code>•说明：在做分组统计时，是否使用bucket table
-•默认值： true
-</code></pre><p>hive.fileformat.check</p>
-<pre><code>•说明：是否检测文件输入格式
-•默认值：true
-</code></pre><p>hive.metastore.client.connect.retry.delay</p>
-<pre><code>•说明： client 连接失败时,retry的时间间隔
-•默认值：1秒
-</code></pre><p>hive.metastore.client.socket.timeout</p>
-<pre><code>•说明:  Client socket 的超时时间
-•默认值：20秒
-</code></pre><p>mapred.reduce.tasks</p>
-<pre><code>•默认值：-1
-•说明：每个任务reduce的默认值
-     -1 代表自动根据作业的情况来设置reduce的值 
-</code></pre><p>hive.exec.reducers.bytes.per.reducer</p>
-<pre><code>•默认值： 1000000000 （1G）
-•说明：每个reduce的接受的数据量
-        如果送到reduce的数据为10G,那么将生成10个reduce任务 
-</code></pre><p>hive.exec.reducers.max</p>
-<pre><code>•默认值：999
-•说明： reduce的最大个数      
-</code></pre><p>hive.exec.reducers.max</p>
-<pre><code>•默认值：999
-•说明： reduce的最大个数
-</code></pre><p>hive.metastore.warehouse.dir</p>
-<pre><code>•默认值：/user/hive/warehouse
-•说明： 默认的数据库存放位置
-</code></pre><p>hive.default.fileformat</p>
-<pre><code>•默认值：TextFile
-•说明： 默认的fileformat
-</code></pre><p>hive.map.aggr</p>
-<pre><code>•默认值：true
-•说明： Map端聚合，相当于combiner
-</code></pre><p>hive.exec.max.dynamic.partitions.pernode</p>
-<pre><code>•默认值：100
-•说明：每个任务节点可以产生的最大的分区数
-</code></pre><p>hive.exec.max.dynamic.partitions</p>
-<pre><code>•默认值：1000
-•说明： 默认的可以创建的分区数
-</code></pre><p>hive.metastore.server.max.threads</p>
-<pre><code>•默认值：100000
-•说明： metastore默认的最大的处理线程数
-</code></pre><p>hive.metastore.server.min.threads</p>
-<pre><code>•默认值：200
-•说明： metastore默认的最小的处理线程数
-</code></pre>
+            <p>zookeeper的主要操作方法如下:</p>
+<p><img src="/images/zookeeper/zookeeper-java-api.jpg" alt=""></p>
+<p>主要代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div><div class="line">205</div><div class="line">206</div><div class="line">207</div><div class="line">208</div><div class="line">209</div><div class="line">210</div><div class="line">211</div><div class="line">212</div><div class="line">213</div><div class="line">214</div><div class="line">215</div><div class="line">216</div><div class="line">217</div></pre></td><td class="code"><pre><div class="line">package com.study.zookeeper;</div><div class="line"></div><div class="line">import org.apache.zookeeper.*;</div><div class="line">import org.apache.zookeeper.data.Stat;</div><div class="line">import org.junit.After;</div><div class="line">import org.junit.Before;</div><div class="line">import org.junit.Test;</div><div class="line"></div><div class="line">import java.io.IOException;</div><div class="line">import java.util.List;</div><div class="line">import java.util.function.Consumer;</div><div class="line"></div><div class="line">/**</div><div class="line"> * Created by sunxing on 16/6/27.</div><div class="line"> * zk操作工具类</div><div class="line"> */</div><div class="line">public class ZkUtils &#123;</div><div class="line">    //会话过期时间</div><div class="line">    private static final int SESSION_TIEMOUT = 30000;</div><div class="line">    //zk地址</div><div class="line">    private static final String ZK_LIST = &quot;localhost:2181&quot; ;</div><div class="line"></div><div class="line">    //客户端监听器</div><div class="line">    private Watcher watcher = new Watcher() &#123;</div><div class="line">        @Override</div><div class="line">        public void process(WatchedEvent event) &#123;</div><div class="line">            System.out.println(&quot;process -&gt; zookeeper初始化时绑定的watch&quot;);</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line"></div><div class="line">    //zookeeper 实例</div><div class="line">    private ZooKeeper zooKeeper = null;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 链接zookeeper</div><div class="line">     */</div><div class="line">    @Before</div><div class="line">    public void connect() throws IOException&#123;</div><div class="line">        zooKeeper = new ZooKeeper(ZK_LIST,SESSION_TIEMOUT,watcher);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 关闭zk</div><div class="line">      */</div><div class="line">    @After</div><div class="line">    public void close()&#123;</div><div class="line">        try&#123;</div><div class="line">            zooKeeper.close();</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 创建一个znode节点</div><div class="line">     * ZooDefs.Ids.OPEN_ACL_UNSAFE:</div><div class="line">     * -&gt; public final ArrayList&lt;ACL&gt; OPEN_ACL_UNSAFE = new ArrayList&lt;ACL&gt;(Collections.singletonList(new ACL(Perms.ALL, ANYONE_ID_UNSAFE)));</div><div class="line">     * -&gt; public final Id ANYONE_ID_UNSAFE = new Id(&quot;world&quot;, &quot;anyone&quot;);</div><div class="line">     *</div><div class="line">     * CreateMode取值：</div><div class="line">     * 1 PERSISTENT：持久化，这个目录节点存储的数据不会丢失</div><div class="line">     * 2 PERSISTENT_SEQUENTIAL：顺序自动编号的目录节点，这种目录节点会根据当前已近存在的节点数自动加 1，然后返回给客户端已经成功创建的目录节点名</div><div class="line">     * 3 EPHEMERAL：临时目录节点，一旦创建这个节点的客户端与服务器端口也就是 session过期超时，这种节点会被自动删除</div><div class="line">     * 4 EPHEMERAL_SEQUENTIAL：临时自动编号节点</div><div class="line">     */</div><div class="line">    @Test</div><div class="line">    public void create()&#123;</div><div class="line">        String result = null;</div><div class="line">        try&#123;</div><div class="line">            result = zooKeeper.create(&quot;/test1&quot;,&quot;test_create_1&quot;.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        System.out.println(&quot;create result -&gt; &quot; + result);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 删除数据</div><div class="line">     */</div><div class="line">    @Test</div><div class="line">    public void delete()&#123;</div><div class="line">        try&#123;</div><div class="line">         zooKeeper.delete(&quot;/test1&quot;,-1);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 删除数据</div><div class="line">     *</div><div class="line">     */</div><div class="line">    @Test</div><div class="line">    public void getData()&#123;</div><div class="line">        try&#123;</div><div class="line">            byte[] data = zooKeeper.getData(&quot;/test1&quot;,null,null);</div><div class="line">            System.out.println(&quot;目录结构/test1下的数据为 -&gt; &quot; + new String(data,&quot;UTF-8&quot;));</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 获取数据</div><div class="line">     * 设置watch监听</div><div class="line">     */</div><div class="line">    @Test</div><div class="line">    public void getDataWithWatch()&#123;</div><div class="line">        String result = null;</div><div class="line">        try&#123;</div><div class="line">            byte[] data = zooKeeper.getData(&quot;/test1&quot;, new Watcher() &#123;</div><div class="line">                @Override</div><div class="line">                public void process(WatchedEvent event) &#123;</div><div class="line">                    System.out.println(&quot;getDataWithWatch wathc -&gt; &quot; + event.getType());</div><div class="line">                &#125;</div><div class="line">            &#125;,null);</div><div class="line"></div><div class="line">            result = new String(data,&quot;UTF-8&quot;);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        System.out.println(&quot;结果 -&gt; &quot; + result);</div><div class="line"></div><div class="line">        //当znode中数据发生改变是,会触发wathc</div><div class="line">        setData();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 添加数据</div><div class="line">     */</div><div class="line">    @Test</div><div class="line">    public void setData()&#123;</div><div class="line">        Stat stat = null;</div><div class="line">        try&#123;</div><div class="line">            stat = zooKeeper.setData(&quot;/test1&quot;,&quot;test-data-1&quot;.getBytes(),-1);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        System.out.println(&quot;setData stat -&gt; &quot; + stat.getVersion());</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Test</div><div class="line">    public void isExits()&#123;</div><div class="line">        Stat stat = null;</div><div class="line">        try&#123;</div><div class="line">            stat = zooKeeper.exists(&quot;/test1&quot;,false);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        System.out.println(&quot;isExits stat -&gt; &quot; + stat.getCzxid());</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Test</div><div class="line">    public void isExitsWithWatch()&#123;</div><div class="line">        Stat stat = null;</div><div class="line">        try&#123;</div><div class="line">            stat = zooKeeper.exists(&quot;/test1&quot;,true);</div><div class="line">            System.out.println(stat.getAversion());</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        //触发watch,这个监听器是zookeeper创建实例时指定</div><div class="line">        try&#123;</div><div class="line">            zooKeeper.delete(&quot;/test1&quot;,-1);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Test</div><div class="line">    public void isExitsWtithWatch2()&#123;</div><div class="line">        Stat stat = null;</div><div class="line">        try&#123;</div><div class="line">            stat = zooKeeper.exists(&quot;/test1&quot;, new Watcher() &#123;</div><div class="line">                @Override</div><div class="line">                public void process(WatchedEvent event) &#123;</div><div class="line">                    System.out.println(&quot;isExitsWithWathc2 -&gt; &quot; + event.getType());</div><div class="line">                &#125;</div><div class="line">            &#125;);</div><div class="line">            System.out.println(stat.getAversion());</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        //触发watch,这个监听器是zookeeper创建实例时指定</div><div class="line">        try&#123;</div><div class="line">            zooKeeper.setData(&quot;/test1&quot;,&quot;isExitsWithWatch2 setData&quot;.getBytes(),-1);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        //只会触发一次</div><div class="line">        try&#123;</div><div class="line">            zooKeeper.delete(&quot;/test1&quot;,-1);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Test</div><div class="line">    public void getChild()&#123;</div><div class="line">        try&#123;</div><div class="line">            zooKeeper.create(&quot;/test2&quot;,&quot;test2-data-1&quot;.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,CreateMode.PERSISTENT);</div><div class="line">            zooKeeper.create(&quot;/test3&quot;,&quot;test3-data-1&quot;.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,CreateMode.PERSISTENT);</div><div class="line">            zooKeeper.create(&quot;/test4&quot;,&quot;test4-data-1&quot;.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,CreateMode.PERSISTENT);</div><div class="line"></div><div class="line">            List&lt;String&gt; list = zooKeeper.getChildren(&quot;/&quot;,true);</div><div class="line">            list.stream().forEach(new Consumer&lt;String&gt;() &#123;</div><div class="line">                @Override</div><div class="line">                public void accept(String s) &#123;</div><div class="line">                    System.out.println(s);</div><div class="line">                &#125;</div><div class="line">            &#125;);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
           
         
       
@@ -1116,7 +894,7 @@ public Double terminate() {}}
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/8/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/10/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/8/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><a class="extend next" rel="next" href="/page/10/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1189,7 +967,7 @@ var duoshuoQuery = {short_name:"sunxing"};
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">65</span>
+              <span class="site-state-item-count">78</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -1197,7 +975,7 @@ var duoshuoQuery = {short_name:"sunxing"};
           
             <div class="site-state-item site-state-categories">
               
-                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-count">13</span>
                 <span class="site-state-item-name">分类</span>
               
             </div>
@@ -1206,7 +984,7 @@ var duoshuoQuery = {short_name:"sunxing"};
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

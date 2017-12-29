@@ -1,0 +1,689 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="spring,spring boot," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="Spring Boot WebSocketwebsocket为浏览器和服务端提供了双工异步通信的功能,浏览器可以向服务端发送消息,服务端也可以向浏览器发送消息.websocket是通过soket来实现双工异步通信能力的,但是直接使用WebSocket协议来开发程序比较繁琐,这里使用它的自协议STOMP. 广播式广播式也就是服务端有消息时,会将消息发送给所有的链接了当前endpoint的浏览器.具体">
+<meta name="keywords" content="spring,spring boot">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring Boot基础学习(九) websocket">
+<meta property="og:url" content="http://www.sunxing.cc/2017/10/23/spring-boot-study009/index.html">
+<meta property="og:site_name" content="孙星的个人博客~">
+<meta property="og:description" content="Spring Boot WebSocketwebsocket为浏览器和服务端提供了双工异步通信的功能,浏览器可以向服务端发送消息,服务端也可以向浏览器发送消息.websocket是通过soket来实现双工异步通信能力的,但是直接使用WebSocket协议来开发程序比较繁琐,这里使用它的自协议STOMP. 广播式广播式也就是服务端有消息时,会将消息发送给所有的链接了当前endpoint的浏览器.具体">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://www.sunxing.cc/2017/10/23/spring-boot-study009/images/spring-boot/socket-1.png">
+<meta property="og:image" content="http://www.sunxing.cc/2017/10/23/spring-boot-study009/images/spring-boot/socket-2.png">
+<meta property="og:image" content="http://www.sunxing.cc/2017/10/23/spring-boot-study009/images/spring-boot/socket-point-1.png">
+<meta property="og:image" content="http://www.sunxing.cc/2017/10/23/spring-boot-study009/images/spring-boot/socket-point-2.png">
+<meta property="og:updated_time" content="2017-11-20T06:53:06.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spring Boot基础学习(九) websocket">
+<meta name="twitter:description" content="Spring Boot WebSocketwebsocket为浏览器和服务端提供了双工异步通信的功能,浏览器可以向服务端发送消息,服务端也可以向浏览器发送消息.websocket是通过soket来实现双工异步通信能力的,但是直接使用WebSocket协议来开发程序比较繁琐,这里使用它的自协议STOMP. 广播式广播式也就是服务端有消息时,会将消息发送给所有的链接了当前endpoint的浏览器.具体">
+<meta name="twitter:image" content="http://www.sunxing.cc/2017/10/23/spring-boot-study009/images/spring-boot/socket-1.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+ <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1258995301'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s11.cnzz.com/z_stat.php%3Fid%3D1258995301' type='text/javascript'%3E%3C/script%3E"));</script>
+
+  <title> Spring Boot基础学习(九) websocket | 孙星的个人博客~ </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">孙星的个人博客~</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">搬砖的,码农~</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Spring Boot基础学习(九) websocket
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2017-10-23T17:22:46+08:00" content="2017-10-23">
+              2017-10-23
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/spring-boot/" itemprop="url" rel="index">
+                    <span itemprop="name">spring boot</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2017/10/23/spring-boot-study009/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/10/23/spring-boot-study009/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Spring-Boot-WebSocket"><a href="#Spring-Boot-WebSocket" class="headerlink" title="Spring Boot WebSocket"></a>Spring Boot WebSocket</h2><p>websocket为浏览器和服务端提供了双工异步通信的功能,浏览器可以向服务端发送消息,服务端也可以向浏览器发送消息.websocket是通过soket来实现双工异步通信能力的,但是直接使用WebSocket协议来开发程序比较繁琐,这里使用它的自协议STOMP.</p>
+<h3 id="广播式"><a href="#广播式" class="headerlink" title="广播式"></a>广播式</h3><p>广播式也就是服务端有消息时,会将消息发送给所有的链接了当前endpoint的浏览器.具体的配置很简单,需要先引入相应的依赖包:</p>
+<pre><code>&lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-websocket&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre><p>依赖包添加好以后,需要配置相应的websocket的配置,具体的构建对应的配置类:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">@Configuration</div><div class="line">@EnableWebSocketMessageBroker //注解开始使用STOMP协议来传输给予代理的消息,这里</div><div class="line">public class WebSocketConfiguration extends AbstractWebSocketMessageBrokerConfigurer &#123;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void registerStompEndpoints(StompEndpointRegistry registry) &#123;</div><div class="line">        //注册STOMP协议的节点(endpoint),并映射的制定的URL,并指定使用的SockJS协议</div><div class="line">        registry.addEndpoint(&quot;/socket&quot;).withSockJS();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里配置好以后,需要使用构造相应的controller,具体的如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">@RestController</div><div class="line">@SpringBootApplication</div><div class="line">public class SpringBootSocketApplication &#123;</div><div class="line">	public static void main(String[] args) &#123;</div><div class="line">		SpringApplication.run(SpringBootSocketApplication.class, args);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	@Autowired</div><div class="line">	private SimpMessagingTemplate template;</div><div class="line"></div><div class="line">	@RequestMapping(value = &quot;/message&quot;)</div><div class="line">	public void send(@RequestParam String name)&#123;</div><div class="line">		template.convertAndSend(&quot;/message&quot;,name);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	@MessageMapping(value = &quot;/message/1&quot;)</div><div class="line">	@SendTo(value = &quot;/message/view&quot;)</div><div class="line">	public String send1(@RequestParam String name)&#123;</div><div class="line">		return &quot;Hello &quot; + name;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在编写的过程中有两种方式可以选择:</p>
+<pre><code>1 使用SimpMessagingTemplate来发送消息
+2 使用@MessageMapping和@SendTo注解来标记
+</code></pre><p>两种方式中使用第二种更加简单,具体的@MessageMapping的用法和@RequestMapping相同。</p>
+<pre><code>1 当浏览器想服务端发送消息时,会映射到@MessageMapping对应的value地址中
+2 当服务端想浏览器发送消息时,会映射到@SendTo对应地址中,这个地址在js中会有引用。
+</code></pre><p>下面看下两种不同方式下的对应的页面：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">&lt;!-- test.html --&gt;</div><div class="line">&lt;html&gt;</div><div class="line">&lt;script src=&quot;js/sockjs.min.js&quot;&gt;&lt;/script&gt;</div><div class="line">&lt;script src=&quot;js/stomp.js&quot;&gt;&lt;/script&gt;</div><div class="line">&lt;script type=&quot;text/javascript&quot;&gt;</div><div class="line">    var socket = new SockJS(&apos;/socket&apos;);</div><div class="line">    var stompClient = Stomp.over(socket);</div><div class="line">    stompClient.connect(&#123;&#125;, function() &#123;</div><div class="line">        stompClient.subscribe(&apos;/message&apos;, function(txt) &#123;</div><div class="line">            alert(txt);</div><div class="line">        &#125;);</div><div class="line">    &#125;);</div><div class="line"></div><div class="line">    function send(txt) &#123;</div><div class="line">        stompClient.send(&quot;/message&quot;, &#123;&#125;, txt);</div><div class="line">    &#125;</div><div class="line">&lt;/script&gt;</div><div class="line">&lt;a href=&quot;javascript:send(&apos;test&apos;)&quot;&gt;测试&lt;/a&gt;</div><div class="line">&lt;/html&gt;</div><div class="line"></div><div class="line"></div><div class="line">&lt;!-- test-1.html --&gt;</div><div class="line">&lt;html&gt;</div><div class="line">&lt;script src=&quot;js/sockjs.min.js&quot;&gt;&lt;/script&gt;</div><div class="line">&lt;script src=&quot;js/stomp.js&quot;&gt;&lt;/script&gt;</div><div class="line">&lt;script type=&quot;text/javascript&quot;&gt;</div><div class="line">    var socket = new SockJS(&apos;/socket&apos;);</div><div class="line">    var stompClient = Stomp.over(socket);</div><div class="line">    stompClient.connect(&#123;&#125;, function() &#123;</div><div class="line">        stompClient.subscribe(&apos;/message/view&apos;, function(txt) &#123;</div><div class="line">            alert(txt);</div><div class="line">        &#125;);</div><div class="line">    &#125;);</div><div class="line"></div><div class="line">    function send(txt) &#123;</div><div class="line">        stompClient.send(&quot;/message/1&quot;, &#123;&#125;, txt);</div><div class="line">    &#125;</div><div class="line">&lt;/script&gt;</div><div class="line">&lt;a href=&quot;javascript:send(&apos;test-1&apos;)&quot;&gt;测试&lt;/a&gt;</div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure>
+<p>执行结果为:<br><img src="images/spring-boot/socket-1.png" alt=""><br><img src="images/spring-boot/socket-2.png" alt=""></p>
+<h3 id="点对点的方式"><a href="#点对点的方式" class="headerlink" title="点对点的方式"></a>点对点的方式</h3><p>点对点的测试其实也比较简单,用到的主要的接口为:</p>
+<pre><code>public void convertAndSendToUser(String user, String destination, Object payload)
+</code></pre><p>下面介绍一个简单的例子用来测试点对点的发送数据内容,具体的用到了Security模块和前端页面的整合,首先需要配置这些模块:</p>
+<p>1 首先编写权限的管理类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line">@Configuration</div><div class="line">@EnableWebSecurity</div><div class="line">public class WebSecurityConfig extends WebSecurityConfigurerAdapter &#123;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 配置访问路径</div><div class="line">     * @param http</div><div class="line">     * @throws Exception</div><div class="line">     */</div><div class="line">    @Override</div><div class="line">    protected void configure(HttpSecurity http) throws Exception &#123;</div><div class="line">        http.authorizeRequests()</div><div class="line">                //设置Spring boot 对/和/login路径不拦截</div><div class="line">                .antMatchers(&quot;/&quot;,&quot;/login&quot;)</div><div class="line">                .permitAll()</div><div class="line">                .anyRequest()</div><div class="line">                .authenticated()</div><div class="line">                .and()</div><div class="line">                .formLogin()</div><div class="line">                .loginPage(&quot;/login&quot;)//指定登录页面</div><div class="line">                .defaultSuccessUrl(&quot;/chat&quot;)//登录成功后跳转的页面</div><div class="line">                .permitAll()</div><div class="line">                .and()</div><div class="line">                .logout()</div><div class="line">                .permitAll();</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    protected void configure(AuthenticationManagerBuilder auth) throws Exception &#123;</div><div class="line">        //指定用户名和密码以及其对应的角色</div><div class="line">        auth.inMemoryAuthentication()</div><div class="line">                .withUser(&quot;sunx&quot;).password(&quot;123&quot;).roles(&quot;USER&quot;)</div><div class="line">                .and()</div><div class="line">                .withUser(&quot;xing&quot;).password(&quot;456&quot;).roles(&quot;USER&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void configure(WebSecurity web) throws Exception &#123;</div><div class="line">        web.ignoring().antMatchers(&quot;/resources/static/**&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>权限管理类主要是用来区分用户的同时初始化内存用户,用来登录验证的。以及静态资源的指定。用到了secruity模块,需要引用相应的依赖:</p>
+<pre><code>&lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-security&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+</code></pre><p>2 创建socket的配置管理类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">@Configuration</div><div class="line">@EnableWebSocketMessageBroker //注解开始使用STOMP协议来传输给予代理的消息,这里</div><div class="line">public class WebSocketConfiguration extends AbstractWebSocketMessageBrokerConfigurer &#123;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void registerStompEndpoints(StompEndpointRegistry registry) &#123;</div><div class="line">        //注册STOMP协议的节点(endpoint),并映射的制定的URL,并指定使用的SockJS协议</div><div class="line">        registry.addEndpoint(&quot;/socket&quot;).withSockJS();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void configureMessageBroker(MessageBrokerRegistry registry) &#123;</div><div class="line">        //配置消息代理(Message Broker)</div><div class="line">        registry.enableSimpleBroker(&quot;/topic&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>3 配置前端页面的mvc模式:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">@Configuration</div><div class="line">public class WebMvcConfig extends WebMvcConfigurerAdapter &#123;</div><div class="line">    @Override</div><div class="line">    public void addViewControllers(ViewControllerRegistry registry) &#123;</div><div class="line">        registry.addViewController(&quot;/login&quot;).setViewName(&quot;/login&quot;);</div><div class="line">        registry.addViewController(&quot;/chat&quot;).setViewName(&quot;/chat&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里引用了模板模式,因此需要引用相应的依赖：</p>
+<pre><code>&lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-thymeleaf&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+</code></pre><p>4 编写相应的controller操作前端消息的发送</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">@Controller</div><div class="line">public class PointController &#123;</div><div class="line">    @Autowired</div><div class="line">    private SimpMessagingTemplate template;</div><div class="line"></div><div class="line">    @MessageMapping(&quot;/chat&quot;)</div><div class="line">    public void handleChat(Principal principal,String msg)&#123;</div><div class="line">        if(principal.getName().equals(&quot;sunx&quot;))&#123;</div><div class="line">            template.convertAndSendToUser(</div><div class="line">                    &quot;xing&quot;,</div><div class="line">                    &quot;/topic/notifications&quot;,</div><div class="line">                    principal.getName() + &quot;-send:&quot; + msg);</div><div class="line">        &#125;else&#123;</div><div class="line">            template.convertAndSendToUser(</div><div class="line">                    &quot;sunx&quot;,</div><div class="line">                    &quot;/topic/notifications&quot;,</div><div class="line">                    principal.getName() + &quot;-send:&quot; + msg</div><div class="line">            );</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里使用了这个接口,可以通过这个将对应的消息发送到指定的用户中。如果是涉及到多个用户,可以通过前端将需要发送给那个用户标记传过来,这样就不用这么麻烦判断了~不过需要前端通过接口获取到当前的用户列表,将msg包装为json格式的内容,读取出其中的目标用户,在将消息发送出去~</p>
+<p>5 编写相应的前端页面</p>
+<p>由于使用了模板的模式,因此需要将静态的网页源码存储在/resources/templates下,将静态资源(引用的js,css等)存储在Security的配置文件中指定的/resources/static下,保证资源文件可以获取到~</p>
+<p>登录页面为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&lt;!DOCTYPE html&gt;</div><div class="line">&lt;!--注意这里使用了thymeleaf，具体的语法规则有兴趣的可以自己找一找相关的资料--&gt;</div><div class="line">&lt;html lang=&quot;en&quot; xmlns=&quot;http://www.w3.org/1999/xhtml&quot;</div><div class="line">      xmlns:th=&quot;http://www.thymeleaf.org&quot;</div><div class="line">      xmlns:sec=&quot;http://www.thymeleaf.org/thymeleaf-extras-springsecurity3&quot;&gt;</div><div class="line">&lt;head&gt;</div><div class="line">    &lt;meta charset=&quot;UTF-8&quot; /&gt;</div><div class="line">    &lt;title&gt;登录页面&lt;/title&gt;</div><div class="line">&lt;/head&gt;</div><div class="line">&lt;body&gt;</div><div class="line">&lt;div th:if=&quot;$&#123;param.error&#125;&quot;&gt;</div><div class="line">    无效的账号和密码</div><div class="line">&lt;/div&gt;</div><div class="line">&lt;div th:if=&quot;$&#123;param.logout&#125;&quot;&gt;</div><div class="line">    你已注销</div><div class="line">&lt;/div&gt;</div><div class="line">&lt;form th:action=&quot;@&#123;/login&#125;&quot; method=&quot;post&quot;&gt;</div><div class="line">    &lt;div&gt;&lt;label&gt;账号：&lt;input type=&quot;text&quot; name=&quot;username&quot;/&gt;&lt;/label&gt;&lt;/div&gt;</div><div class="line">    &lt;div&gt;&lt;label&gt;密码：&lt;input type=&quot;password&quot; name=&quot;password&quot;/&gt;&lt;/label&gt;&lt;/div&gt;</div><div class="line">    &lt;div&gt;&lt;input type=&quot;submit&quot; th:value=&quot;登录&quot;/&gt;&lt;/div&gt;</div><div class="line">&lt;/form&gt;</div><div class="line">&lt;/body&gt;</div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure>
+<p>聊天页面为:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div></pre></td><td class="code"><pre><div class="line">&lt;!DOCTYPE html&gt;</div><div class="line">&lt;!--注意这里使用了thymeleaf，具体的语法规则有兴趣的可以自己找一找相关的资料--&gt;</div><div class="line">&lt;html lang=&quot;en&quot; xmlns:th=&quot;http://www.thymeleaf.org&quot;&gt;</div><div class="line">&lt;head&gt;</div><div class="line">    &lt;meta charset=&quot;UTF-8&quot; /&gt;</div><div class="line">    &lt;script th:src=&quot;@&#123;sockjs.min.js&#125;&quot;&gt;&lt;/script&gt;</div><div class="line">    &lt;script th:src=&quot;@&#123;stomp.js&#125;&quot;&gt;&lt;/script&gt;</div><div class="line">    &lt;script th:src=&quot;@&#123;jquery.js&#125;&quot;&gt;&lt;/script&gt;</div><div class="line">    &lt;title&gt;聊天室&lt;/title&gt;</div><div class="line">&lt;/head&gt;</div><div class="line">&lt;body&gt;</div><div class="line">&lt;p&gt;聊天室&lt;/p&gt;</div><div class="line">&lt;form id=&quot;minuorForm&quot;&gt;</div><div class="line">    &lt;textarea rows=&quot;4&quot; cols=&quot;60&quot; name=&quot;text&quot;&gt;&lt;/textarea&gt;&lt;br /&gt;</div><div class="line">    &lt;input type=&quot;submit&quot; th:value=&quot;发送&quot;/&gt;</div><div class="line">&lt;/form&gt;</div><div class="line">&lt;button id=&quot;stop&quot;&gt;退出&lt;/button&gt;</div><div class="line">&lt;div id=&quot;output&quot;&gt;&lt;/div&gt;</div><div class="line">&lt;script th:inline=&quot;javascript&quot;&gt;</div><div class="line">    //重写form表单提交方法</div><div class="line">    $(&quot;#minuorForm&quot;).submit(function(e)&#123;</div><div class="line">        e.preventDefault();</div><div class="line">        var text = $(&quot;#minuorForm&quot;).find(&quot;textarea[name=&apos;text&apos;]&quot;).val();</div><div class="line">        sendSpittle(text);</div><div class="line">    &#125;);</div><div class="line">    //创建消息客户端，并连接服务端</div><div class="line">    var sock = new SockJS(&quot;/socket&quot;);</div><div class="line">    var stompClient = Stomp.over(sock);</div><div class="line">    stompClient.connect(&quot;guest&quot;,&quot;guest&quot;,function(frame)&#123;</div><div class="line">        stompClient.subscribe(&quot;/user/topic/notifications&quot;,handleNotification);</div><div class="line">    &#125;);</div><div class="line"></div><div class="line">    //显示消息内容</div><div class="line">    function handleNotification(message)&#123;</div><div class="line">        $(&quot;#output&quot;).append(&quot;&lt;b&gt;&quot; + message.body + &quot;&lt;/b&gt;&lt;br/&gt;&quot;)</div><div class="line">    &#125;</div><div class="line">    //发送消息</div><div class="line">    function sendSpittle(text)&#123;</div><div class="line">        stompClient.send(&quot;/chat&quot;,&#123;&#125;,text);</div><div class="line">    &#125;</div><div class="line">    //关闭消息接收</div><div class="line">    $(&quot;#stop&quot;).click(function()&#123;</div><div class="line">        sock.close();</div><div class="line">    &#125;);</div><div class="line">&lt;/script&gt;</div><div class="line">&lt;/body&gt;</div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure>
+<p>先访问<a href="http://localhost:8080/login进行登录,登录后可以进行数据发送了,测试的结果为：" target="_blank" rel="external">http://localhost:8080/login进行登录,登录后可以进行数据发送了,测试的结果为：</a><br><img src="images/spring-boot/socket-point-1.png" alt=""></p>
+<p><img src="images/spring-boot/socket-point-2.png" alt=""></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/spring/" rel="tag">#spring</a>
+          
+            <a href="/tags/spring-boot/" rel="tag">#spring boot</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/10/21/spring-boot-study008/" rel="next" title="Spring Boot基础学习(八) 消息服务">
+                <i class="fa fa-chevron-left"></i> Spring Boot基础学习(八) 消息服务
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/10/25/spring-boot-study010/" rel="prev" title="Spring Boot基础学习(十) 安全">
+                Spring Boot基础学习(十) 安全 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+           <!-- 多说热评文章 start -->
+	<div class="ds-top-threads" data-range="daily" data-num-items="5"></div>
+<!-- 多说热评文章 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+
+
+           <section id="comments">
+   <!-- 多说评论框 start -->
+<div id="ds-thread" class="ds-thread" data-thread-key="<%= post.path %>" data-title="<%= post.title %>" data-url="<%= post.permalink %>"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"sunxing"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+<!-- 多说公共JS代码 end -->
+  </section>
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="孙星" />
+          <p class="site-author-name" itemprop="name">孙星</p>
+          <p class="site-description motion-element" itemprop="description">sunxing's blog | mysql | java | scala | hadoop | spark | kafka | flume</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">78</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Spring-Boot-WebSocket"><span class="nav-number">1.</span> <span class="nav-text">Spring Boot WebSocket</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#广播式"><span class="nav-number">1.1.</span> <span class="nav-text">广播式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#点对点的方式"><span class="nav-number">1.2.</span> <span class="nav-text">点对点的方式</span></a></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孙星</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"sunxing"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+<script type="text/javascript" async src="//push.zhanzhang.baidu.com/push.js">
+</script>
+
+
+</body>
+</html>

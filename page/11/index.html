@@ -231,8 +231,8 @@
             
               
                 
-                <a class="post-title-link" href="/2016/05/20/hadoop-study007/" itemprop="url">
-                  MapReduce程序开发(七) 单表关联
+                <a class="post-title-link" href="/2016/06/12/hbase-study006/" itemprop="url">
+                  HBase学习笔记(六) Phoenix的安装使用
                 </a>
               
             
@@ -245,8 +245,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-05-20T10:13:55+08:00" content="2016-05-20">
-              2016-05-20
+            <time itemprop="dateCreated" datetime="2016-06-12T09:55:55+08:00" content="2016-06-12">
+              2016-06-12
             </time>
           </span>
 
@@ -259,8 +259,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/hadoop/" itemprop="url" rel="index">
-                    <span itemprop="name">hadoop</span>
+                  <a href="/categories/hbase/" itemprop="url" rel="index">
+                    <span itemprop="name">hbase</span>
                   </a>
                 </span>
 
@@ -275,394 +275,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/05/20/hadoop-study007/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/20/hadoop-study007/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="1-单表关联"><a href="#1-单表关联" class="headerlink" title="1 单表关联"></a>1 单表关联</h2><p>单个表关联,现在有一张表,只有一个字段,单表关联主要是自己和自己关联,我这里的操作是将值都组合为&lt;左表表示,value&gt;,&lt;右表标示,value&gt;,在讲缓存中的数据进行遍历处理</p>
-<p>代码如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div></pre></td><td class="code"><pre><div class="line">import org.apache.hadoop.conf.Configuration;</div><div class="line">import org.apache.hadoop.fs.Path;</div><div class="line">import org.apache.hadoop.io.LongWritable;</div><div class="line">import org.apache.hadoop.io.Text;</div><div class="line">import org.apache.hadoop.mapreduce.Job;</div><div class="line">import org.apache.hadoop.mapreduce.Mapper;</div><div class="line">import org.apache.hadoop.mapreduce.Reducer;</div><div class="line">import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;</div><div class="line">import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;</div><div class="line"></div><div class="line">import java.io.IOException;</div><div class="line">import java.util.ArrayList;</div><div class="line"></div><div class="line">public class SelfJoin &#123;</div><div class="line"></div><div class="line">    public static class SelfMap extends Mapper&lt;LongWritable,Text,Text,Text&gt;&#123;</div><div class="line">        @Override</div><div class="line">        protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException &#123;</div><div class="line">            //左</div><div class="line">            context.write(new Text(&quot;c&quot;),new Text(&quot;p_&quot; + value.toString()));</div><div class="line">            //右</div><div class="line">            context.write(new Text(&quot;c&quot;),new Text(&quot;c_&quot; + value.toString()));</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static class SelfReduce extends Reducer&lt;Text,Text,Text,Text&gt; &#123;</div><div class="line">        @Override</div><div class="line">        protected void reduce(Text key, Iterable&lt;Text&gt; values, Context context) throws IOException, InterruptedException &#123;</div><div class="line">            ArrayList&lt;String&gt; clist = new ArrayList&lt;String&gt;();</div><div class="line">            ArrayList&lt;String&gt; plist = new ArrayList&lt;String&gt;();</div><div class="line"></div><div class="line">            for(Text v : values)&#123;</div><div class="line">                if(v.toString().contains(&quot;c_&quot;))&#123;</div><div class="line">                    clist.add(v.toString().substring(2));</div><div class="line">                &#125;else if(v.toString().contains(&quot;p_&quot;))&#123;</div><div class="line">                    plist.add(v.toString().substring(2));</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            //遍历做数据判断</div><div class="line">            if(!clist.isEmpty() &amp;&amp; !plist.isEmpty())&#123;</div><div class="line">                for(String c : clist)&#123;</div><div class="line">                    for(String p : plist)&#123;</div><div class="line"></div><div class="line">                        int r = Integer.parseInt(c);</div><div class="line">                        int l = Integer.parseInt(p);</div><div class="line"></div><div class="line">                        if(Math.abs(r-l) == 3)&#123;</div><div class="line">                            context.write(new Text(c),new Text(p));</div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static void main(String[] args) throws Exception&#123;</div><div class="line">        Configuration conf = new Configuration();</div><div class="line"></div><div class="line">        Job job = Job.getInstance(conf,&quot;sort&quot;);</div><div class="line"></div><div class="line">        job.setJarByClass(SelfJoin.class);</div><div class="line"></div><div class="line">        job.setMapperClass(SelfMap.class);</div><div class="line">        job.setMapOutputKeyClass(Text.class);</div><div class="line">        job.setMapOutputValueClass(Text.class);</div><div class="line"></div><div class="line">        job.setReducerClass(SelfReduce.class);</div><div class="line">        job.setOutputKeyClass(Text.class);</div><div class="line">        job.setOutputValueClass(Text.class);</div><div class="line"></div><div class="line">        FileInputFormat.addInputPath(job,new Path((&quot;/user/hive/warehouse/ym.db/test&quot;)));</div><div class="line">        FileOutputFormat.setOutputPath(job,new Path(&quot;/output/self&quot;));</div><div class="line"></div><div class="line">        //程序等待job完成,job已经提交给了dataNode,需要等待</div><div class="line">        System.exit(job.waitForCompletion(true)? 0:1);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>单表关联的结果展示如下：</p>
-<p><img src="/images/hadoop/self-data.png" alt=""></p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/05/19/hadoop-study006/" itemprop="url">
-                  MapReduce程序开发(六) 自定义分区排序
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-05-19T18:13:55+08:00" content="2016-05-19">
-              2016-05-19
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/hadoop/" itemprop="url" rel="index">
-                    <span itemprop="name">hadoop</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/05/19/hadoop-study006/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/19/hadoop-study006/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="1-自定义分区"><a href="#1-自定义分区" class="headerlink" title="1 自定义分区"></a>1 自定义分区</h2><p>map阶段将文件切割好以后,由于近文件切割为多个小的文件,将这些文件根据指定的分区进行分区后再合并写入到硬盘中,自定义分区的输入是map阶段的输出,下面使用去重的数据源进行自定义分区的实现,主要是讲数据按照大于5来进行分区,分区代码如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div></pre></td><td class="code"><pre><div class="line">import org.apache.hadoop.conf.Configuration;</div><div class="line">import org.apache.hadoop.fs.Path;</div><div class="line">import org.apache.hadoop.io.IntWritable;</div><div class="line">import org.apache.hadoop.io.LongWritable;</div><div class="line">import org.apache.hadoop.io.Text;</div><div class="line">import org.apache.hadoop.mapreduce.Job;</div><div class="line">import org.apache.hadoop.mapreduce.Mapper;</div><div class="line">import org.apache.hadoop.mapreduce.Partitioner;</div><div class="line">import org.apache.hadoop.mapreduce.Reducer;</div><div class="line">import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;</div><div class="line">import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;</div><div class="line"></div><div class="line">import java.io.IOException;</div><div class="line"></div><div class="line">public class JobRun &#123;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * map</div><div class="line">     */</div><div class="line">    public static class PartitionMap extends Mapper&lt;LongWritable,Text,IntWritable,Text&gt; &#123;</div><div class="line">        @Override</div><div class="line">        protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException &#123;</div><div class="line">            context.write(new IntWritable(Integer.parseInt(value.toString())),new Text());</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * partition</div><div class="line">     */</div><div class="line">    public static class MyPartition extends Partitioner&lt;IntWritable,Text&gt;&#123;</div><div class="line">        @Override</div><div class="line">        public int getPartition(IntWritable key, Text value, int i) &#123;</div><div class="line">            int k = key.get();</div><div class="line"></div><div class="line">            if(k &gt;= 5)return 1;</div><div class="line">            return 0;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * reduce</div><div class="line">     */</div><div class="line">    public static class PartitionReduce extends Reducer&lt;IntWritable,Text,IntWritable,Text&gt;&#123;</div><div class="line">        @Override</div><div class="line">        protected void reduce(IntWritable key, Iterable&lt;Text&gt; values, Context context) throws IOException, InterruptedException &#123;</div><div class="line">            context.write(key,new Text());</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * main函数</div><div class="line">     * @param args</div><div class="line">     */</div><div class="line">    public static void main(String[] args) throws Exception&#123;</div><div class="line">        Configuration conf = new Configuration();</div><div class="line"></div><div class="line">        Job job = Job.getInstance(conf,&quot;mypartition&quot;);</div><div class="line"></div><div class="line">        job.setJarByClass(JobRun.class);</div><div class="line"></div><div class="line">        job.setMapperClass(PartitionMap.class);</div><div class="line">        job.setReducerClass(PartitionReduce.class);</div><div class="line"></div><div class="line">        job.setMapOutputKeyClass(IntWritable.class);</div><div class="line">        job.setMapOutputValueClass(Text.class);</div><div class="line"></div><div class="line">        job.setPartitionerClass(MyPartition.class);</div><div class="line">        job.setNumReduceTasks(2);</div><div class="line"></div><div class="line">        FileInputFormat.addInputPath(job,new Path((&quot;/user/hive/warehouse/ym.db/test&quot;)));</div><div class="line">        FileOutputFormat.setOutputPath(job,new Path(&quot;/output/mypartition2&quot;));</div><div class="line"></div><div class="line">        //程序等待job完成,job已经提交给了dataNode,需要等待</div><div class="line">        System.exit(job.waitForCompletion(true)? 0:1);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>执行结果展示如下:</p>
-<p><img src="/images/hadoop/partition-result.png" alt=""></p>
-<p><img src="/images/hadoop/partition-detail.png" alt=""></p>
-<p>在分区中,mapreduce有默认的指定分区方式,分区源码如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">//</div><div class="line">// Source code recreated from a .class file by IntelliJ IDEA</div><div class="line">// (powered by Fernflower decompiler)</div><div class="line">//</div><div class="line"></div><div class="line">package org.apache.hadoop.mapreduce.lib.partition;</div><div class="line"></div><div class="line">import org.apache.hadoop.mapreduce.Partitioner;</div><div class="line"></div><div class="line">public class HashPartitioner&lt;K, V&gt; extends Partitioner&lt;K, V&gt; &#123;</div><div class="line">    public HashPartitioner() &#123;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public int getPartition(K key, V value, int numReduceTasks) &#123;</div><div class="line">        return (key.hashCode() &amp; 2147483647) % numReduceTasks;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>可见一个key应该分区给那个数据是根据key的hashCode和reduceTask的个数进行分区的</p>
-<h2 id="2-自定义排序"><a href="#2-自定义排序" class="headerlink" title="2 自定义排序"></a>2 自定义排序</h2><p>排序主要是在map端,map端进行数据切分后需要进行排序分组,在这个过程中对数据进行排序,当然在Shuffle过程中还需要在排序,也就是在将不同机器分布的数据拷贝到同一台机器上时,也就是需要这台机器进行reduce计算的任务数据,在拷贝过来后需要重新针对每块进行排序合并操作。</p>
-<p>基于去重的数据源,进行排序操作,实现将序排列如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div></pre></td><td class="code"><pre><div class="line">import org.apache.hadoop.conf.Configuration;</div><div class="line">import org.apache.hadoop.fs.Path;</div><div class="line">import org.apache.hadoop.io.LongWritable;</div><div class="line">import org.apache.hadoop.io.Text;</div><div class="line">import org.apache.hadoop.io.WritableComparable;</div><div class="line">import org.apache.hadoop.mapreduce.Job;</div><div class="line">import org.apache.hadoop.mapreduce.Mapper;</div><div class="line">import org.apache.hadoop.mapreduce.Reducer;</div><div class="line">import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;</div><div class="line">import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;</div><div class="line"></div><div class="line">import java.io.DataInput;</div><div class="line">import java.io.DataOutput;</div><div class="line">import java.io.IOException;</div><div class="line">import java.lang.Exception;</div><div class="line"></div><div class="line">public class JobRun &#123;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * map</div><div class="line">     */</div><div class="line">    public static class SortMap extends Mapper&lt;LongWritable,Text,MyKey,Text&gt; &#123;</div><div class="line">        @Override</div><div class="line">        protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException &#123;</div><div class="line">            int k = Integer.parseInt(value.toString());</div><div class="line">            MyKey mk = new MyKey(k);</div><div class="line">            context.write(mk,new Text());</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 对key进行重构</div><div class="line">     */</div><div class="line">    public static class MyKey implements WritableComparable&lt;MyKey&gt;&#123;</div><div class="line">        public int value;</div><div class="line"></div><div class="line">        public MyKey()&#123;&#125;</div><div class="line"></div><div class="line">        public MyKey(int value)&#123;</div><div class="line">            this.value = value;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        public void readFields(DataInput in) throws IOException &#123;</div><div class="line">            this.value = in.readInt();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        public void write(DataOutput out) throws IOException &#123;</div><div class="line">            out.writeInt(this.value);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        public int compareTo(MyKey o) &#123;</div><div class="line">            //升序排列</div><div class="line">            int tmp = o.value - this.value;</div><div class="line">            if(tmp &lt; 0)return -1;</div><div class="line">            return 1;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * reduce</div><div class="line">     */</div><div class="line">    public static class SortReduce extends Reducer&lt;MyKey,Text,LongWritable,Text&gt;&#123;</div><div class="line">        @Override</div><div class="line">        protected void reduce(MyKey key, Iterable&lt;Text&gt; values, Context context) throws IOException, InterruptedException &#123;</div><div class="line">            context.write(new LongWritable(key.value),new Text());</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * main函数</div><div class="line">     * @param args</div><div class="line">     */</div><div class="line">    public static void main(String[] args) throws Exception&#123;</div><div class="line">        Configuration conf = new Configuration();</div><div class="line"></div><div class="line">        Job job = Job.getInstance(conf,&quot;sort&quot;);</div><div class="line"></div><div class="line">        job.setJarByClass(JobRun.class);</div><div class="line"></div><div class="line">        job.setMapperClass(SortMap.class);</div><div class="line">        job.setMapOutputKeyClass(MyKey.class);</div><div class="line">        job.setMapOutputValueClass(Text.class);</div><div class="line"></div><div class="line">        job.setReducerClass(SortReduce.class);</div><div class="line">        job.setOutputKeyClass(LongWritable.class);</div><div class="line">        job.setOutputValueClass(Text.class);</div><div class="line"></div><div class="line">        FileInputFormat.addInputPath(job,new Path((&quot;/user/hive/warehouse/ym.db/test&quot;)));</div><div class="line">        FileOutputFormat.setOutputPath(job,new Path(&quot;/output/sort&quot;));</div><div class="line"></div><div class="line">        //程序等待job完成,job已经提交给了dataNode,需要等待</div><div class="line">        System.exit(job.waitForCompletion(true)? 0:1);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>排序结果展示如下:</p>
-<p><img src="/images/hadoop/sort-data.png" alt=""></p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/05/19/hadoop-study005/" itemprop="url">
-                  MapReduce程序开发(五) 去重
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-05-19T14:13:55+08:00" content="2016-05-19">
-              2016-05-19
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/hadoop/" itemprop="url" rel="index">
-                    <span itemprop="name">hadoop</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/05/19/hadoop-study005/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/19/hadoop-study005/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="1-去重"><a href="#1-去重" class="headerlink" title="1 去重"></a>1 去重</h2><p>例如需要做如下的操作：<br>select distinct id from test;</p>
-<p>在MapReduce中所有的数据操作都是<key,value>进行操作的,而在这键值对中,键是不重复的,当前MapReuce中键的去重操作是在Shuffle中进行完成的。</key,value></p>
-<p>也就是将每个数据块的数据处理成<key,value>后,在讲key进行汇总,也就这里进行了去重,因此这个操作的实现方式是很简单的,只要将每一行的数据取出来找到store_id后,将这个当做key进行处理写出,写出后在reduce中在讲这个key进行写出就行了</key,value></p>
-<p>数据源：hdfs中存储的目录和文件内容如下:</p>
-<p><img src="/images/hadoop/test-data.png" alt=""></p>
-<p>代码试下如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> *</div><div class="line"> */</div><div class="line">public class JobRun &#123;</div><div class="line">    /**</div><div class="line">     *</div><div class="line">     */</div><div class="line">    public static class DistinctMapper extends Mapper&lt;LongWritable,Text,Text,Text&gt; &#123;</div><div class="line">        /**</div><div class="line">         * 每次调用哪个这个map方法,会传入split中的一行数据</div><div class="line">         * key:该行数据所在文件中的下标,位置下标</div><div class="line">         * value：对应的为这一行数据</div><div class="line">         * @param key</div><div class="line">         * @param value</div><div class="line">         * @param context</div><div class="line">         * @throws IOException</div><div class="line">         * @throws InterruptedException</div><div class="line">         */</div><div class="line">        protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException &#123;</div><div class="line">            //由于这里拿到一行对应的就一个值,因此不需要切分,将这个值写出就行了</div><div class="line">            String line = value.toString();</div><div class="line">            //map的输出</div><div class="line">            context.write(new Text(line),new Text());</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     *</div><div class="line">     */</div><div class="line">    public static class DistinctReducer extends Reducer&lt;Text,Text,Text,Text&gt; &#123;</div><div class="line">        /**</div><div class="line">         *</div><div class="line">         * @param key</div><div class="line">         * @param values</div><div class="line">         * @param context</div><div class="line">         * @throws IOException</div><div class="line">         * @throws InterruptedException</div><div class="line">         */</div><div class="line">        protected void reduce(Text key, Iterable&lt;Text&gt; values, Context context) throws IOException, InterruptedException &#123;</div><div class="line">            context.write(key,null);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static void main(String[] args) throws Exception&#123;</div><div class="line"></div><div class="line">        Configuration conf = new Configuration();</div><div class="line"></div><div class="line">        Job job = Job.getInstance(conf,&quot;distinct&quot;);</div><div class="line"></div><div class="line">        job.setJarByClass(JobRun.class);</div><div class="line">        job.setMapperClass(DistinctMapper.class);</div><div class="line">        job.setReducerClass(DistinctReducer.class);</div><div class="line">        job.setMapOutputKeyClass(Text.class);</div><div class="line">        job.setMapOutputValueClass(Text.class);</div><div class="line"></div><div class="line">        FileInputFormat.addInputPath(job,new Path((&quot;/user/hive/warehouse/ym.db/test&quot;)));</div><div class="line">        FileOutputFormat.setOutputPath(job,new Path(&quot;/output&quot;));</div><div class="line"></div><div class="line">        //程序等待job完成,job已经提交给了dataNode,需要等待</div><div class="line">        System.exit(job.waitForCompletion(true)? 0:1);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>执行任务:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div></pre></td><td class="code"><pre><div class="line">root@hadoopmaster:/data/sunx/jar# hadoop jar StudyCode.jar com.study.hadoop.mr.distinct.JobRun</div><div class="line">16/05/18 14:38:23 INFO client.RMProxy: Connecting to ResourceManager at /172.16.11.247:8032</div><div class="line">16/05/18 14:38:23 WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.</div><div class="line">16/05/18 14:38:23 INFO input.FileInputFormat: Total input paths to process : 1</div><div class="line">16/05/18 14:38:24 INFO mapreduce.JobSubmitter: number of splits:1</div><div class="line">16/05/18 14:38:24 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1462894136239_0380</div><div class="line">16/05/18 14:38:24 INFO impl.YarnClientImpl: Submitted application application_1462894136239_0380</div><div class="line">16/05/18 14:38:24 INFO mapreduce.Job: The url to track the job: http://hadoopmaster:8088/proxy/application_1462894136239_0380/</div><div class="line">16/05/18 14:38:24 INFO mapreduce.Job: Running job: job_1462894136239_0380</div><div class="line">16/05/18 14:38:30 INFO mapreduce.Job: Job job_1462894136239_0380 running in uber mode : false</div><div class="line">16/05/18 14:38:30 INFO mapreduce.Job:  map 0% reduce 0%</div><div class="line">16/05/18 14:38:35 INFO mapreduce.Job:  map 100% reduce 0%</div><div class="line">16/05/18 14:38:41 INFO mapreduce.Job:  map 100% reduce 100%</div><div class="line">16/05/18 14:38:41 INFO mapreduce.Job: Job job_1462894136239_0380 completed successfully</div><div class="line">16/05/18 14:38:41 INFO mapreduce.Job: Counters: 49</div><div class="line">	File System Counters</div><div class="line">		FILE: Number of bytes read=81</div><div class="line">		FILE: Number of bytes written=230953</div><div class="line">		FILE: Number of read operations=0</div><div class="line">		FILE: Number of large read operations=0</div><div class="line">		FILE: Number of write operations=0</div><div class="line">		HDFS: Number of bytes read=160</div><div class="line">		HDFS: Number of bytes written=18</div><div class="line">		HDFS: Number of read operations=6</div><div class="line">		HDFS: Number of large read operations=0</div><div class="line">		HDFS: Number of write operations=2</div><div class="line">	Job Counters</div><div class="line">		Launched map tasks=1</div><div class="line">		Launched reduce tasks=1</div><div class="line">		Data-local map tasks=1</div><div class="line">		Total time spent by all maps in occupied slots (ms)=3081</div><div class="line">		Total time spent by all reduces in occupied slots (ms)=6000</div><div class="line">		Total time spent by all map tasks (ms)=3081</div><div class="line">		Total time spent by all reduce tasks (ms)=3000</div><div class="line">		Total vcore-seconds taken by all map tasks=3081</div><div class="line">		Total vcore-seconds taken by all reduce tasks=3000</div><div class="line">		Total megabyte-seconds taken by all map tasks=3154944</div><div class="line">		Total megabyte-seconds taken by all reduce tasks=6144000</div><div class="line">	Map-Reduce Framework</div><div class="line">		Map input records=15</div><div class="line">		Map output records=15</div><div class="line">		Map output bytes=45</div><div class="line">		Map output materialized bytes=81</div><div class="line">		Input split bytes=130</div><div class="line">		Combine input records=0</div><div class="line">		Combine output records=0</div><div class="line">		Reduce input groups=9</div><div class="line">		Reduce shuffle bytes=81</div><div class="line">		Reduce input records=15</div><div class="line">		Reduce output records=9</div><div class="line">		Spilled Records=30</div><div class="line">		Shuffled Maps =1</div><div class="line">		Failed Shuffles=0</div><div class="line">		Merged Map outputs=1</div><div class="line">		GC time elapsed (ms)=60</div><div class="line">		CPU time spent (ms)=1290</div><div class="line">		Physical memory (bytes) snapshot=439840768</div><div class="line">		Virtual memory (bytes) snapshot=3590205440</div><div class="line">		Total committed heap usage (bytes)=424148992</div><div class="line">	Shuffle Errors</div><div class="line">		BAD_ID=0</div><div class="line">		CONNECTION=0</div><div class="line">		IO_ERROR=0</div><div class="line">		WRONG_LENGTH=0</div><div class="line">		WRONG_MAP=0</div><div class="line">		WRONG_REDUCE=0</div><div class="line">	File Input Format Counters</div><div class="line">		Bytes Read=30</div><div class="line">	File Output Format Counters</div><div class="line">		Bytes Written=18</div></pre></td></tr></table></figure>
-<p>结果展示：</p>
-<p><img src="/images/hadoop/test-result.png" alt=""></p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/05/13/hadoop-study004/" itemprop="url">
-                  MapReduce程序开发(四) 开发准备和wordcount程序
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-05-13T14:13:55+08:00" content="2016-05-13">
-              2016-05-13
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/hadoop/" itemprop="url" rel="index">
-                    <span itemprop="name">hadoop</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/05/13/hadoop-study004/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/13/hadoop-study004/" itemprop="commentsCount"></span>
+                <a href="/2016/06/12/hbase-study006/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/12/hbase-study006/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -688,50 +302,40 @@
         
           
             <blockquote>
-<p>MapReduce框架主要就是给定一个输入流将输入了整理成<key,value>的键值对集合,对于这个集合的预处理需要开发者自己定义,同样的预处理后需要将与处理的结果汇总汇总后在进行相应的聚合处理,在整个过程中采用的是键值对的方式进行数据的处理,在将最后处理的结果输出到指定的结果数据源中<br>正如官网上说的：</key,value></p>
-<p>Input and Output types of a MapReduce job:</p>
-<p>(input) \<k1, v1=""> -&gt; map -&gt; \<k2, v2=""> -&gt; combine -&gt; \<k2, v2=""> -&gt; reduce -&gt; \<k3, v3=""> (output)</k3,></k2,></k2,></k1,></p>
+<p>Phoenix查询引擎会将SQL查询转换为一个或多个HBase scan，并编排执行以生成标准的JDBC结果集。直接使用HBase API、协同处理器与自定义过滤器，对于简单查询来说，其性能量级是毫秒，对于百万级别的行数来说，其性能量级是秒。</p>
 </blockquote>
-<h2 id="1-下面介绍MapReduce的部分参数及其默认设置："><a href="#1-下面介绍MapReduce的部分参数及其默认设置：" class="headerlink" title="1 下面介绍MapReduce的部分参数及其默认设置："></a>1 下面介绍MapReduce的部分参数及其默认设置：</h2><pre><code>1 InputFormat类 该类的作用是将输入的数据分割成一个个的split，并将split进一步拆分成&lt;key, value&gt;对作为map函数的输入
+<p>Phoenix的特性:</p>
+<pre><code>* 嵌入式的JDBC驱动，实现了大部分的java.sql接口，包括元数据API
+* 可以通过多部行键或是键/值单元对列进行建模
+* 完善的查询支持，可以使用多个谓词以及优化的扫描键
+* DDL支持：通过CREATE TABLE、DROP TABLE及ALTER TABLE来添加/删除列
+* 版本化的模式仓库：当写入数据时，快照查询会使用恰当的模式
+* DML支持：用于逐行插入的UPSERT VALUES、用于相同或不同表之间大量数据传输的UPSERT SELECT、用于删除行的DELETE
+* 通过客户端的批处理实现的有限的事务支持
+* 单表——还没有连接，同时二级索引也在开发当中
+* 紧跟ANSI SQL标准
+</code></pre><h2 id="1-Phoenix的安装"><a href="#1-Phoenix的安装" class="headerlink" title="1 Phoenix的安装"></a>1 Phoenix的安装</h2><p>下载安装包:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">//下载数据</div><div class="line">wget http://mirrors.hust.edu.cn/apache/phoenix/phoenix-4.7.0-HBase-1.1/bin/phoenix-4.7.0-HBase-1.1-bin.tar.gz</div><div class="line"></div><div class="line">//解压数据</div><div class="line">tar -zxvf phoenix-4.7.0-HBase-1.1-bin.tar.gz</div></pre></td></tr></table></figure>
+<p>将解压后的文件中phoenix-4.7.0-HBase-1.1-server.jar拷贝到所有RegionServer的lib目录下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">scp phoenix-4.7.0-HBase-1.1-server.jar root@hadoop-slave:/data/hbase1.2.0/lib/</div></pre></td></tr></table></figure>
+<p>重新启动hbase进行验证是否安装成功:</p>
+<p><img src="/images/phoenix/phoenix-link.png" alt=""></p>
+<p><img src="/images/phoenix/phoenix-table.png" alt=""></p>
+<h2 id="2-Phoenix-in-15minutes-or-less"><a href="#2-Phoenix-in-15minutes-or-less" class="headerlink" title="2 Phoenix in 15minutes or less"></a>2 Phoenix in 15minutes or less</h2><p>创建一个sql脚本,其中脚本中的内容为一个建表语句的定义,具体的如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">create_table.sql</div><div class="line"></div><div class="line">create table if not exists test_table(</div><div class="line">	state char(1) not null,</div><div class="line">	city varchar not null,</div><div class="line">	population bigint,</div><div class="line">	constraint my_pk primary key (state,city)</div><div class="line">);</div></pre></td></tr></table></figure>
+<p>创建一个csv,包含部分数据用于插入到表中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">test_table.csv</div><div class="line"></div><div class="line">N,New York,1</div><div class="line">B,Bei Jing,2</div><div class="line">S,Shang Hai,3</div><div class="line">N,Nan Jing,4</div><div class="line">B,Bai Jie,5</div></pre></td></tr></table></figure>
+<p>创建一个用于统计查询的sql:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">create_table_count.sql</div><div class="line"></div><div class="line">select </div><div class="line">     state as &quot;State&quot;,</div><div class="line">     count(city) as &quot;City Count&quot;,</div><div class="line">     sum(population) as &quot;Population Sum&quot;</div><div class="line">from test_table</div><div class="line">group by state</div><div class="line">order by sum(population) desc;</div></pre></td></tr></table></figure>
+<p>执行命令:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./psql.py hadoopmaster:2181 create_table.sql create_table.csv create_table_count.sql</div></pre></td></tr></table></figure>
+<p>执行结果截图如下:</p>
+<p><img src="/images/phoenix/phoenix-test.png" alt=""></p>
+<p>其中在调用的时候csv的文件名要和表名称相对应,否则会报错</p>
+<p>查看表中的数据：</p>
+<p><img src="/images/phoenix/phoenix-test-list.png" alt=""></p>
+<p><img src="/images/phoenix/phoenix-test-select.png" alt=""></p>
 
-2 Mapper类 实现map函数，根据输入的&lt;key, value&gt;对生产中间结果
-
-3 Combiner 实现combine函数，合并中间结果中具有相同key值的键值对。
-
-4 Partitioner类 实现getPartition函数，用于在Shuffle过程按照key值将中间数据分成R份，每一份由一个Reduce负责
-
-5 Reducer类 实现reduce函数，将中间结果合并，得到最终的结果
-
-6 OutputFormat类 该类负责输出最终的结果
-</code></pre><h2 id="2-MapReduce开发的准备"><a href="#2-MapReduce开发的准备" class="headerlink" title="2 MapReduce开发的准备"></a>2 MapReduce开发的准备</h2><p>   主要是引入相应的jar包,我建的是maven项目,因此需要引入相应的依赖,依赖的截图如下:<br>   <img src="/images/hadoop/mapreduce-mavn-dependency.png" alt=""></p>
-<h2 id="3-WordCount程序："><a href="#3-WordCount程序：" class="headerlink" title="3 WordCount程序："></a>3 WordCount程序：</h2> <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div></pre></td><td class="code"><pre><div class="line">import java.io.IOException;</div><div class="line">import java.util.StringTokenizer;</div><div class="line"></div><div class="line">import org.apache.hadoop.conf.Configuration;</div><div class="line">import org.apache.hadoop.fs.Path;</div><div class="line">import org.apache.hadoop.io.IntWritable;</div><div class="line">import org.apache.hadoop.io.Text;</div><div class="line">import org.apache.hadoop.mapreduce.Job;</div><div class="line">import org.apache.hadoop.mapreduce.Mapper;</div><div class="line">import org.apache.hadoop.mapreduce.Reducer;</div><div class="line">import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;</div><div class="line">import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;</div><div class="line"></div><div class="line">public class WordCount &#123;</div><div class="line"></div><div class="line">  public static class TokenizerMapper</div><div class="line">       extends Mapper&lt;Object, Text, Text, IntWritable&gt;&#123;</div><div class="line"></div><div class="line">    private final static IntWritable one = new IntWritable(1);</div><div class="line">    private Text word = new Text();</div><div class="line"></div><div class="line">    public void map(Object key, Text value, Context context</div><div class="line">                    ) throws IOException, InterruptedException &#123;</div><div class="line">      StringTokenizer itr = new StringTokenizer(value.toString());</div><div class="line">      while (itr.hasMoreTokens()) &#123;</div><div class="line">        word.set(itr.nextToken());</div><div class="line">        context.write(word, one);</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  public static class IntSumReducer</div><div class="line">       extends Reducer&lt;Text,IntWritable,Text,IntWritable&gt; &#123;</div><div class="line">    private IntWritable result = new IntWritable();</div><div class="line"></div><div class="line">    public void reduce(Text key, Iterable&lt;IntWritable&gt; values,</div><div class="line">                       Context context</div><div class="line">                       ) throws IOException, InterruptedException &#123;</div><div class="line">      int sum = 0;</div><div class="line">      for (IntWritable val : values) &#123;</div><div class="line">        sum += val.get();</div><div class="line">      &#125;</div><div class="line">      result.set(sum);</div><div class="line">      context.write(key, result);</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  public static void main(String[] args) throws Exception &#123;</div><div class="line">    Configuration conf = new Configuration();</div><div class="line">    Job job = Job.getInstance(conf, &quot;word count&quot;);</div><div class="line">    job.setJarByClass(WordCount.class);</div><div class="line">    job.setMapperClass(TokenizerMapper.class);</div><div class="line">    job.setCombinerClass(IntSumReducer.class);</div><div class="line">    job.setReducerClass(IntSumReducer.class);</div><div class="line">    job.setOutputKeyClass(Text.class);</div><div class="line">    job.setOutputValueClass(IntWritable.class);</div><div class="line">    FileInputFormat.addInputPath(job, new Path(args[0]));</div><div class="line">    FileOutputFormat.setOutputPath(job, new Path(args[1]));</div><div class="line">    System.exit(job.waitForCompletion(true) ? 0 : 1);</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>程序主要说明:</p>
-<blockquote>
-<p>MapReuce是通过将输入的数据源切割成<key,value>的形式,而数据分布式在多台机器上,因此需要先在每台机器上将数据源切割处理好后,在按照key汇总,汇总后再进行相应的处理将数据处理好以后写入到结果文件目录中,因此在编写MapReduce程序的时候,需要指定相应的输入数据源和输入数据源,指定目录的形式来进行指定。</key,value></p>
-</blockquote>
-<pre><code> //这个是配置信息主要是链接到相应的hdfs上
- Configuration conf = new Configuration();
- Job job = Job.getInstance(conf, &quot;word count&quot;);
- job.setJarByClass(WordCount.class);
-
- //对数据源进行初步的处理的map程序的类
-job.setMapperClass(TokenizerMapper.class);
-//进行汇总的操作类,主要是讲相同的key进行汇总
-job.setCombinerClass(IntSumReducer.class);
-//针对特定的key汇总后的每条数据进行如何处理
-job.setReducerClass(IntSumReducer.class);
-
-//结果数据的输出格式,也就是结果输出的类型设定
-job.setOutputKeyClass(Text.class);
-job.setOutputValueClass(IntWritable.class);
-//输入数据源
-FileInputFormat.addInputPath(job, new Path(args[0]));
-//输出数据源
-FileOutputFormat.setOutputPath(job, new Path(args[1]));
-
-//等待程序完成
-System.exit(job.waitForCompletion(true) ? 0 : 1);
-</code></pre>
           
         
       
@@ -780,8 +384,8 @@ System.exit(job.waitForCompletion(true) ? 0 : 1);
             
               
                 
-                <a class="post-title-link" href="/2016/05/11/java-io-3/" itemprop="url">
-                  JavaIO学习笔记(三) Java File类
+                <a class="post-title-link" href="/2016/06/08/hbase-study005/" itemprop="url">
+                  HBase学习笔记(五) HBase与MapReduce的集成
                 </a>
               
             
@@ -794,8 +398,8 @@ System.exit(job.waitForCompletion(true) ? 0 : 1);
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-05-11T09:57:55+08:00" content="2016-05-11">
-              2016-05-11
+            <time itemprop="dateCreated" datetime="2016-06-08T11:55:55+08:00" content="2016-06-08">
+              2016-06-08
             </time>
           </span>
 
@@ -808,8 +412,8 @@ System.exit(job.waitForCompletion(true) ? 0 : 1);
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
+                  <a href="/categories/hbase/" itemprop="url" rel="index">
+                    <span itemprop="name">hbase</span>
                   </a>
                 </span>
 
@@ -824,8 +428,8 @@ System.exit(job.waitForCompletion(true) ? 0 : 1);
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/05/11/java-io-3/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/11/java-io-3/" itemprop="commentsCount"></span>
+                <a href="/2016/06/08/hbase-study005/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/08/hbase-study005/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -850,40 +454,477 @@ System.exit(job.waitForCompletion(true) ? 0 : 1);
       
         
           
-            <blockquote>
-<p>在Java语言的java.io包中，由File类提供了描述文件和目录的操作与管理方法。在Java中File不是InputStream,OutputStream或者是Reader以及Writer的子类,File只是负责与管理磁盘上的文件和目录。</p>
-</blockquote>
-<h2 id="File的构造函数"><a href="#File的构造函数" class="headerlink" title="File的构造函数"></a>File的构造函数</h2><pre><code>String path = &quot;conf/test.txt&quot;;
-File file = new File(path);
-//创建文件的另外两种构造函数方式
-//1 new File(parent,child) 如：new File(&quot;conf/&quot;,&quot;test.txt&quot;)
-//2 new File(File file,String fileName), 如果file对应的文件夹不存在,则创建文件夹
-</code></pre><h2 id="文件和文件夹的创建"><a href="#文件和文件夹的创建" class="headerlink" title="文件和文件夹的创建"></a>文件和文件夹的创建</h2><p>创建文件,这个地方需要捕获异常:IOException</p>
-<pre><code>file.createNewFile();
-</code></pre><p>该方法的源代码如下:</p>
-<p> <img src="/images/io/create-file.png" alt=""></p>
-<p>可见其过程是：先获取一个SecurityManager对象,通过调用checkWrite(String path)方法去检测是否可写,这个可写是什么样的一个过程：检测这个路径下是否有创文件的权限,源码如下：</p>
-<p><img src="/images/io/check-write-file.png" alt=""></p>
-<p> 通过验证文件目录下是否有权限去创建文件后,还需要验证路径的有效性, 然后创建文件,这个地方调用的是一个接口,这个接口的实现是调用的非java方法。</p>
-<p>创建文件夹:</p>
-<pre><code>file.mkdirs();  
-file.mkdir();
-</code></pre><p>创建文件夹有两种方式,这两种方式中file.mkdir()是创建一个文件夹,  其过程和创建文件一样：先检测给定目录下是否可以创建文件夹,然后进行文件的创建。</p>
-<p>针对另外一个方法file.mkdirs(),这个方法中给定目录去创建文件夹,而如果父目录不存在也一并创建,这个地方使用的是递归调用的方式来进行的,源码如下：</p>
-<p>  <img src="/images/io/mkdirs.png" alt=""></p>
-<h2 id="删除操作"><a href="#删除操作" class="headerlink" title="删除操作"></a>删除操作</h2><p>删除文件和文件夹的方式一样,删除的接口方式如下:</p>
-<pre><code>file.delete();                //删除文件
-file.deleteOnExit();        //删除文件,当文件存在的话
-</code></pre><h2 id="修改操作"><a href="#修改操作" class="headerlink" title="修改操作"></a>修改操作</h2><p>修改操作主要是文件的重命名,</p>
-<pre><code>file.renameTo(new File(&quot;conf/test/test1.txt&quot;));
-</code></pre><p>这个操作是讲一个文件重命名为另外一个文件,除了重命名还可以用于启动文件,也就是将文件重命名到另外一个目录下,如上。</p>
-<h2 id="展示操作"><a href="#展示操作" class="headerlink" title="展示操作"></a>展示操作</h2><p><img src="/images/io/file-list.png" alt=""></p>
-<h2 id="其他操作"><a href="#其他操作" class="headerlink" title="其他操作"></a>其他操作</h2><pre><code>1）public boolean exists( ) 判断文件或目录是否存在
-2）public boolean isFile( ) 判断是文件还是目录 
-3）public boolean isDirectory( ) 判断是文件还是目录
-4）public String getName( ) 返回文件名或目录名
-5）public String getPath( ) 返回文件或目录的路径。
-</code></pre>
+            <p>以下内容摘抄与官网文档中</p>
+<h2 id="1-HBase-MapReduce-Read-Example"><a href="#1-HBase-MapReduce-Read-Example" class="headerlink" title="1 HBase MapReduce Read Example"></a>1 HBase MapReduce Read Example</h2><p>The following is an example of using HBase as a MapReduce source in read-only manner. Specifically, there is a Mapper instance but no Reducer, and nothing is being emitted from the Mapper. The job would be defined as follows…​</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">Configuration config = HBaseConfiguration.create();</div><div class="line">Job job = new Job(config, &quot;ExampleRead&quot;);</div><div class="line">job.setJarByClass(MyReadJob.class);     // class that contains mapper</div><div class="line"></div><div class="line">Scan scan = new Scan();</div><div class="line">scan.setCaching(500);        // 1 is the default in Scan, which will be bad for MapReduce jobs</div><div class="line">scan.setCacheBlocks(false);  // don&apos;t set to true for MR jobs</div><div class="line">// set other scan attrs</div><div class="line">...</div><div class="line"></div><div class="line">TableMapReduceUtil.initTableMapperJob(</div><div class="line">  tableName,        // input HBase table name</div><div class="line">  scan,             // Scan instance to control CF and attribute selection</div><div class="line">  MyMapper.class,   // mapper</div><div class="line">  null,             // mapper output key</div><div class="line">  null,             // mapper output value</div><div class="line">  job);</div><div class="line">job.setOutputFormatClass(NullOutputFormat.class);   // because we aren&apos;t emitting anything from mapper</div><div class="line"></div><div class="line">boolean b = job.waitForCompletion(true);</div><div class="line">if (!b) &#123;</div><div class="line">  throw new IOException(&quot;error with job!&quot;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>the mapper instance would extend TableMapper</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">public static class MyMapper extends TableMapper&lt;Text, Text&gt; &#123;</div><div class="line"></div><div class="line">  public void map(ImmutableBytesWritable row, Result value, Context context) throws InterruptedException, IOException &#123;</div><div class="line">    // process data for the row from the Result instance.</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="2-HBase-MapReduce-Read-Write-Example"><a href="#2-HBase-MapReduce-Read-Write-Example" class="headerlink" title="2 HBase MapReduce Read/Write Example"></a>2 HBase MapReduce Read/Write Example</h2><p>The following is an example of using HBase both as a source and as a sink with MapReduce. This example will simply copy data from one table to another.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">Configuration config = HBaseConfiguration.create();</div><div class="line">Job job = new Job(config,&quot;ExampleReadWrite&quot;);</div><div class="line">job.setJarByClass(MyReadWriteJob.class);    // class that contains mapper</div><div class="line"></div><div class="line">Scan scan = new Scan();</div><div class="line">scan.setCaching(500);        // 1 is the default in Scan, which will be bad for MapReduce jobs</div><div class="line">scan.setCacheBlocks(false);  // don&apos;t set to true for MR jobs</div><div class="line">// set other scan attrs</div><div class="line"></div><div class="line">TableMapReduceUtil.initTableMapperJob(</div><div class="line">  sourceTable,      // input table</div><div class="line">  scan,             // Scan instance to control CF and attribute selection</div><div class="line">  MyMapper.class,   // mapper class</div><div class="line">  null,             // mapper output key</div><div class="line">  null,             // mapper output value</div><div class="line">  job);</div><div class="line">TableMapReduceUtil.initTableReducerJob(</div><div class="line">  targetTable,      // output table</div><div class="line">  null,             // reducer class</div><div class="line">  job);</div><div class="line">job.setNumReduceTasks(0);</div><div class="line"></div><div class="line">boolean b = job.waitForCompletion(true);</div><div class="line">if (!b) &#123;</div><div class="line">    throw new IOException(&quot;error with job!&quot;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>An explanation is required of what TableMapReduceUtil is doing, especially with the reducer. TableOutputFormat is being used as the outputFormat class, and several parameters are being set on the config (e.g., TableOutputFormat.OUTPUT_TABLE), as well as setting the reducer output key to ImmutableBytesWritable and reducer value to Writable. These could be set by the programmer on the job and conf, but TableMapReduceUtil tries to make things easier.</p>
+<p>The following is the example mapper, which will create a Put and matching the input Result and emit it. Note: this is what the CopyTable utility does.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">public static class MyMapper extends TableMapper&lt;ImmutableBytesWritable, Put&gt;  &#123;</div><div class="line"></div><div class="line">  public void map(ImmutableBytesWritable row, Result value, Context context) throws IOException, InterruptedException &#123;</div><div class="line">    // this example is just copying the data from the source table...</div><div class="line">      context.write(row, resultToPut(row,value));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private static Put resultToPut(ImmutableBytesWritable key, Result result) throws IOException &#123;</div><div class="line">      Put put = new Put(key.get());</div><div class="line">      for (KeyValue kv : result.raw()) &#123;</div><div class="line">        put.add(kv);</div><div class="line">      &#125;</div><div class="line">      return put;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>There isn’t actually a reducer step, so TableOutputFormat takes care of sending the Put to the target table.</p>
+<p>This is just an example, developers could choose not to use TableOutputFormat and connect to the target table themselves.</p>
+<h2 id="3-HBase-MapReduce-Read-Write-Example-With-Multi-Table-Output"><a href="#3-HBase-MapReduce-Read-Write-Example-With-Multi-Table-Output" class="headerlink" title="3 HBase MapReduce Read/Write Example With Multi-Table Output"></a>3 HBase MapReduce Read/Write Example With Multi-Table Output</h2><p>TODO: example for MultiTableOutputFormat.</p>
+<h2 id="4-HBase-MapReduce-Summary-to-HBase-Example"><a href="#4-HBase-MapReduce-Summary-to-HBase-Example" class="headerlink" title="4 HBase MapReduce Summary to HBase Example"></a>4 HBase MapReduce Summary to HBase Example</h2><p>The following example uses HBase as a MapReduce source and sink with a summarization step. This example will count the number of distinct instances of a value in a table and write those summarized counts in another table.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">Configuration config = HBaseConfiguration.create();</div><div class="line">Job job = new Job(config,&quot;ExampleSummary&quot;);</div><div class="line">job.setJarByClass(MySummaryJob.class);     // class that contains mapper and reducer</div><div class="line"></div><div class="line">Scan scan = new Scan();</div><div class="line">scan.setCaching(500);        // 1 is the default in Scan, which will be bad for MapReduce jobs</div><div class="line">scan.setCacheBlocks(false);  // don&apos;t set to true for MR jobs</div><div class="line">// set other scan attrs</div><div class="line"></div><div class="line">TableMapReduceUtil.initTableMapperJob(</div><div class="line">  sourceTable,        // input table</div><div class="line">  scan,               // Scan instance to control CF and attribute selection</div><div class="line">  MyMapper.class,     // mapper class</div><div class="line">  Text.class,         // mapper output key</div><div class="line">  IntWritable.class,  // mapper output value</div><div class="line">  job);</div><div class="line">TableMapReduceUtil.initTableReducerJob(</div><div class="line">  targetTable,        // output table</div><div class="line">  MyTableReducer.class,    // reducer class</div><div class="line">  job);</div><div class="line">job.setNumReduceTasks(1);   // at least one, adjust as required</div><div class="line"></div><div class="line">boolean b = job.waitForCompletion(true);</div><div class="line">if (!b) &#123;</div><div class="line">  throw new IOException(&quot;error with job!&quot;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>In this example mapper a column with a String-value is chosen as the value to summarize upon. This value is used as the key to emit from the mapper, and an IntWritable represents an instance counter.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">public static class MyMapper extends TableMapper&lt;Text, IntWritable&gt;  &#123;</div><div class="line">  public static final byte[] CF = &quot;cf&quot;.getBytes();</div><div class="line">  public static final byte[] ATTR1 = &quot;attr1&quot;.getBytes();</div><div class="line"></div><div class="line">  private final IntWritable ONE = new IntWritable(1);</div><div class="line">  private Text text = new Text();</div><div class="line"></div><div class="line">  public void map(ImmutableBytesWritable row, Result value, Context context) throws IOException, InterruptedException &#123;</div><div class="line">    String val = new String(value.getValue(CF, ATTR1));</div><div class="line">    text.set(val);     // we can only emit Writables...</div><div class="line">    context.write(text, ONE);</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>In the reducer, the “ones” are counted (just like any other MR example that does this), and then emits a Put.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">public static class MyTableReducer extends TableReducer&lt;Text, IntWritable, ImmutableBytesWritable&gt;  &#123;</div><div class="line">  public static final byte[] CF = &quot;cf&quot;.getBytes();</div><div class="line">  public static final byte[] COUNT = &quot;count&quot;.getBytes();</div><div class="line"></div><div class="line">  public void reduce(Text key, Iterable&lt;IntWritable&gt; values, Context context) throws IOException, InterruptedException &#123;</div><div class="line">    int i = 0;</div><div class="line">    for (IntWritable val : values) &#123;</div><div class="line">      i += val.get();</div><div class="line">    &#125;</div><div class="line">    Put put = new Put(Bytes.toBytes(key.toString()));</div><div class="line">    put.add(CF, COUNT, Bytes.toBytes(i));</div><div class="line"></div><div class="line">    context.write(null, put);</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="5-HBase-MapReduce-Summary-to-File-Example"><a href="#5-HBase-MapReduce-Summary-to-File-Example" class="headerlink" title="5 HBase MapReduce Summary to File Example"></a>5 HBase MapReduce Summary to File Example</h2><p>This very similar to the summary example above, with exception that this is using HBase as a MapReduce source but HDFS as the sink. The differences are in the job setup and in the reducer. The mapper remains the same.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">Configuration config = HBaseConfiguration.create();</div><div class="line">Job job = new Job(config,&quot;ExampleSummaryToFile&quot;);</div><div class="line">job.setJarByClass(MySummaryFileJob.class);     // class that contains mapper and reducer</div><div class="line"></div><div class="line">Scan scan = new Scan();</div><div class="line">scan.setCaching(500);        // 1 is the default in Scan, which will be bad for MapReduce jobs</div><div class="line">scan.setCacheBlocks(false);  // don&apos;t set to true for MR jobs</div><div class="line">// set other scan attrs</div><div class="line"></div><div class="line">TableMapReduceUtil.initTableMapperJob(</div><div class="line">  sourceTable,        // input table</div><div class="line">  scan,               // Scan instance to control CF and attribute selection</div><div class="line">  MyMapper.class,     // mapper class</div><div class="line">  Text.class,         // mapper output key</div><div class="line">  IntWritable.class,  // mapper output value</div><div class="line">  job);</div><div class="line">job.setReducerClass(MyReducer.class);    // reducer class</div><div class="line">job.setNumReduceTasks(1);    // at least one, adjust as required</div><div class="line">FileOutputFormat.setOutputPath(job, new Path(&quot;/tmp/mr/mySummaryFile&quot;));  // adjust directories as required</div><div class="line"></div><div class="line">boolean b = job.waitForCompletion(true);</div><div class="line">if (!b) &#123;</div><div class="line">  throw new IOException(&quot;error with job!&quot;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>As stated above, the previous Mapper can run unchanged with this example. As for the Reducer, it is a “generic” Reducer instead of extending TableMapper and emitting Puts.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">public static class MyReducer extends Reducer&lt;Text, IntWritable, Text, IntWritable&gt;  &#123;</div><div class="line"></div><div class="line">  public void reduce(Text key, Iterable&lt;IntWritable&gt; values, Context context) throws IOException, InterruptedException &#123;</div><div class="line">    int i = 0;</div><div class="line">    for (IntWritable val : values) &#123;</div><div class="line">      i += val.get();</div><div class="line">    &#125;</div><div class="line">    context.write(key, new IntWritable(i));</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="7-HBase-MapReduce-Summary-to-HBase-Without-Reducer"><a href="#7-HBase-MapReduce-Summary-to-HBase-Without-Reducer" class="headerlink" title="7 HBase MapReduce Summary to HBase Without Reducer"></a>7 HBase MapReduce Summary to HBase Without Reducer</h2><p>It is also possible to perform summaries without a reducer - if you use HBase as the reducer.</p>
+<p>An HBase target table would need to exist for the job summary. The Table method incrementColumnValue would be used to atomically increment values. From a performance perspective, it might make sense to keep a Map of values with their values to be incremented for each map-task, and make one update per key at during the cleanup method of the mapper. However, your mileage may vary depending on the number of rows to be processed and unique keys.</p>
+<p>In the end, the summary results are in HBase.</p>
+<h2 id="8-HBase-MapReduce-Summary-to-RDBMS"><a href="#8-HBase-MapReduce-Summary-to-RDBMS" class="headerlink" title="8 HBase MapReduce Summary to RDBMS"></a>8 HBase MapReduce Summary to RDBMS</h2><p>Sometimes it is more appropriate to generate summaries to an RDBMS. For these cases, it is possible to generate summaries directly to an RDBMS via a custom reducer. The setup method can connect to an RDBMS (the connection information can be passed via custom parameters in the context) and the cleanup method can close the connection.</p>
+<p>It is critical to understand that number of reducers for the job affects the summarization implementation, and you’ll have to design this into your reducer. Specifically, whether it is designed to run as a singleton (one reducer) or multiple reducers. Neither is right or wrong, it depends on your use-case. Recognize that the more reducers that are assigned to the job, the more simultaneous connections to the RDBMS will be created - this will scale, but only to a point.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">public static class MyRdbmsReducer extends Reducer&lt;Text, IntWritable, Text, IntWritable&gt;  &#123;</div><div class="line"></div><div class="line">  private Connection c = null;</div><div class="line"></div><div class="line">  public void setup(Context context) &#123;</div><div class="line">    // create DB connection...</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  public void reduce(Text key, Iterable&lt;IntWritable&gt; values, Context context) throws IOException, InterruptedException &#123;</div><div class="line">    // do summarization</div><div class="line">    // in this example the keys are Text, but this is just an example</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  public void cleanup(Context context) &#123;</div><div class="line">    // close db connection</div><div class="line">  &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>In the end, the summary results are written to your RDBMS table/s.</p>
+<h2 id="9-Accessing-Other-HBase-Tables-in-a-MapReduce-Job"><a href="#9-Accessing-Other-HBase-Tables-in-a-MapReduce-Job" class="headerlink" title="9 Accessing Other HBase Tables in a MapReduce Job"></a>9 Accessing Other HBase Tables in a MapReduce Job</h2><p>Although the framework currently allows one HBase table as input to a MapReduce job, other HBase tables can be accessed as lookup tables, etc., in a MapReduce job via creating an Table instance in the setup method of the Mapper.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">public class MyMapper extends TableMapper&lt;Text, LongWritable&gt; &#123;</div><div class="line">  private Table myOtherTable;</div><div class="line"></div><div class="line">  public void setup(Context context) &#123;</div><div class="line">    // In here create a Connection to the cluster and save it or use the Connection</div><div class="line">    // from the existing table</div><div class="line">    myOtherTable = connection.getTable(&quot;myOtherTable&quot;);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  public void map(ImmutableBytesWritable row, Result value, Context context) throws IOException, InterruptedException &#123;</div><div class="line">    // process Result...</div><div class="line">    // use &apos;myOtherTable&apos; for lookups</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/06/07/hbase-study004/" itemprop="url">
+                  HBase学习笔记(四) HBase的java操作
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-07T18:55:55+08:00" content="2016-06-07">
+              2016-06-07
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/hbase/" itemprop="url" rel="index">
+                    <span itemprop="name">hbase</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/07/hbase-study004/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/07/hbase-study004/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="1-hbase的简单操作api"><a href="#1-hbase的简单操作api" class="headerlink" title="1 hbase的简单操作api"></a>1 hbase的简单操作api</h2><p>代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div><div class="line">205</div><div class="line">206</div><div class="line">207</div><div class="line">208</div><div class="line">209</div><div class="line">210</div><div class="line">211</div><div class="line">212</div><div class="line">213</div><div class="line">214</div><div class="line">215</div><div class="line">216</div><div class="line">217</div><div class="line">218</div><div class="line">219</div><div class="line">220</div><div class="line">221</div><div class="line">222</div><div class="line">223</div><div class="line">224</div><div class="line">225</div><div class="line">226</div><div class="line">227</div><div class="line">228</div><div class="line">229</div><div class="line">230</div><div class="line">231</div><div class="line">232</div><div class="line">233</div><div class="line">234</div><div class="line">235</div><div class="line">236</div><div class="line">237</div><div class="line">238</div><div class="line">239</div><div class="line">240</div><div class="line">241</div><div class="line">242</div><div class="line">243</div><div class="line">244</div><div class="line">245</div><div class="line">246</div><div class="line">247</div><div class="line">248</div><div class="line">249</div><div class="line">250</div><div class="line">251</div><div class="line">252</div><div class="line">253</div><div class="line">254</div><div class="line">255</div><div class="line">256</div><div class="line">257</div><div class="line">258</div><div class="line">259</div><div class="line">260</div><div class="line">261</div><div class="line">262</div><div class="line">263</div><div class="line">264</div><div class="line">265</div><div class="line">266</div><div class="line">267</div><div class="line">268</div><div class="line">269</div><div class="line">270</div><div class="line">271</div><div class="line">272</div><div class="line">273</div><div class="line">274</div><div class="line">275</div><div class="line">276</div><div class="line">277</div><div class="line">278</div><div class="line">279</div><div class="line">280</div><div class="line">281</div><div class="line">282</div><div class="line">283</div><div class="line">284</div><div class="line">285</div><div class="line">286</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">import org.apache.hadoop.conf.Configuration;</div><div class="line">import org.apache.hadoop.fs.Path;</div><div class="line">import org.apache.hadoop.hbase.*;</div><div class="line">import org.apache.hadoop.hbase.client.*;</div><div class="line">import org.apache.hadoop.hbase.util.Bytes;</div><div class="line"></div><div class="line">import java.util.ArrayList;</div><div class="line">import java.util.List;</div><div class="line">import java.util.Map;</div><div class="line">import java.util.NavigableMap;</div><div class="line"></div><div class="line">public class CrudApi &#123;</div><div class="line"></div><div class="line">    private static final String TABKLE_NAME = &quot;test_sunx&quot;;</div><div class="line">    private static final String DF_COLUMN = &quot;default_column_family&quot;;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 创建表</div><div class="line">     * @param conf</div><div class="line">     * @throws Exception</div><div class="line">     */</div><div class="line">    public static void create(Configuration conf) throws  Exception&#123;</div><div class="line">        Connection conn = ConnectionFactory.createConnection(conf);</div><div class="line"></div><div class="line">        Admin admin = conn.getAdmin();</div><div class="line"></div><div class="line">        HTableDescriptor table = new HTableDescriptor(TableName.valueOf(TABKLE_NAME));</div><div class="line"></div><div class="line">        table.addFamily(new HColumnDescriptor(DF_COLUMN));</div><div class="line"></div><div class="line">        System.out.println(&quot;Create table...&quot;);</div><div class="line">        if(admin.tableExists(table.getTableName()))&#123;</div><div class="line">            admin.disableTable(table.getTableName());</div><div class="line">            admin.deleteTable(table.getTableName());</div><div class="line">        &#125;</div><div class="line">        admin.createTable(table);</div><div class="line">        System.out.println(&quot; Done.&quot;);</div><div class="line"></div><div class="line">        admin.close();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     *</div><div class="line">     * 删除表</div><div class="line">     *</div><div class="line">     */</div><div class="line">    public static void delete(Configuration conf,String tableName) throws  Exception&#123;</div><div class="line">        Connection connection = ConnectionFactory.createConnection(conf);</div><div class="line">        Admin admin = connection.getAdmin();</div><div class="line"></div><div class="line">        TableName  name = new HTableDescriptor(TableName.valueOf(tableName)).getTableName();</div><div class="line"></div><div class="line">        admin.disableTable(name);</div><div class="line">        admin.deleteTable(name);</div><div class="line"></div><div class="line">        admin.close();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 修改表</div><div class="line">     */</div><div class="line">    public static void alter(Configuration conf,String tableName) throws  Exception &#123;</div><div class="line">        Connection connection = ConnectionFactory.createConnection(conf);</div><div class="line">        Admin admin = connection.getAdmin();</div><div class="line"></div><div class="line">        HColumnDescriptor colu = new HColumnDescriptor(&quot;colu&quot;);</div><div class="line"></div><div class="line">        HTableDescriptor table = new HTableDescriptor(TableName.valueOf(tableName));</div><div class="line">        table.modifyFamily(colu);</div><div class="line"></div><div class="line">        admin.modifyTable(table.getTableName(),table);</div><div class="line"></div><div class="line">        admin.close();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 扫描表</div><div class="line">     * @param conf</div><div class="line">     * @param tableName</div><div class="line">     */</div><div class="line">    public static void scan(Configuration conf,String tableName) throws Exception&#123;</div><div class="line">        Connection connection = ConnectionFactory.createConnection(conf);</div><div class="line">        Table table = connection.getTable(TableName.valueOf(tableName));</div><div class="line"></div><div class="line">        //常见查询条件</div><div class="line">        Scan scan = new Scan();</div><div class="line">        scan.setRowPrefixFilter(Bytes.toBytes(&quot;r1&quot;));</div><div class="line">        ResultScanner rs = table.getScanner(scan);</div><div class="line"></div><div class="line">        for(Result r = rs.next() ;r!=null;r = rs.next())&#123;</div><div class="line">            //执行列簇,获取数据</div><div class="line">            System.out.println(&quot;***************查看已知的列簇下的数据***************&quot;);</div><div class="line">            Map&lt;byte[], byte[]&gt; nmp = r.getFamilyMap(Bytes.toBytes(&quot;fx&quot;));</div><div class="line">            for(Map.Entry&lt;byte[], byte[]&gt; entry : nmp.entrySet())&#123;</div><div class="line">                String key = new String(entry.getKey());</div><div class="line">                String value = new String(entry.getValue());</div><div class="line">                //列簇中的子列和对应的值</div><div class="line">                System.out.println(key + &quot;\t&quot; + value);</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            //查看指定行下的数据信息</div><div class="line">            System.out.println(&quot;***************查看指定行下的数据信息***************&quot;);</div><div class="line">            Map&lt;byte[], NavigableMap&lt;byte[], byte[]&gt;&gt; nv = r.getNoVersionMap();</div><div class="line">            for(Map.Entry&lt;byte[], NavigableMap&lt;byte[], byte[]&gt;&gt; entry : nv.entrySet())&#123;</div><div class="line">                //获取列簇</div><div class="line">                String lc = new String(entry.getKey());</div><div class="line"></div><div class="line">                Map&lt;byte[],byte[]&gt; v = entry.getValue();</div><div class="line">                for(Map.Entry&lt;byte[],byte[]&gt; e : v.entrySet())&#123;</div><div class="line">                    String k1 = new String(e.getKey());</div><div class="line">                    String v1 = new String(e.getValue());</div><div class="line"></div><div class="line">                    System.out.println(k1 + &quot;\t&quot; + v1);</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        rs.close();</div><div class="line">        table.close();</div><div class="line">        connection.close();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 给定指定的行和列查询相应的单元格中的数据</div><div class="line">     * @param conf</div><div class="line">     * @param tableName</div><div class="line">     */</div><div class="line">    public static void get(Configuration conf,String tableName,String raw,String family,String qualifier) throws  Exception&#123;</div><div class="line">        Connection connection = ConnectionFactory.createConnection(conf);</div><div class="line">        Table table = connection.getTable(TableName.valueOf(tableName));</div><div class="line"></div><div class="line">        Get get = new Get(Bytes.toBytes(raw));</div><div class="line">        Result result = table.get(get);</div><div class="line"></div><div class="line">        byte[] value = result.getValue(Bytes.toBytes(family),Bytes.toBytes(qualifier));</div><div class="line"></div><div class="line">        System.out.println(new String(value));</div><div class="line"></div><div class="line">        table.close();</div><div class="line">        connection.close();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 向表中插入一条数据</div><div class="line">     * @param conf</div><div class="line">     * @param tableName</div><div class="line">     * @param raw</div><div class="line">     * @param family</div><div class="line">     * @param qualifier</div><div class="line">     * @param data</div><div class="line">     */</div><div class="line">    public static void put(Configuration conf,String tableName,String raw,String family,String qualifier,String data) throws  Exception&#123;</div><div class="line">        Connection connection = ConnectionFactory.createConnection(conf);</div><div class="line">        Table table = connection.getTable(TableName.valueOf(tableName));</div><div class="line"></div><div class="line">        Put put = new Put(Bytes.toBytes(raw));</div><div class="line">        put.addColumn(Bytes.toBytes(family),Bytes.toBytes(qualifier),Bytes.toBytes(data));</div><div class="line"></div><div class="line">        table.put(put);</div><div class="line"></div><div class="line">        table.close();</div><div class="line">        connection.close();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 批量插入数据</div><div class="line">     * @param conf</div><div class="line">     * @param tableName</div><div class="line">     * @param list</div><div class="line">     */</div><div class="line">    public static void puts(Configuration conf,String tableName,List&lt;String[]&gt; list) throws  Exception&#123;</div><div class="line">        Connection connection = ConnectionFactory.createConnection(conf);</div><div class="line">        Table table = connection.getTable(TableName.valueOf(tableName));</div><div class="line"></div><div class="line">        List&lt;Put&gt; puts = new ArrayList&lt;Put&gt;();</div><div class="line">        for(String[] raw : list)&#123;</div><div class="line">            Put put = new Put(Bytes.toBytes(raw[0]));</div><div class="line">            put.addColumn(Bytes.toBytes(raw[1]),Bytes.toBytes(raw[2]),Bytes.toBytes(raw[3]));</div><div class="line"></div><div class="line">            puts.add(put);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        table.put(puts);</div><div class="line">        table.close();</div><div class="line">        connection.close();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 删除行</div><div class="line">     * @param conf</div><div class="line">     * @param tableName</div><div class="line">     * @param raw</div><div class="line">     */</div><div class="line">    public static void delete(Configuration conf,String tableName,String raw)throws  Exception&#123;</div><div class="line">        Connection connection = ConnectionFactory.createConnection(conf);</div><div class="line">        Table table = connection.getTable(TableName.valueOf(tableName));</div><div class="line"></div><div class="line">        Delete delete = new Delete(Bytes.toBytes(raw));</div><div class="line">        table.delete(delete);</div><div class="line"></div><div class="line">        table.close();</div><div class="line">        connection.close();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 删除单元格</div><div class="line">     * @param conf</div><div class="line">     * @param tableName</div><div class="line">     * @param raw</div><div class="line">     * @param family</div><div class="line">     * @param qualifier</div><div class="line">     */</div><div class="line">    public static void delete(Configuration conf,String tableName,String raw,String family,String qualifier)throws  Exception&#123;</div><div class="line">        Connection connection = ConnectionFactory.createConnection(conf);</div><div class="line">        Table table = connection.getTable(TableName.valueOf(tableName));</div><div class="line"></div><div class="line">        Delete delete = new Delete(Bytes.toBytes(raw));</div><div class="line">        delete.addColumn(Bytes.toBytes(family),Bytes.toBytes(qualifier));</div><div class="line"></div><div class="line">        table.delete(delete);</div><div class="line"></div><div class="line">        table.close();</div><div class="line">        connection.close();</div><div class="line">    &#125;</div><div class="line">    /**</div><div class="line">     * 更新动作</div><div class="line">     * @param config</div><div class="line">     * @throws Exception</div><div class="line">     */</div><div class="line">    public static void modifySchema(Configuration config,String tableName) throws Exception&#123;</div><div class="line">        Connection connection = ConnectionFactory.createConnection(config);</div><div class="line">        Admin admin  = connection.getAdmin();</div><div class="line"></div><div class="line">        //更新已经存在的表</div><div class="line">        HColumnDescriptor newColumn = new HColumnDescriptor(&quot;new_column&quot;);</div><div class="line">        admin.addColumn(TableName.valueOf(tableName),newColumn);</div><div class="line"></div><div class="line">        //更新已经存在的列</div><div class="line">        HColumnDescriptor hc = new HColumnDescriptor(DF_COLUMN);</div><div class="line">        admin.addColumn(TableName.valueOf(tableName),hc);</div><div class="line"></div><div class="line">        //隐藏该表</div><div class="line">//        admin.disableTable(TableName.valueOf(tableName));</div><div class="line"></div><div class="line">        //删除已经存在的列簇</div><div class="line">        admin.deleteColumn(TableName.valueOf(tableName),DF_COLUMN.getBytes(&quot;UTF-8&quot;));</div><div class="line"></div><div class="line">        //删除表,需要先卸载掉表</div><div class="line">//        admin.deleteTable(TableName.valueOf(tableName));</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static void main(String[] args) throws  Exception&#123;</div><div class="line">        Configuration conf = HBaseConfiguration.create();</div><div class="line"></div><div class="line">        //add any necessary configuration files (hbase-site.xml,core-site.xml)</div><div class="line">        conf.addResource(new Path(&quot;/usr/local/share/hbase1.2.0/conf/hbase-site.xml&quot;));</div><div class="line">        conf.addResource(new Path(&quot;/usr/local/share/hadoop2.7.1/etc/hadoop/core-site.xml&quot;));</div><div class="line"></div><div class="line">        //创建表</div><div class="line">//        create(conf);</div><div class="line">        //删除表</div><div class="line">//        delete(conf,&quot;test2&quot;);</div><div class="line">        //查询数据</div><div class="line">//        scan(conf,&quot;test2&quot;);</div><div class="line">        //查询单个单元格对应的数据</div><div class="line">//        get(conf,&quot;test2&quot;,&quot;r1&quot;,&quot;f3&quot;,&quot;&quot;);</div><div class="line">        //插入数据</div><div class="line">//        put(conf,&quot;test2&quot;,&quot;r2&quot;,&quot;f3&quot;,&quot;&quot;,&quot;123&quot;);</div><div class="line">        //批量插入数据</div><div class="line">//        String[] st = &#123;&quot;r3&quot;,&quot;f3&quot;,&quot;&quot;,&quot;r3f3&quot;&#125;;</div><div class="line">//        String[] st2=&#123;&quot;r4&quot;,&quot;fx&quot;,&quot;&quot;,&quot;r4fx&quot;&#125;;</div><div class="line">//</div><div class="line">//        List&lt;String[]&gt; ls = new ArrayList&lt;&gt;();</div><div class="line">//        ls.add(st);</div><div class="line">//        ls.add(st2);</div><div class="line">//</div><div class="line">//        puts(conf,&quot;test2&quot;,ls);</div><div class="line">        //删除数据</div><div class="line">//        delete(conf,&quot;test1&quot;);</div><div class="line">        //更新表</div><div class="line">        modifySchema(conf,&quot;test2&quot;);</div><div class="line"></div><div class="line">        put(conf,&quot;test2&quot;,&quot;test_row&quot;,&quot;new_column&quot;,&quot;&quot;,&quot;test_value_123&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/06/07/hbase-study003/" itemprop="url">
+                  HBase学习笔记(三) HBase的shell操作
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-07T11:55:55+08:00" content="2016-06-07">
+              2016-06-07
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/hbase/" itemprop="url" rel="index">
+                    <span itemprop="name">hbase</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/07/hbase-study003/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/07/hbase-study003/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>1 查看表</p>
+<p><img src="/images/hbase/hbase-list-shell.png" alt=""></p>
+<p>2 创建表,查看表,插入数据</p>
+<p><img src="/images/hbase/hbase-shell.png" alt=""></p>
+<p>3 查询数据</p>
+<p><img src="/images/hbase/hbase-get.png" alt=""></p>
+<p>get命令操作的主要顺序是:表名称,行名称,列名称,如果有其他的调教在用花括号加上,具体的代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">hbase&gt; get ‘t1′, ‘r1′ </div><div class="line">hbase&gt; get ‘t1′, ‘r1′, &#123;TIMERANGE =&gt; [ts1, ts2]&#125; </div><div class="line">hbase&gt; get ‘t1′, ‘r1′, &#123;COLUMN =&gt; ‘c1′&#125; </div><div class="line">hbase&gt; get ‘t1′, ‘r1′, &#123;COLUMN =&gt; [&apos;c1&apos;, &apos;c2&apos;, &apos;c3&apos;]&#125; </div><div class="line">hbase&gt; get ‘t1′, ‘r1′, &#123;COLUMN =&gt; ‘c1′, TIMESTAMP =&gt; ts1&#125; </div><div class="line">hbase&gt; get ‘t1′, ‘r1′, &#123;COLUMN =&gt; ‘c1′, TIMERANGE =&gt; [ts1, ts2], VERSIONS =&gt; 4&#125; </div><div class="line">hbase&gt; get ‘t1′, ‘r1′, &#123;COLUMN =&gt; ‘c1′, TIMESTAMP =&gt; ts1, VERSIONS =&gt; 4&#125; </div><div class="line">hbase&gt; get ‘t1′, ‘r1′, ‘c1′ </div><div class="line">hbase&gt; get ‘t1′, ‘r1′, ‘c1′, ‘c2′ </div><div class="line">hbase&gt; get ‘t1′, ‘r1′, [&apos;c1&apos;, &apos;c2&apos;]</div></pre></td></tr></table></figure>
+<p>scan 命令查询表数据</p>
+<p>这个命令主要是扫描表数据,可根据给定的条件进行数据查询并展示.</p>
+<p><img src="/images/hbase/hbase-scan-example.png" alt=""></p>
+<p>4 删除数据</p>
+<p><img src="/images/hbase/hbase-delete.png" alt=""></p>
+<p>如果需要进行全表删除操作，就使用truncate命令，其实没有直接的全表删除命令，这个命令也是disable，drop，create三个命令组合出来的</p>
+<p>5 修改表</p>
+<p>增加一个列簇:</p>
+<p><img src="/images/hbase/hbase-alter.png" alt=""></p>
+<p>删除一个列簇：</p>
+<p><img src="/images/hbase/hbase-alter-delete.png" alt=""></p>
+<p>执行多个修改动作</p>
+<p><img src="/images/hbase/hbase-alter-mult.png" alt=""></p>
+<p>6 统计数据</p>
+<p>统计表中数据的函数,根据指定条件查询</p>
+<p><img src="/images/hbase/hbase-count.png" alt=""></p>
+<p>count一般会比较耗时，使用mapreduce进行统计，统计结果会缓存，默认是10行。统计间隔默认的是1000行（INTERVAL）</p>
+<p>7 表的可用和隐藏</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">//隐藏表</div><div class="line">disable tableName</div><div class="line"></div><div class="line">//表可用</div><div class="line">enbale tableName</div></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/06/01/hbase-study002/" itemprop="url">
+                  HBase学习笔记(二) HBase的简单介绍(转)
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-01T18:55:55+08:00" content="2016-06-01">
+              2016-06-01
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/hbase/" itemprop="url" rel="index">
+                    <span itemprop="name">hbase</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/01/hbase-study002/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/01/hbase-study002/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="1-表-行-列和单元格"><a href="#1-表-行-列和单元格" class="headerlink" title="1 表,行,列和单元格"></a>1 表,行,列和单元格</h2><p>hbase中最基本的单位是单元格,其中一张表中有多行,一行可以有多个列族,一个列族由多个列组成，具体的结构图如下:</p>
+<p><img src="/images/hbase/hbase-table.png" alt=""></p>
+<p>1) RowKey: 行键，可理解成MySQL中的主键列。</p>
+<p>2) Column: 列，可理解成MySQL列。</p>
+<p>3) ColumnFamily: 列族, HBase引入的概念：<br>    将多个列聚合成一个列族。<br>    可以理解成MySQL的垂直分区（将一张宽表，切分成几张不那么宽的表）。<br>    此机制引入的原因，是因为HBase相信，查询可能并不需要将一整行的所有列数据全部返回。（就像我们往往在写SQL时不    太会写select all一样）<br>    对应到文件存储结构（不同的ColumnFamily会写入不同的文件）。</p>
+<p>4) TimeStamp：在每次跟新数据时，用以标识一行数据的不同版本（事实上，TimeStamp是与列绑定的。）</p>
+<h2 id="2-hbase系统架构图"><a href="#2-hbase系统架构图" class="headerlink" title="2 hbase系统架构图"></a>2 hbase系统架构图</h2><p><img src="/images/hbase/hbase-jiagou.jpg" alt=""></p>
+<p>组成部件说明</p>
+<p>Client:</p>
+<pre><code>使用HBase RPC机制与HMaster和HRegionServer进行通信 
+Client与HMaster进行通信进行管理类操作 
+Client与HRegionServer进行数据读写类操作 
+</code></pre><p>Zookeeper： </p>
+<pre><code>Zookeeper Quorum存储-ROOT-表地址、HMaster地址 
+HRegionServer把自己以Ephedral方式注册到Zookeeper中，HMaster随时感知各个HRegionServer的健康状况 
+Zookeeper避免HMaster单点问题 
+</code></pre><p>HMaster： </p>
+<pre><code>HMaster没有单点问题，HBase中可以启动多个HMaster，通过Zookeeper的Master Election机制保证总有一个Master在运行 
+主要负责Table和Region的管理工作： 
+    1 管理用户对表的增删改查操作 
+    2 管理HRegionServer的负载均衡，调整Region分布 
+    3 Region Split后，负责新Region的分布 
+    4 在HRegionServer停机后，负责失效HRegionServer上Region迁移 
+</code></pre><p>HRegionServer： </p>
+<pre><code>HBase中最核心的模块，主要负责响应用户I/O请求，向HDFS文件系统中读写数据
+</code></pre><p><img src="/images/hbase/hbase-region.jpg" alt=""></p>
+<p>自动分区:</p>
+<p>HBase中负责扩张和负载均衡的基本单元成为region,region本质上是以行键排序的连续存储的分区,</p>
+<p>如果region太大,系统就会自动的进行拆分,相反的,如果region太小的话,系统就会进行合并,以减少数据的存储文件数量。</p>
+<p>一张表初始化的时候只有一个region,当用户向其中插入数据的时候,系统会自动检测这个region的大小是否超过配置的最大值,如果超过这个限制,系统会在中间键(region中间哪一行)处将这个region拆分两个等大小的子region。</p>
+<p>HRegionServer:</p>
+<pre><code>每个HRegion对应Table中一个Region，HRegion由多个HStore组成； 
+每个HStore对应Table中一个Column Family的存储； 
+Column Family就是一个集中的存储单元，故将具有相同IO特性的Column放在一个Column Family会更高效
+</code></pre><p>HStore</p>
+<pre><code>HBase存储的核心,由MemStore和StoreFile组成
+MemStore是Sorted Memory Buffer，由用户写入数据的流程
+</code></pre><p><img src="/images/hbase/hbase-hstore.gif" alt=""></p>
+<p>Client写入 -&gt; 存入MemStore，一直到MemStore满 -&gt; Flush成一个StoreFile，直至增长到一定阈值 -&gt; 出发Compact合并操作 -&gt; 多个StoreFile合并成一个StoreFile，同时进行版本合并和数据删除 -&gt; 当StoreFiles Compact后，逐步形成越来越大的StoreFile -&gt; 单个StoreFile大小超过一定阈值后，触发Split操作，把当前Region Split成2个Region，Region会下线，新Split出的2个孩子Region会被HMaster分配到相应的HRegionServer上，使得原先1个Region的压力得以分流到2个Region上</p>
+<p>由此过程可知，HBase只是增加数据，有所得更新和删除操作，都是在Compact阶段做的，所以，用户写操作只需要进入到内存即可立即返回，从而保证I/O高性能。</p>
+<p>HLog</p>
+<p>引入HLog原因：</p>
+<p>在分布式系统环境中，无法避免系统出错或者宕机，一旦HRegionServer以外退出，MemStore中的内存数据就会丢失，引入HLog就是防止这种情况</p>
+<p>工作机制：<br>每个HRegionServer中都会有一个HLog对象，HLog是一个实现Write Ahead Log的类，每次用户操作写入Memstore的同时，也会写一份数据到HLog文件，HLog文件定期会滚动出新，并删除旧的文件(已持久化到StoreFile中的数据)。当HRegionServer意外终止后，HMaster会通过Zookeeper感知，HMaster首先处理遗留的HLog文件，将不同region的log数据拆分，分别放到相应region目录下，然后再将失效的region重新分配，领取到这些region的HRegionServer在Load Region的过程中，会发现有历史HLog需要处理，因此会Replay HLog中的数据到MemStore中，然后flush到StoreFiles，完成数据恢复。</p>
+<p>HBase存储格式</p>
+<p>HBase中的所有数据文件都存储在Hadoop HDFS文件系统上，格式主要有两种：</p>
+<p>1 HFile HBase中KeyValue数据的存储格式，HFile是Hadoop的二进制格式文件，实际上StoreFile就是对HFile做了轻量级包装，即StoreFile底层就是HFile</p>
+<p>2 HLog File，HBase中WAL（Write Ahead Log） 的存储格式，物理上是Hadoop的Sequence Filed<br>I<br><img src="/images/hbase/hbase-hfile.jpg" alt=""></p>
+<p>图片解释：<br>HFile文件不定长，长度固定的块只有两个：Trailer和FileInfo<br><br>Trailer中指针指向其他数据块的起始点<br><br>File Info中记录了文件的一些Meta信息，例如：AVG_KEY_LEN, AVG_VALUE_LEN, LAST_KEY, COMPARATOR, MAX_SEQ_ID_KEY等<br><br>Data Index和Meta Index块记录了每个Data块和Meta块的起始点<br><br>Data Block是HBase I/O的基本单元，为了提高效率，HRegionServer中有基于LRU的Block Cache机制<br><br>每个Data块的大小可以在创建一个Table的时候通过参数指定，大号的Block有利于顺序Scan，小号Block利于随机查询<br><br>每个Data块除了开头的Magic以外就是一个个KeyValue对拼接而成, Magic内容就是一些随机数字，目的是防止数据损坏<br></p>
+<p>HFile里面的每个KeyValue对就是一个简单的byte数组。这个byte数组里面包含了很多项，并且有固定的结构</p>
+<p><img src="/images/hbase/hbase-hf.jpg" alt=""></p>
+<p>KeyLength和ValueLength：两个固定的长度，分别代表Key和Value的长度<br><br>Key部分：Row Length是固定长度的数值，表示RowKey的长度，Row 就是RowKey<br><br>Column Family Length是固定长度的数值，表示Family的长度<br><br>接着就是Column Family，再接着是Qualifier，然后是两个固定长度的数值，表示Time Stamp和Key Type（Put/Delete）<br><br>Value部分没有这么复杂的结构，就是纯粹的二进制数据<br></p>
+<p><img src="/images/hbase/hbase-hlog.jpg" alt=""></p>
+<p>HLog文件就是一个普通的Hadoop Sequence File，Sequence File 的Key是HLogKey对象，HLogKey中记录了写入数据的归属信息，除了table和region名字外，同时还包括 sequence number和timestamp，timestamp是“写入时间”，sequence number的起始值为0，或者是最近一次存入文件系统中sequence number。<br>HLog Sequece File的Value是HBase的KeyValue对象，即对应HFile中的KeyValue</p>
+
           
         
       
@@ -915,7 +956,7 @@ file.deleteOnExit();        //删除文件,当文件存在的话
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/10/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/12/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/10/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><a class="extend next" rel="next" href="/page/12/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -988,7 +1029,7 @@ var duoshuoQuery = {short_name:"sunxing"};
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">65</span>
+              <span class="site-state-item-count">78</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -996,7 +1037,7 @@ var duoshuoQuery = {short_name:"sunxing"};
           
             <div class="site-state-item site-state-categories">
               
-                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-count">13</span>
                 <span class="site-state-item-name">分类</span>
               
             </div>
@@ -1005,7 +1046,7 @@ var duoshuoQuery = {short_name:"sunxing"};
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

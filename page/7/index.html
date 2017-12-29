@@ -231,8 +231,8 @@
             
               
                 
-                <a class="post-title-link" href="/2016/07/01/spider-study001/" itemprop="url">
-                  网络爬虫学习笔记(一) 网络爬虫概述
+                <a class="post-title-link" href="/2016/07/19/java-nio-study003/" itemprop="url">
+                  JavaNIO学习笔记(三) JavaNIO DatagramChannel
                 </a>
               
             
@@ -245,8 +245,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-07-01T11:55:55+08:00" content="2016-07-01">
-              2016-07-01
+            <time itemprop="dateCreated" datetime="2016-07-19T09:57:55+08:00" content="2016-07-19">
+              2016-07-19
             </time>
           </span>
 
@@ -259,8 +259,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/爬虫/" itemprop="url" rel="index">
-                    <span itemprop="name">爬虫</span>
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
                   </a>
                 </span>
 
@@ -275,8 +275,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/07/01/spider-study001/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/01/spider-study001/" itemprop="commentsCount"></span>
+                <a href="/2016/07/19/java-nio-study003/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/19/java-nio-study003/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -301,38 +301,379 @@
       
         
           
-            <h2 id="1-什么是网络爬虫"><a href="#1-什么是网络爬虫" class="headerlink" title="1 什么是网络爬虫"></a>1 什么是网络爬虫</h2><blockquote>
-<p>网络爬虫（又被称为网页蜘蛛，网络机器人，在FOAF社区中间，更经常的称为网页追逐者），是一种按照一定的规则，自动地抓取万维网信息的程序或者脚本。另外一些不常使用的名字还有蚂蚁、自动索引、模拟程序或者蠕虫。</p>
+            <h2 id="1-TCP"><a href="#1-TCP" class="headerlink" title="1 TCP"></a>1 TCP</h2><p>TCP（Transmission Control Protocol，传输控制协议）是面向连接的协议，也就是说，在收发数据前，必须和对方建立可靠的连接。</p>
+<p>TCP协议是面向连接、保证高可靠性(数据无丢失、数据无失序、数据无错误、数据无重复到达)传输层协议。</p>
+<h3 id="1-1-tcp报文格式"><a href="#1-1-tcp报文格式" class="headerlink" title="1.1 tcp报文格式"></a>1.1 tcp报文格式</h3><p>tcp的报文首部格式如下:</p>
+<p><img src="/images/io/nio-tcp-header.png" alt=""></p>
+<p>其中主要部分解释如下:</p>
+<p>Source Port： 是源端口,16位。在操作系统层面主机与主机之间的通信是通过端口来实现数据传输的,也就是a主机将数据从某个端口发出,发送到目标主机的某个端口,每个端口会有相应的进程监控。</p>
+<p>Destination Port：目标端口,16位</p>
+<p>Sequence Number：32位,发送序号</p>
+<p>Acknowledgment Number: 确认序号</p>
+<p>发送序号：用来标识从 TCP源端向 TCP目的端发送的数据字节流，它表示在这个报文段中的第一个数据字节的顺序号。如果将字节流看作在两个应用程序间的单向流动，则 TCP用顺序号对每个字节进行计数。序号是 32bit的无符号数，序号到达 2  32－ 1后又从 0开始。当建立一个新的连接时， SYN标志变 1，顺序号字段包含由这个主机选择的该连接的初始顺序号 ISN（ Initial Sequence Number）。</p>
+<p>确认序号：包含发送确认的一端所期望收到的下一个顺序号。因此，确认序号应当是上次已成功收到数据字节顺序号加 1。只有 ACK标志为 1时确认序号字段才有效。 TCP为应用层提供全双工服务，这意味数据能在两个方向上独立地进行传输。因此，连接的每一端必须保持每个方向上的传输数据顺序号</p>
+<p>offset ： 偏移量,实际指的是TCP首部的长度，它用来表明TCP首部中32 bit字的数目，通过它可以知道一个TCP包它的用户数据是从哪里开始的。这个字段占4bit,如4bit的值是0101,则说明TCP首部长度是5 <em> 4 = 20字节。 所以TCP的首部长度最大为15 </em> 4 = 60字节。然而没有可选字段，正常长度为20字节。</p>
+<p>Reserved： 6位,暂时没有使用。</p>
+<p>TCP flag : 在TCP首部中有6个标志比特。他们中的多个可同时被置为1 。</p>
+<pre><code>URG         紧急指针(urgent pointer)有效
+ACK         确认序号有效
+PSH         指示接收方应该尽快将这个报文段交给应用层而不用等待缓冲区装满
+RST         一般表示断开一个连接
+SYN         同步序号用来发起一个连接
+FIN         发送端完成发送任务(即断开连接)
+</code></pre><p>Checksum是校验和，16位</p>
+<p>Urgent Pointers是紧急指针，16位，只有URG标志位被设置时该字段才有意义，表示紧急数据相对序列号（Sequence Number字段的值）的偏移</p>
+<h3 id="1-2-链接简历"><a href="#1-2-链接简历" class="headerlink" title="1.2 链接简历"></a>1.2 链接简历</h3><p>TCP三次握手的过程如下：</p>
+<pre><code>1 客户端发送SYN（SEQ=x）报文给服务器端，进入SYN_SEND状态。
+2 服务器端收到SYN报文，回应一个SYN （SEQ=y）ACK(ACK=x+1）报文，进入SYN_RECV状态。
+3 客户端收到服务器端的SYN报文，回应一个ACK(ACK=y+1）报文，进入Established状态。
+</code></pre><p><img src="/images/io/nio-tcp-link.jpg" alt=""></p>
+<p>三次握手完成，TCP客户端和服务器端成功地建立连接，可以开始传输数据了</p>
+<h3 id="1-3-链接的关闭"><a href="#1-3-链接的关闭" class="headerlink" title="1.3 链接的关闭"></a>1.3 链接的关闭</h3><p>a.现在的网络通信都是基于socket实现的，当客户端将自己的socket进行关闭时，内核协议栈会向服务器自动发送一个FIN置位的包，请求断开连接。我们称首先发起断开请求的一方称为主动断开方。</p>
+<p>b.服务器端收到请客端的FIN断开请求后，内核协议栈会立即发送一个ACK包作为应答，表示已经收到客户端的请求</p>
+<p>c.服务器运行一段时间后，关闭了自己的socket。这个时候内核协议栈会向客户端发送一个FIN置位的包，请求断开连接</p>
+<p>d.客户端收到服务端发来的FIN断开请求后，会发送一个ACK做出应答，表示已经收到服务端的请求</p>
+<p><img src="/images/io/nio-tcp-link-close.jpg" alt=""></p>
+<p>部分内容摘抄于：<a href="http://blog.chinaunix.net/uid-26833883-id-3627644.html" target="_blank" rel="external">http://blog.chinaunix.net/uid-26833883-id-3627644.html</a></p>
+<h2 id="2-UDP"><a href="#2-UDP" class="headerlink" title="2 UDP"></a>2 UDP</h2><p>UDP（User Data Protocol，用户数据报协议）,UDP协议也是传输层协议，它是无连接，不保证可靠的传输层协议。它的协议头比较简单</p>
+<p><img src="/images/io/nio-udp-header.png" alt=""></p>
+<pre><code>(1) UDP是一个非连接的协议，传输数据之前源端和终端不建立连接，当它想传送时就简单地去抓取来自应用程序的数据，并尽可能快地把它扔到网络上。在发送端，UDP传送数据的速度仅仅是受应用程序生成数据的速度、计算机的能力和传输带宽的限制；在接收端，UDP把每个消息段放在队列中，应用程序每次从队列中读一个消息段。
+(2) 由于传输数据不建立连接，因此也就不需要维护连接状态，包括收发状态等，因此一台服务机可同时向多个客户机传输相同的消息。
+(3) UDP信息包的标题很短，只有8个字节，相对于TCP的20个字节信息包的额外开销很小。
+(4) 吞吐量不受拥挤控制算法的调节，只受应用软件生成数据的速率、传输带宽、源端和终端主机性能的限制。
+(5) UDP使用尽最大努力交付，即不保证可靠交付，因此主机不需要维持复杂的链接状态表（这里面有许多参数）。
+(6) UDP是面向报文的。发送方的UDP对应用程序交下来的报文，在添加首部后就向下交付给IP层。既不拆分，也不合并，而是保留这些报文的边界，因此，应用程序需要选择合适的报文大小
+</code></pre><p>TCP与UDP的区别：</p>
+<pre><code>1.基于连接与无连接；
+2.对系统资源的要求（TCP较多，UDP少）；
+3.UDP程序结构较简单；
+4.流模式与数据报模式 ；
+5.TCP保证数据正确性，UDP可能丢包，TCP保证数据顺序，UDP不保证
+</code></pre><h2 id="3-socket"><a href="#3-socket" class="headerlink" title="3 socket"></a>3 socket</h2><p>网络上的两个程序通过一个双向的通信连接实现数据的交换，这个连接的一端称为一个socket。</p>
+<p>socket的通信模式如下：</p>
+<p><img src="/images/io/nio-socket-link.jpg" alt=""></p>
+<h2 id="4-DatagramChannel"><a href="#4-DatagramChannel" class="headerlink" title="4 DatagramChannel"></a>4 DatagramChannel</h2><p>Java NIO中的DatagramChannel是一个能收发UDP包的通道。因为UDP是无连接的网络协议，所以不能像其它通道那样读取和写入。它发送和接收的是数据包.</p>
+<p>下面介绍基于DatagramChannel实现的基本的服务端和客户端之间的通信操作,具体的代码如下:</p>
+<p>服务端:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div></pre></td><td class="code"><pre><div class="line">public class Server &#123;</div><div class="line">    //选择器</div><div class="line">    private Selector selector = null;</div><div class="line">    //管道</div><div class="line">    private DatagramChannel channel = null;</div><div class="line">    //服务端的端口</div><div class="line">    private int port;</div><div class="line">    //超时时间</div><div class="line">    private long TIME_OUT = 3000;</div><div class="line">    //缓存的最大大小</div><div class="line">    private int MAX_BUFFER_SIZE = 4096;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 构造函数初始化</div><div class="line">     * @param port</div><div class="line">     */</div><div class="line">    public Server(int port)&#123;</div><div class="line">        this.port = port;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 初始化数据</div><div class="line">     */</div><div class="line">    public Server init()&#123;</div><div class="line">        try&#123;</div><div class="line">            selector = Selector.open();</div><div class="line">            channel = DatagramChannel.open();</div><div class="line">            channel.socket().bind(new InetSocketAddress(port));</div><div class="line">            channel.configureBlocking(false);</div><div class="line">            channel.register(selector, SelectionKey.OP_READ,new IoSession());</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        return this;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 开始准备客户端的链接</div><div class="line">     */</div><div class="line">    public void start()&#123;</div><div class="line">        while(true)&#123;</div><div class="line">            try&#123;</div><div class="line">                //监听是否有链接请求过来</div><div class="line">                if(selector.select(TIME_OUT) == 0)&#123;</div><div class="line">                    System.out.print(&quot;.&quot;);</div><div class="line">                    continue;</div><div class="line">                &#125;</div><div class="line">                //遍历数据</div><div class="line">                Iterator&lt;SelectionKey&gt; it = selector.selectedKeys().iterator();</div><div class="line">                while(it.hasNext())&#123;</div><div class="line">                    SelectionKey key = it.next();</div><div class="line"></div><div class="line">                    if(key.isReadable())&#123;</div><div class="line">                        handlerReader(key);</div><div class="line">                    &#125;</div><div class="line">                    if(key.isValid() &amp;&amp; key.isWritable())&#123;</div><div class="line">                        handlerWriter(key);</div><div class="line">                    &#125;</div><div class="line">                    it.remove();</div><div class="line">                &#125;</div><div class="line">            &#125;catch (Exception e)&#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 处理读取数据情况</div><div class="line">     * @param key</div><div class="line">     */</div><div class="line">    public void handlerReader(SelectionKey key)&#123;</div><div class="line">        try&#123;</div><div class="line">            DatagramChannel channel = (DatagramChannel) key.channel();</div><div class="line">            IoSession session = (IoSession)key.attachment();</div><div class="line">            session.buffer.clear();</div><div class="line">            session.socket = (InetSocketAddress)channel.receive(session.buffer);</div><div class="line">            //如果从客户端中接收到相应的数据,那么久进行数据打印</div><div class="line">            if(session.socket != null)&#123;</div><div class="line">                //打印缓冲区的数据</div><div class="line">                System.out.println(session.toString());</div><div class="line">                //将该管道注册到选择器上,并更改为可写状态</div><div class="line">                key.interestOps(SelectionKey.OP_WRITE);</div><div class="line">            &#125;</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 处理写操作</div><div class="line">     * @param key</div><div class="line">     */</div><div class="line">    public void handlerWriter(SelectionKey key)&#123;</div><div class="line">        try&#123;</div><div class="line">            DatagramChannel channel = (DatagramChannel) key.channel();</div><div class="line">            IoSession session = (IoSession)key.attachment();</div><div class="line">            //重置缓冲区,等待写入</div><div class="line">            session.clean();</div><div class="line">            session.buffer.put(&quot;server send data to client&quot;.getBytes());</div><div class="line">            session.buffer.flip();</div><div class="line">            //服务端想客户端写入数据</div><div class="line">            int cnt = channel.send(session.buffer,session.socket);</div><div class="line">            //如果从客户端中接收到相应的数据,那么久进行数据打印</div><div class="line">            if(cnt != 0)&#123;</div><div class="line">                //打印缓冲区的数据</div><div class="line">                // 将该管道注册到选择器上,并更改为读写状态</div><div class="line">                key.interestOps(SelectionKey.OP_READ);</div><div class="line">            &#125;</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 链接对象话缓冲区</div><div class="line">     */</div><div class="line">    public class IoSession&#123;</div><div class="line">        private InetSocketAddress socket = null;</div><div class="line">        private ByteBuffer buffer = ByteBuffer.allocate(MAX_BUFFER_SIZE);</div><div class="line"></div><div class="line">        public InetSocketAddress getSocket() &#123;</div><div class="line">            return socket;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        public IoSession setSocket(InetSocketAddress socket) &#123;</div><div class="line">            this.socket = socket;</div><div class="line">            return this;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        public ByteBuffer getBuffer() &#123;</div><div class="line">            return buffer;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        public IoSession setBuffer(ByteBuffer buffer) &#123;</div><div class="line">            this.buffer = buffer;</div><div class="line">            return this;</div><div class="line">        &#125;</div><div class="line">        public IoSession clean()&#123;</div><div class="line">            buffer.clear();</div><div class="line">            return this;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        public String toString()&#123;</div><div class="line">            try&#123;</div><div class="line">                return new String(buffer.array(),&quot;UTF-8&quot;);</div><div class="line">            &#125;catch (Exception e)&#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125;</div><div class="line">            return null;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">        new Server(9999).init().start();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>客户端如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div></pre></td><td class="code"><pre><div class="line">public class Client &#123;</div><div class="line">    //服务端的ip和端口</div><div class="line">    private String ip = null;</div><div class="line">    private int port = 9999;</div><div class="line">    //管道</div><div class="line">    private DatagramChannel channel = null;</div><div class="line">    //缓冲区</div><div class="line">    private ByteBuffer buffer = null;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 初始化参数</div><div class="line">     * @param ip</div><div class="line">     * @param port</div><div class="line">     */</div><div class="line">    public Client(String ip,int port)&#123;</div><div class="line">        this.ip = ip;</div><div class="line">        this.port = port;</div><div class="line">    &#125;</div><div class="line">    /**</div><div class="line">     * 初始化</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public Client init()&#123;</div><div class="line">        try&#123;</div><div class="line">            channel = DatagramChannel.open();</div><div class="line">            channel.configureBlocking(false);</div><div class="line">            channel.connect(new InetSocketAddress(ip,port));</div><div class="line"></div><div class="line">            buffer = ByteBuffer.allocate(512);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        return this;</div><div class="line">    &#125;</div><div class="line">    /**</div><div class="line">     * 启动线程</div><div class="line">     */</div><div class="line">    public void start()&#123;</div><div class="line">        try &#123;</div><div class="line">            while (true) &#123;</div><div class="line">                String data = &quot;client send data to server -&gt; &quot; + UUID.randomUUID();</div><div class="line">                channel.write(ByteBuffer.wrap(data.getBytes()));</div><div class="line">                buffer.clear();</div><div class="line">                int cnt = channel.read(buffer);</div><div class="line">                if (cnt &gt; 0) &#123;</div><div class="line">                    buffer.flip();</div><div class="line">                    System.out.println(toString(buffer));</div><div class="line">                &#125;</div><div class="line">                try&#123;</div><div class="line">                    Thread.sleep(1000);</div><div class="line">                &#125;catch (Exception e)&#123;</div><div class="line">                    e.printStackTrace();</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125; catch (IOException e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 读取缓冲区的数据</div><div class="line">     * @param buffer</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public String toString(ByteBuffer buffer)&#123;</div><div class="line">        return new String(buffer.array());</div><div class="line">    &#125;</div><div class="line">    /**</div><div class="line">     *</div><div class="line">     * @param args</div><div class="line">     */</div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">        new Client(&quot;127.0.0.1&quot;,9999).init().start();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>运行结果截图:</p>
+<p><img src="/images/io/datagramchannel-server-console.png" alt=""></p>
+<p><img src="/images/io/datagramchannel-client-console.png" alt=""></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/07/19/java-thread-study002/" itemprop="url">
+                  Java 多线程学习笔记(二) 线程的同步与锁
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-19T09:57:55+08:00" content="2016-07-19">
+              2016-07-19
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/19/java-thread-study002/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/19/java-thread-study002/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="1-同步的问题"><a href="#1-同步的问题" class="headerlink" title="1 同步的问题"></a>1 同步的问题</h2><p>线程同步的问题是为了防止多个线程同时访问一个对象或者变量是,导致并发问题。</p>
+<p>具体的例子如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">public class Test implements Runnable&#123;</div><div class="line">    private int count = 0;</div><div class="line"></div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">        Test test = new Test();</div><div class="line"></div><div class="line">        Thread t1 = new Thread(test,&quot;t1&quot;);</div><div class="line">        Thread t2 = new Thread(test,&quot;t2&quot;);</div><div class="line">        t1.start();</div><div class="line">        t2.start();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void run() &#123;</div><div class="line">        for(int i=0;i&lt;10;i++)&#123;</div><div class="line">            this.add(1);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void add(int i)&#123;</div><div class="line">        count += i;</div><div class="line">        System.out.println(Thread.currentThread().getName() + &quot; -&gt; count = &quot; + count);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><img src="/images/thread/thread-tongbu.png" alt=""></p>
+<p>如果是正常的顺序,一个线程访问完,下一个线程继续访问,那么结果的数据应该为:<br>0-20的顺序。</p>
+<p>由上面的结果数据可以看出:<br>t1 -&gt; count + 1 之后t1休眠,t2线程开始做加法操作<br><br>t2 -&gt; count + 1 之后t1休眠结束,打印数据,结果为2</p>
+<h2 id="2-同步的实现方式"><a href="#2-同步的实现方式" class="headerlink" title="2 同步的实现方式"></a>2 同步的实现方式</h2><p>通过上面的过程可以看得出来,如果线程是顺序的,那么结果可定不可能是这样的,那么如何解决这种问题,防止多线程并发情况下的数据错乱。主要的采用的是线程同步,用于避免在该线程没有完成操作之前,被其他线程调用。</p>
+<p>实现线程同步的方式一共有四种：</p>
+<pre><code>1 synchronized关键字 
+2 volatile
+3 重入锁实现线程同步
+4 部变量实现线程同步
+</code></pre><h3 id="2-1-synchronized关键字"><a href="#2-1-synchronized关键字" class="headerlink" title="2.1 synchronized关键字"></a>2.1 synchronized关键字</h3><p>synchronized关键字主要是同来进行代码同步,java中每一个对象都有一个内置锁,当用这个关键字修饰方法的时候,内置锁会保护整个方法,在调用该方法前，需要获得内置锁，否则就处于阻塞状态。</p>
+<p>同步是一种高开销的操作，因此应该尽量减少同步的内容。通常没有必要同步整个方法，使用synchronized代码块同步关键代码即可</p>
+<p>synchronized可以修饰方法,同步方法,也可以修饰代码块</p>
+<p>同步方法主要的方式如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">public synchronized void save()&#123;&#125;</div></pre></td></tr></table></figure>
+<p>同步代码块的方式如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">public void save(Object bean)&#123;</div><div class="line">	synchronized(bean)&#123;</div><div class="line">		...</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>synchronized使用的优点：<br>在竞争不是很激烈的并发情况下, synchronized同步的性能更优与其他的同步方案。</p>
+<p>synchronized的缺点：</p>
+<pre><code>1 无法终端一个正在等候获取锁的线程
+2 无法通过投票获取锁
+3 在激烈竞争的时候性能急剧下降
+</code></pre><h3 id="2-2-锁"><a href="#2-2-锁" class="headerlink" title="2.2 锁"></a>2.2 锁</h3><p>采用上面的代码的改版来实现基本的锁，代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">public class Test implements Runnable&#123;</div><div class="line">    private int count = 0;</div><div class="line"></div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">        Test test = new Test();</div><div class="line"></div><div class="line">        Thread t1 = new Thread(test,&quot;t1&quot;);</div><div class="line">        Thread t2 = new Thread(test,&quot;t2&quot;);</div><div class="line">        t1.start();</div><div class="line">        t2.start();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void run() &#123;</div><div class="line">        for(int i=0;i&lt;10;i++)&#123;</div><div class="line">            this.add(1);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void add(Integer i)&#123;</div><div class="line">        synchronized(i)&#123;</div><div class="line">            count += i;</div><div class="line">            System.out.println(Thread.currentThread().getName() + &quot; -&gt; count = &quot; + count);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>由于对象内部都会有一个内置锁,使用关键字synchronized来实现相应的锁,现在采用java中Lock锁。简单的例子如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">public class Test implements Runnable&#123;</div><div class="line">    private int count = 0;</div><div class="line">    private Lock lock = new ReentrantLock();</div><div class="line"></div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">        Test test = new Test();</div><div class="line"></div><div class="line">        Thread t1 = new Thread(test,&quot;t1&quot;);</div><div class="line">        Thread t2 = new Thread(test,&quot;t2&quot;);</div><div class="line">        t1.start();</div><div class="line">        t2.start();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void run() &#123;</div><div class="line">        for(int i=0;i&lt;10;i++)&#123;</div><div class="line">            this.add(1);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void add(int i)&#123;</div><div class="line">        try&#123;</div><div class="line">            lock.lock();</div><div class="line">            count += i;</div><div class="line">            System.out.println(Thread.currentThread().getName() + &quot; -&gt; count = &quot; + count);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;finally&#123;</div><div class="line">            lock.unlock();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>lock.lock() 主要是对lock对象进行加锁,因此所有对该对象调用lock()方法的线程都会被阻塞,直到该Lock对象的unlock()方法被调用。</p>
+<p>Lock代码的简答实现如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">class MyLock&#123;</div><div class="line">        private boolean isLocked = false;</div><div class="line"></div><div class="line">        public synchronized void lock()&#123;</div><div class="line">            while(isLocked)&#123;</div><div class="line">                //阻塞,等待锁</div><div class="line">                wait();</div><div class="line">            &#125;</div><div class="line">            isLocked = true;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        public synchronized void unlock()&#123;</div><div class="line">            isLocked = false;</div><div class="line">            notify();</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>基本上可以看出,当有线程申请锁对象时,isLocked如果为true,则while(isLocked)一直循环,那么它叫做自旋锁,调用lock()方法,线程在wait()方法上阻塞等待,为了防止该线程没有收到notify()调用也从wait()中返回,这个线程会重新去检测isLocked条件已决当前是返回还是继续等待.而不是认为线程被唤醒了,就可以重新运行了。如果isLocked为false,当前线程会退出循环,并取消锁设置,也就是释放锁。</p>
+<p>锁的可重用性：主要是在指当一个线程进入synchronized同步块以后,并因此获得了该同步块使用的同步对象对应的管理上的锁,也就是如果一个同步代码块中,调用了另一个同步代码块,那么将同时获取这两个的锁。</p>
+<p>具体的代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">public class Reentrant&#123;</div><div class="line">	public synchronized outer()&#123;</div><div class="line">		inner();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public synchronized inner()&#123;</div><div class="line">		//do something</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如果采用Lock锁,那么是否有什么问题呢？<br>具体的代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">public class Reentrant2&#123;</div><div class="line">	Lock lock = new Lock();</div><div class="line"></div><div class="line">	public outer()&#123;</div><div class="line">		lock.lock();</div><div class="line">		inner();</div><div class="line">		lock.unlock();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	public synchronized inner()&#123;</div><div class="line">		lock.lock();</div><div class="line">		//do something</div><div class="line">		lock.unlock();</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>由于Lock在outer()已经获取到锁了,也就是说lock的isLocked为true,在outer()中调用inner()的时候,又尝试去获取锁,那么这个就出现问题了,因为这个锁已经被占用了(outer()中占用的,没有释放掉),所以线程等待.卡死在这里。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">public class Lock&#123;</div><div class="line">	boolean isLocked = false;</div><div class="line">	Thread  lockedBy = null;</div><div class="line">	int lockedCount = 0;</div><div class="line"></div><div class="line">	public synchronized void lock()</div><div class="line">		throws InterruptedException&#123;</div><div class="line">		Thread callingThread =</div><div class="line">			Thread.currentThread();</div><div class="line">		while(isLocked &amp;&amp; lockedBy != callingThread)&#123;</div><div class="line">			wait();</div><div class="line">		&#125;</div><div class="line">		isLocked = true;</div><div class="line">		lockedCount++;</div><div class="line">		lockedBy = callingThread;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">	public synchronized void unlock()&#123;</div><div class="line">		if(Thread.curentThread() ==</div><div class="line">			this.lockedBy)&#123;</div><div class="line">			lockedCount--;</div><div class="line"></div><div class="line">			if(lockedCount == 0)&#123;</div><div class="line">				isLocked = false;</div><div class="line">				notify();</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="2-3-volatile"><a href="#2-3-volatile" class="headerlink" title="2.3 volatile"></a>2.3 volatile</h3><p>volatile关键字用于修饰变量,主要的作用为:</p>
+<pre><code>1 使用volatile修饰以后,会强制将修改后的值立即写入主存
+2 如果多个线程有缓存volatile修饰的关键字的值,当一个线程修改了改值后,对应线程的缓存数据失效,需要重新从主存中加载
+3 实现变量的修改可见性,但不具备原子特性
+</code></pre><p>下面是一个简单的使用:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">public class Test1 &#123;</div><div class="line"></div><div class="line">    public volatile int inc = 0;</div><div class="line"></div><div class="line">    public void increase() &#123;</div><div class="line">        inc++;</div><div class="line">        System.out.println(inc);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static void main(String[] args) &#123;</div><div class="line">        final Test1 test = new Test1();</div><div class="line">        for(int i=0;i&lt;10;i++)&#123;</div><div class="line">            new Thread()&#123;</div><div class="line">                public void run() &#123;</div><div class="line">                    for(int j=0;j&lt;1000;j++)</div><div class="line">                        test.increase();</div><div class="line">                &#125;</div><div class="line">            &#125;.start();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><img src="/images/thread/thread-volatile.png" alt=""></p>
+<h3 id="2-4-部变量实现线程同步"><a href="#2-4-部变量实现线程同步" class="headerlink" title="2.4 部变量实现线程同步"></a>2.4 部变量实现线程同步</h3><p>如果使用ThreadLocal管理变量，则每一个使用该变量的线程都获得该变量的副本,副本之间相互独立，这样每一个线程都可以随意修改自己的变量副本，而不会对其他线程产生影响。</p>
+<p>ThreadLocal类的常用方法</p>
+<pre><code>ThreadLocal() : 创建一个线程本地变量 
+get() : 返回此线程局部变量的当前线程副本中的值 
+initialValue() : 返回此线程局部变量的当前线程的&quot;初始值&quot; 
+set(T value) : 将此线程局部变量的当前线程副本中的值设置为value
+</code></pre><p>在ThreadLocal的内部是实现的一个简单的ThreadLocalMap用来存储每个线程局部变量的副本,每个线程在使用这个局部变量的时候是想不不影响的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">private ThreadLocal&lt;Integer&gt; param = new ThreadLocal&lt;Integer&gt;()&#123;</div><div class="line">        @Override</div><div class="line">        protected Integer initialValue() &#123;</div><div class="line">            return 10;</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line"></div><div class="line">    public void add(int increase)&#123;</div><div class="line">        param.set(param.get() + increase);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public int get()&#123;</div><div class="line">        return param.get();</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/07/18/java-nio-study001/" itemprop="url">
+                  JavaNIO学习笔记(一) Java NIO简单概述
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-18T09:57:55+08:00" content="2016-07-18">
+              2016-07-18
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/18/java-nio-study001/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/18/java-nio-study001/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>Java NIO(New IO)是一个可以替代标准Java IO API的IO API（从Java 1.4开始)，Java NIO提供了与标准IO不同的IO工作方式。</p>
 </blockquote>
-<p>上面是百度百科的定义,网络爬虫其实就是指,在现有的互联网中,各个终端设备间构造成了一个像蜘蛛网络一样的东西,程序通过一定的逻辑或者是自定义的方式访问每个节点的数据，这段程序被称作为网络爬虫。</p>
-<h2 id="2-网络爬虫的基本结构"><a href="#2-网络爬虫的基本结构" class="headerlink" title="2 网络爬虫的基本结构"></a>2 网络爬虫的基本结构</h2><p>爬虫的基本结构框架流程图如下：</p>
-<p><img src="/images/spider/spider-kuangjia.png" alt=""></p>
-<p>网络爬虫的基本框架如下:</p>
-<pre><code>1 首先需要一个已知的种子url库
-2 读取已知的种子url集合到带抓取集合中
-3 抓取线程读取带抓取集合中的种子url,进行抓取解析
-4 将解析到的结果存储到指定的位置中
-5 将抓取过的url插入到已抓取的队列中
-</code></pre><h2 id="3-网络爬虫的抓取策略"><a href="#3-网络爬虫的抓取策略" class="headerlink" title="3 网络爬虫的抓取策略"></a>3 网络爬虫的抓取策略</h2><p>1 宽度优先遍历策略</p>
-<p>宽度优先遍历策略是最简单的遍历方式,爬虫通过抓取种子url,解析到需要的链接地址后,将这个链接地址直接添加到带抓取的url队列中</p>
-<p><img src="/images/spider/spider-kuandu.jpg" alt=""></p>
-<p>具体的抓取顺序为: A -&gt; B -&gt; C -&gt; D -&gt; E -&gt; F</p>
-<p>2 深度优先遍历策略</p>
-<p>深度优先遍历策略主要是通过抓取种子url后,对新抓到的链接地址立即进行抓取,知道抓取到最深度,也就是没有在满足要求的链接地址为止。具体的抓取顺序如下：<br> A -&gt; B -&gt; D -&gt; E -&gt; C -&gt; F</p>
-<p>3 非完全PageRank页面</p>
-<p>PageRank算法是google提出来的,主要是用于分析页面的重要性上,页面重要性的衡量主表为:</p>
-<pre><code>1 入链的个数
-2 页面质量
-</code></pre><p>针对某个互联网网页A来说,该页面的PageRank的计算基于以下两个假设：</p>
-<pre><code>1 数量假设：如果一个页面节点接收到的其他页面的执行的入链数越多,那么这个页面越重要
-2 质量假设：指向页面A的入链的质量不同,质量高的页面通过连接其他页面传递质量,越是质量高的页面执行A,则A越重要
-</code></pre><p>通过以上两个假设,PageRank算法刚开始赋予每个页面相同的质量权重,通过迭代递归计算的方式,来更新每个页面的PageRank的得分,知道得分稳定为止。</p>
-<p>而PageRank是全局性算法,也就是当网页下载下来以后再计算是可靠的,在抓取过程中网页的数量在增加,每个页面的入链和质量都在改变,因此PageRank的值是不可能给出的。</p>
-<p>基于这个事实情况,做出了如下改动:如果定义一个阈值K,每当下载了K个页面,就重新计算一次PageRank的值。</p>
-<p>4 OPIC策略</p>
-<p>OPIC是指Online Page Importance Computation,也就是指在线页面重要新计算,可以看做是一种改进型的PageRank算法。基本的思想:在页面初始阶段给定每个页面相同的“现金”,每当下载某个页面P后,P将自己拥有的“现金”平均分给页面中包含的链接页面,同时把自己的“现金”清空。而对于链接页面,将根据每个页面的“现金”的多少进行排序,优先下载”现金“充裕的链接页面。</p>
-<p>5 大站优先策略</p>
-<p>以网站来衡量页面的重要性,根据对带抓取的链接url进行按照网站进行分类,如果那个网站等待下载的页面最多,则优先下载这些链接。</p>
+<p>Java NIO由一下几个核心的组成部分：</p>
+<pre><code>Channels
+Buffers
+Selectors
+</code></pre><h2 id="1-Channels"><a href="#1-Channels" class="headerlink" title="1 Channels"></a>1 Channels</h2><p>Channels:管道,就是一个联通的通道,类似于流,但是又不相同</p>
+<pre><code>* 既可以从通道中读取数据,又可以写数据到通道中,但是流的读写是单向的
+* 通道可以异步读写
+* 通道中的数据总是需要先读到一个Buffer,或者是从一个Buffer中写入
+</code></pre><p><img src="/images/io/nio-channel.png" alt=""></p>
+<p>JavaNIO下的最重要的通道的实现,基本的代码如下:</p>
+<pre><code>FileChannel                从文件中读写数据
+DatagramChannel            能通过udp读写网络中的数据
+SocketChannel            能通过TCP读写网络中的数据
+ServerSocketChannel        可以监听新进来的tcp链接,想web服务器那样,对每一个新进来的链接都会创建一个ScoketChannel
+</code></pre><h2 id="2-Buffer"><a href="#2-Buffer" class="headerlink" title="2 Buffer"></a>2 Buffer</h2><p>JavaNIO中缓冲区Buffer的主要功能用于和NIO通道进行交互,缓冲区本质上是一块可以写入数据,然后可以从其中读取数据的内存,这块内存被封装为NIO Buffer对象,并提供了一系列的方式,用于访问这块内存.</p>
+<p>Buffer缓冲区的具体的包装类有哪些:</p>
+<p><img src="/images/io/nio-buffer.gif" alt=""></p>
+<p>Java NIO可以让你非阻塞的使用IO，例如：当线程从通道读取数据到缓冲区时，线程还是可以进行其他事情。当数据被写入到缓冲区时，线程可以继续处理它。从缓冲区写入通道也类似</p>
+<h2 id="3-Selectors"><a href="#3-Selectors" class="headerlink" title="3 Selectors"></a>3 Selectors</h2><p>Java NIO引入了选择器的概念，选择器用于监听多个通道的事件（比如：连接打开，数据到达）。因此，单个的线程可以监听多个数据通道。</p>
 
           
         
@@ -382,8 +723,8 @@
             
               
                 
-                <a class="post-title-link" href="/2016/06/17/zookeeper-study004/" itemprop="url">
-                  Zookeeper学习笔记(四) zookeeper的java api
+                <a class="post-title-link" href="/2016/07/18/java-nio-study002/" itemprop="url">
+                  JavaNIO学习笔记(二) JavaNio FileChannel
                 </a>
               
             
@@ -396,8 +737,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-06-17T11:55:55+08:00" content="2016-06-17">
-              2016-06-17
+            <time itemprop="dateCreated" datetime="2016-07-18T09:57:55+08:00" content="2016-07-18">
+              2016-07-18
             </time>
           </span>
 
@@ -410,8 +751,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/zookeeper/" itemprop="url" rel="index">
-                    <span itemprop="name">zookeeper</span>
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
                   </a>
                 </span>
 
@@ -426,8 +767,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/06/17/zookeeper-study004/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/17/zookeeper-study004/" itemprop="commentsCount"></span>
+                <a href="/2016/07/18/java-nio-study002/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/18/java-nio-study002/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -452,308 +793,34 @@
       
         
           
-            <p>zookeeper的主要操作方法如下:</p>
-<p><img src="/images/zookeeper/zookeeper-java-api.jpg" alt=""></p>
-<p>主要代码如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div><div class="line">205</div><div class="line">206</div><div class="line">207</div><div class="line">208</div><div class="line">209</div><div class="line">210</div><div class="line">211</div><div class="line">212</div><div class="line">213</div><div class="line">214</div><div class="line">215</div><div class="line">216</div><div class="line">217</div></pre></td><td class="code"><pre><div class="line">package com.study.zookeeper;</div><div class="line"></div><div class="line">import org.apache.zookeeper.*;</div><div class="line">import org.apache.zookeeper.data.Stat;</div><div class="line">import org.junit.After;</div><div class="line">import org.junit.Before;</div><div class="line">import org.junit.Test;</div><div class="line"></div><div class="line">import java.io.IOException;</div><div class="line">import java.util.List;</div><div class="line">import java.util.function.Consumer;</div><div class="line"></div><div class="line">/**</div><div class="line"> * Created by sunxing on 16/6/27.</div><div class="line"> * zk操作工具类</div><div class="line"> */</div><div class="line">public class ZkUtils &#123;</div><div class="line">    //会话过期时间</div><div class="line">    private static final int SESSION_TIEMOUT = 30000;</div><div class="line">    //zk地址</div><div class="line">    private static final String ZK_LIST = &quot;localhost:2181&quot; ;</div><div class="line"></div><div class="line">    //客户端监听器</div><div class="line">    private Watcher watcher = new Watcher() &#123;</div><div class="line">        @Override</div><div class="line">        public void process(WatchedEvent event) &#123;</div><div class="line">            System.out.println(&quot;process -&gt; zookeeper初始化时绑定的watch&quot;);</div><div class="line">        &#125;</div><div class="line">    &#125;;</div><div class="line"></div><div class="line">    //zookeeper 实例</div><div class="line">    private ZooKeeper zooKeeper = null;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 链接zookeeper</div><div class="line">     */</div><div class="line">    @Before</div><div class="line">    public void connect() throws IOException&#123;</div><div class="line">        zooKeeper = new ZooKeeper(ZK_LIST,SESSION_TIEMOUT,watcher);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 关闭zk</div><div class="line">      */</div><div class="line">    @After</div><div class="line">    public void close()&#123;</div><div class="line">        try&#123;</div><div class="line">            zooKeeper.close();</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 创建一个znode节点</div><div class="line">     * ZooDefs.Ids.OPEN_ACL_UNSAFE:</div><div class="line">     * -&gt; public final ArrayList&lt;ACL&gt; OPEN_ACL_UNSAFE = new ArrayList&lt;ACL&gt;(Collections.singletonList(new ACL(Perms.ALL, ANYONE_ID_UNSAFE)));</div><div class="line">     * -&gt; public final Id ANYONE_ID_UNSAFE = new Id(&quot;world&quot;, &quot;anyone&quot;);</div><div class="line">     *</div><div class="line">     * CreateMode取值：</div><div class="line">     * 1 PERSISTENT：持久化，这个目录节点存储的数据不会丢失</div><div class="line">     * 2 PERSISTENT_SEQUENTIAL：顺序自动编号的目录节点，这种目录节点会根据当前已近存在的节点数自动加 1，然后返回给客户端已经成功创建的目录节点名</div><div class="line">     * 3 EPHEMERAL：临时目录节点，一旦创建这个节点的客户端与服务器端口也就是 session过期超时，这种节点会被自动删除</div><div class="line">     * 4 EPHEMERAL_SEQUENTIAL：临时自动编号节点</div><div class="line">     */</div><div class="line">    @Test</div><div class="line">    public void create()&#123;</div><div class="line">        String result = null;</div><div class="line">        try&#123;</div><div class="line">            result = zooKeeper.create(&quot;/test1&quot;,&quot;test_create_1&quot;.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        System.out.println(&quot;create result -&gt; &quot; + result);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 删除数据</div><div class="line">     */</div><div class="line">    @Test</div><div class="line">    public void delete()&#123;</div><div class="line">        try&#123;</div><div class="line">         zooKeeper.delete(&quot;/test1&quot;,-1);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 删除数据</div><div class="line">     *</div><div class="line">     */</div><div class="line">    @Test</div><div class="line">    public void getData()&#123;</div><div class="line">        try&#123;</div><div class="line">            byte[] data = zooKeeper.getData(&quot;/test1&quot;,null,null);</div><div class="line">            System.out.println(&quot;目录结构/test1下的数据为 -&gt; &quot; + new String(data,&quot;UTF-8&quot;));</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 获取数据</div><div class="line">     * 设置watch监听</div><div class="line">     */</div><div class="line">    @Test</div><div class="line">    public void getDataWithWatch()&#123;</div><div class="line">        String result = null;</div><div class="line">        try&#123;</div><div class="line">            byte[] data = zooKeeper.getData(&quot;/test1&quot;, new Watcher() &#123;</div><div class="line">                @Override</div><div class="line">                public void process(WatchedEvent event) &#123;</div><div class="line">                    System.out.println(&quot;getDataWithWatch wathc -&gt; &quot; + event.getType());</div><div class="line">                &#125;</div><div class="line">            &#125;,null);</div><div class="line"></div><div class="line">            result = new String(data,&quot;UTF-8&quot;);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        System.out.println(&quot;结果 -&gt; &quot; + result);</div><div class="line"></div><div class="line">        //当znode中数据发生改变是,会触发wathc</div><div class="line">        setData();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 添加数据</div><div class="line">     */</div><div class="line">    @Test</div><div class="line">    public void setData()&#123;</div><div class="line">        Stat stat = null;</div><div class="line">        try&#123;</div><div class="line">            stat = zooKeeper.setData(&quot;/test1&quot;,&quot;test-data-1&quot;.getBytes(),-1);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        System.out.println(&quot;setData stat -&gt; &quot; + stat.getVersion());</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Test</div><div class="line">    public void isExits()&#123;</div><div class="line">        Stat stat = null;</div><div class="line">        try&#123;</div><div class="line">            stat = zooKeeper.exists(&quot;/test1&quot;,false);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        System.out.println(&quot;isExits stat -&gt; &quot; + stat.getCzxid());</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Test</div><div class="line">    public void isExitsWithWatch()&#123;</div><div class="line">        Stat stat = null;</div><div class="line">        try&#123;</div><div class="line">            stat = zooKeeper.exists(&quot;/test1&quot;,true);</div><div class="line">            System.out.println(stat.getAversion());</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        //触发watch,这个监听器是zookeeper创建实例时指定</div><div class="line">        try&#123;</div><div class="line">            zooKeeper.delete(&quot;/test1&quot;,-1);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Test</div><div class="line">    public void isExitsWtithWatch2()&#123;</div><div class="line">        Stat stat = null;</div><div class="line">        try&#123;</div><div class="line">            stat = zooKeeper.exists(&quot;/test1&quot;, new Watcher() &#123;</div><div class="line">                @Override</div><div class="line">                public void process(WatchedEvent event) &#123;</div><div class="line">                    System.out.println(&quot;isExitsWithWathc2 -&gt; &quot; + event.getType());</div><div class="line">                &#125;</div><div class="line">            &#125;);</div><div class="line">            System.out.println(stat.getAversion());</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        //触发watch,这个监听器是zookeeper创建实例时指定</div><div class="line">        try&#123;</div><div class="line">            zooKeeper.setData(&quot;/test1&quot;,&quot;isExitsWithWatch2 setData&quot;.getBytes(),-1);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        //只会触发一次</div><div class="line">        try&#123;</div><div class="line">            zooKeeper.delete(&quot;/test1&quot;,-1);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Test</div><div class="line">    public void getChild()&#123;</div><div class="line">        try&#123;</div><div class="line">            zooKeeper.create(&quot;/test2&quot;,&quot;test2-data-1&quot;.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,CreateMode.PERSISTENT);</div><div class="line">            zooKeeper.create(&quot;/test3&quot;,&quot;test3-data-1&quot;.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,CreateMode.PERSISTENT);</div><div class="line">            zooKeeper.create(&quot;/test4&quot;,&quot;test4-data-1&quot;.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,CreateMode.PERSISTENT);</div><div class="line"></div><div class="line">            List&lt;String&gt; list = zooKeeper.getChildren(&quot;/&quot;,true);</div><div class="line">            list.stream().forEach(new Consumer&lt;String&gt;() &#123;</div><div class="line">                @Override</div><div class="line">                public void accept(String s) &#123;</div><div class="line">                    System.out.println(s);</div><div class="line">                &#125;</div><div class="line">            &#125;);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/06/16/zookeeper-study003/" itemprop="url">
-                  Zookeeper学习笔记(三) zookeeper的安装和使用
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-06-16T15:55:55+08:00" content="2016-06-16">
-              2016-06-16
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/zookeeper/" itemprop="url" rel="index">
-                    <span itemprop="name">zookeeper</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/06/16/zookeeper-study003/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/16/zookeeper-study003/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="1-zookeeper的安装"><a href="#1-zookeeper的安装" class="headerlink" title="1 zookeeper的安装"></a>1 zookeeper的安装</h2><p>1 解压zookeeper3.4.7压缩包后修改主要配置如下<br>修改文件夹下的配置文件conf/zoo_sample.cfg 重命名为zoo.cfg<br>修改的主要内容如下:</p>
-<p><img src="/images/zookeeper/zoo-cfg.png" alt=""></p>
-<p>对应的参数：</p>
-<p>tickTime：这个参数主要是用来针对 ZooKeeper 服务端和客户端的会话控制，包括心跳控制，一般来说，会话超时时间是该值的两倍，它的单位是毫秒，我们设置为 2000 毫秒。</p>
-<p>dataDir：这个目录用来存放数据库的镜像和操作数据库的日志。注意，如果这个文件夹不存在，需要手动创建一个并赋予读写权限，我们设置为/data/zookeeper3.4.7/data，不用手动创建这个文件夹，系统运行后会自动创建或覆盖。</p>
-<p>clientPort：ZooKeeper 服务端监听客户端的端口，默认是 2181，这里沿用默认设置。</p>
-<p>initLimit：follower 对于 Leader 的初始化连接 timeout 时间；</p>
-<p>syncLimit：follower 对于 Leader 的同步 timeout 时间；</p>
-<p>timeout 的计算公式是 initLimit <em> tickTime，syncLimit </em> tickTime。</p>
-<p>server.A=B：C：D：其中 A 是一个数字，表示这个是第几号服务器；B 是这个服务器的 ip 地址；C 表示的是这个服务器与集群中的 Leader 服务器交换信息的端口；D 表示的是万一集群中的 Leader 服务器挂了，需要一个端口来重新进行选举，选出一个新的 Leader，而这个端口就是用来执行选举时服务器相互通信的端口。如果是伪集群的配置方式，由于 B 都是一样，所以不同的 Zookeeper 实例通信端口号不能一样，所以要给它们分配不同的端口号。</p>
-<p>2 在对应的机器中的data目录下创建相应的myid文件，该文件内容为对应的服务机器的id</p>
-<p><img src="/images/zookeeper/zookeeper-list.png" alt=""></p>
-<p>3 拷贝数据到相应的客户机上后重新建立myid文件，后配置完成</p>
-<h2 id="2-启动服务"><a href="#2-启动服务" class="headerlink" title="2 启动服务"></a>2 启动服务</h2><p>1 接下来通过 bin 目录下面的 zkServer.sh 脚本启动 ZooKeeper 服务，如果不清楚具体参数，可以直接调用脚本查看输出，ZooKeeper 采用的是 Bourne Shell</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">localhost:bin sunxing$ ./zkServer.sh start</div><div class="line">ZooKeeper JMX enabled by default</div><div class="line">Using config: /usr/local/share/zookeeper3.4.7/bin/../conf/zoo.cfg</div><div class="line">Starting zookeeper ... STARTED</div></pre></td></tr></table></figure>
-<p>2 其他对应的命令如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">localhost:bin sunxing$ ./zkServer.sh</div><div class="line">ZooKeeper JMX enabled by default</div><div class="line">Using config: /usr/local/share/zookeeper3.4.7/bin/../conf/zoo.cfg</div><div class="line">Usage: ./zkServer.sh &#123;start|start-foreground|stop|restart|status|upgrade|print-cmd&#125;</div></pre></td></tr></table></figure>
-<p>3 查看zk进程</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">localhost:bin sunxing$ jps</div><div class="line">1578 QuorumPeerMain</div><div class="line">1605 Jps</div><div class="line">localhost:bin sunxing$</div></pre></td></tr></table></figure>
-<p>这里我们看到的进程号为 1578 的进程 QuorumPeerMain 代表了 ZooKeeper 服务。我们也可以通过 ZooKeeper 启动脚本自带的参数“Status”来查看 ZooKeeper 进程状态</p>
-<p>4 查看zk的进程状态</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">localhost:zookeeper3.4.7 sunxing$ ./bin/zkCli.sh -server localhost:2181</div><div class="line">Connecting to localhost:2181</div><div class="line">2016-06-16 17:11:44,878 [myid:] - INFO  [main:Environment@100] - Client environment:zookeeper.version=3.4.7-1713338, built on 11/09/2015 04:32 GMT</div><div class="line">2016-06-16 17:11:44,883 [myid:] - INFO  [main:Environment@100] - Client environment:host.name=localhost</div><div class="line">2016-06-16 17:11:44,883 [myid:] - INFO  [main:Environment@100] - Client environment:java.version=1.7.0_71</div><div class="line">2016-06-16 17:11:44,886 [myid:] - INFO  [main:Environment@100] - Client environment:java.vendor=Oracle Corporation</div><div class="line">2016-06-16 17:11:44,886 [myid:] - INFO  [main:Environment@100] - Client environment:java.home=/Library/Java/JavaVirtualMachines/jdk1.7.0_71.jdk/Contents/Home/jre</div><div class="line">2016-06-16 17:11:44,886 [myid:] - INFO  [main:Environment@100] - Client environment:java.class.path=/usr/local/share/zookeeper3.4.7/bin/../build/classes:/usr/local/share/zookeeper3.4.7/bin/../build/lib/*.jar:/usr/local/share/zookeeper3.4.7/bin/../lib/slf4j-log4j12-1.6.1.jar:/usr/local/share/zookeeper3.4.7/bin/../lib/slf4j-api-1.6.1.jar:/usr/local/share/zookeeper3.4.7/bin/../lib/netty-3.7.0.Final.jar:/usr/local/share/zookeeper3.4.7/bin/../lib/log4j-1.2.16.jar:/usr/local/share/zookeeper3.4.7/bin/../lib/jline-0.9.94.jar:/usr/local/share/zookeeper3.4.7/bin/../zookeeper-3.4.7.jar:/usr/local/share/zookeeper3.4.7/bin/../src/java/lib/*.jar:/usr/local/share/zookeeper3.4.7/bin/../conf:.:/Library/Java/JavaVirtualMachines/jdk1.7.0_71.jdk/Contents/Home/lib/dt.jar:/Library/Java/JavaVirtualMachines/jdk1.7.0_71.jdk/Contents/Home/lib/tools.jar</div><div class="line">2016-06-16 17:11:44,886 [myid:] - INFO  [main:Environment@100] - Client environment:java.library.path=/Users/sunxing/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:.</div><div class="line">2016-06-16 17:11:44,887 [myid:] - INFO  [main:Environment@100] - Client environment:java.io.tmpdir=/var/folders/0q/vq9qm6l14qld8y3gk48hmm9w0000gn/T/</div><div class="line">2016-06-16 17:11:44,887 [myid:] - INFO  [main:Environment@100] - Client environment:java.compiler=&lt;NA&gt;</div><div class="line">2016-06-16 17:11:44,887 [myid:] - INFO  [main:Environment@100] - Client environment:os.name=Mac OS X</div><div class="line">2016-06-16 17:11:44,887 [myid:] - INFO  [main:Environment@100] - Client environment:os.arch=x86_64</div><div class="line">2016-06-16 17:11:44,887 [myid:] - INFO  [main:Environment@100] - Client environment:os.version=10.10.5</div><div class="line">2016-06-16 17:11:44,887 [myid:] - INFO  [main:Environment@100] - Client environment:user.name=sunxing</div><div class="line">2016-06-16 17:11:44,887 [myid:] - INFO  [main:Environment@100] - Client environment:user.home=/Users/sunxing</div><div class="line">2016-06-16 17:11:44,888 [myid:] - INFO  [main:Environment@100] - Client environment:user.dir=/usr/local/share/zookeeper3.4.7</div><div class="line">2016-06-16 17:11:44,889 [myid:] - INFO  [main:ZooKeeper@438] - Initiating client connection, connectString=localhost:2181 sessionTimeout=30000 watcher=org.apache.zookeeper.ZooKeeperMain$MyWatcher@2ae61f87</div><div class="line">Welcome to ZooKeeper!</div><div class="line">2016-06-16 17:11:44,946 [myid:] - INFO  [main-SendThread(localhost:2181):ClientCnxn$SendThread@1032] - Opening socket connection to server localhost/127.0.0.1:2181. Will not attempt to authenticate using SASL (unknown error)</div><div class="line">JLine support is enabled</div><div class="line">2016-06-16 17:11:44,966 [myid:] - INFO  [main-SendThread(localhost:2181):ClientCnxn$SendThread@876] - Socket connection established to localhost/127.0.0.1:2181, initiating session</div><div class="line">2016-06-16 17:11:45,020 [myid:] - INFO  [main-SendThread(localhost:2181):ClientCnxn$SendThread@1299] - Session establishment complete on server localhost/127.0.0.1:2181, sessionid = 0x155587ac2930000, negotiated timeout = 30000</div><div class="line"></div><div class="line">WATCHER::</div><div class="line"></div><div class="line">WatchedEvent state:SyncConnected type:None path:null</div><div class="line">[zk: localhost:2181(CONNECTED) 0]</div></pre></td></tr></table></figure>
-<p>执行help命令查看指导:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">[zk: localhost:2181(CONNECTED) 0] help</div><div class="line">ZooKeeper -server host:port cmd args</div><div class="line">	connect host:port</div><div class="line">	get path [watch]</div><div class="line">	ls path [watch]</div><div class="line">	set path data [version]</div><div class="line">	rmr path</div><div class="line">	delquota [-n|-b] path</div><div class="line">	quit</div><div class="line">	printwatches on|off</div><div class="line">	create [-s] [-e] path data acl</div><div class="line">	stat path [watch]</div><div class="line">	close</div><div class="line">	ls2 path [watch]</div><div class="line">	history</div><div class="line">	listquota path</div><div class="line">	setAcl path acl</div><div class="line">	getAcl path</div><div class="line">	sync path</div><div class="line">	redo cmdno</div><div class="line">	addauth scheme auth</div><div class="line">	delete path [version]</div><div class="line">	setquota -n|-b val path</div><div class="line">[zk: localhost:2181(CONNECTED) 1]</div></pre></td></tr></table></figure>
-<h2 id="3-流程及源代码解释"><a href="#3-流程及源代码解释" class="headerlink" title="3 流程及源代码解释"></a>3 流程及源代码解释</h2><p>ZooKeeper 的启动由 zkServer.sh 发起，真正的起源是 Java 类 QuorumPeerMain，然后进行了一系列配置后启动负责 ZooKeeper 服务的线程，具体调用过程如图 1 所示</p>
-<p><img src="/images/zookeeper/zookeeper-start.png" alt=""></p>
-<p>初始化ZOOMAIN的地方的shell如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">if [ &quot;x$JMXDISABLE&quot; = &quot;x&quot; ]</div><div class="line">then</div><div class="line">  echo &quot;ZooKeeper JMX enabled by default&quot; &gt;&amp;2</div><div class="line">  if [ &quot;x$JMXPORT&quot; = &quot;x&quot; ]</div><div class="line">  then</div><div class="line">    # for some reason these two options are necessary on jdk6 on Ubuntu</div><div class="line">    #   accord to the docs they are not necessary, but otw jconsole cannot</div><div class="line">    #   do a local attach</div><div class="line">    ZOOMAIN=&quot;-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.local.only=$JMXLOCALONLY org.apache.zookeeper.server.quorum.QuorumPeerMain&quot;</div><div class="line">  else</div><div class="line">    if [ &quot;x$JMXAUTH&quot; = &quot;x&quot; ]</div><div class="line">    then</div><div class="line">      JMXAUTH=false</div><div class="line">    fi</div><div class="line">    if [ &quot;x$JMXSSL&quot; = &quot;x&quot; ]</div><div class="line">    then</div><div class="line">      JMXSSL=false</div><div class="line">    fi</div><div class="line">    if [ &quot;x$JMXLOG4J&quot; = &quot;x&quot; ]</div><div class="line">    then</div><div class="line">      JMXLOG4J=true</div><div class="line">    fi</div><div class="line">    echo &quot;ZooKeeper remote JMX Port set to $JMXPORT&quot; &gt;&amp;2</div><div class="line">    echo &quot;ZooKeeper remote JMX authenticate set to $JMXAUTH&quot; &gt;&amp;2</div><div class="line">    echo &quot;ZooKeeper remote JMX ssl set to $JMXSSL&quot; &gt;&amp;2</div><div class="line">    echo &quot;ZooKeeper remote JMX log4j set to $JMXLOG4J&quot; &gt;&amp;2</div><div class="line">    ZOOMAIN=&quot;-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=$JMXPORT -Dcom.sun.management.jmxremote.authenticate=$JMXAUTH -Dcom.sun.management.jmxremote.ssl=$JMXSSL -Dzookeeper.jmx.log4j.disable=$JMXLOG4J org.apache.zookeeper.server.quorum.QuorumPeerMain&quot;</div><div class="line">  fi</div><div class="line">else</div><div class="line">    echo &quot;JMX disabled by user request&quot; &gt;&amp;2</div><div class="line">    ZOOMAIN=&quot;org.apache.zookeeper.server.quorum.QuorumPeerMain&quot;</div><div class="line">fi</div></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/06/15/zookeeper-study002/" itemprop="url">
-                  Zookeeper学习笔记(二) zookeeper的应用场景
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-06-15T11:55:55+08:00" content="2016-06-15">
-              2016-06-15
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/zookeeper/" itemprop="url" rel="index">
-                    <span itemprop="name">zookeeper</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/06/15/zookeeper-study002/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/15/zookeeper-study002/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="1-zookeeper的统一命名服务"><a href="#1-zookeeper的统一命名服务" class="headerlink" title="1 zookeeper的统一命名服务"></a>1 zookeeper的统一命名服务</h2><p>在分布式环境下,经常需要对应用/服务进行统一命名,便于识别不同的服务.</p>
-<pre><code>1) 类似于域名与ip之间的关系
-2) 通过名称来获取资源或服务的地址等信息
-</code></pre><p>按照城市结果组织服务/应用名称</p>
-<pre><code>1) 可以将服务名称和地址信息写到zookeeper中,客户端通过zookeeper获取服务的列表信息
-</code></pre><p>具体的结构图如下：</p>
-<p><img src="/images/zookeeper/zookeeper-tongyimingming.jpg" alt=""></p>
-<p>如：在路径下/app/p_1  表示服务p_1,可以进服务对应的数据存在这个目录下.</p>
-<h2 id="2-配置管理"><a href="#2-配置管理" class="headerlink" title="2 配置管理"></a>2 配置管理</h2><p>在分布式环境下,进程需要配置文件管理和同步</p>
-<pre><code>1) 一个集群中,所有节点的配置信息应该一致
-2) 我们队配置文件修改后,希望能够快速同步到各个节点上
-</code></pre><p>配置管理可以交给zookeeper实现:</p>
-<pre><code>1) 可以将配置信息写入到zookeeper中的一个znode节点上
-2) 各个节点监听这个znode
-3) 一旦znode中的数据被修改了,zookeeper将通知各个节点
-</code></pre><p>具体的管理构造图如下:</p>
-<p><img src="/images/zookeeper/zookeeper-conf-manager.jpg" alt=""></p>
-<h2 id="3-zookeeper的集群管理"><a href="#3-zookeeper的集群管理" class="headerlink" title="3 zookeeper的集群管理"></a>3 zookeeper的集群管理</h2><p>分布式管理中我们需要实时掌握每个节点的状态,可根据节点实时状态做出一些调整</p>
-<p>可交由zookeeper进行实现:</p>
-<pre><code>1) 可将节点信息写入到zookeeper上的一个znode钟
-2) 监听这个znode可获取他的实时状态变化
-</code></pre><p>典型的应用：HBase中master状态监控和选举</p>
-<p>1 hbase regionserver 向zookeeper注册，提供hbase regionserver状态信息（是否在线）</p>
-<p>2 HMaster主要作用在于，通过HMaster维护系统表-ROOT-,.META.，记录regionserver所对应region变化信息。此外还负责监控处理当前hbase cluster中regionserver状态变化信息。</p>
-<pre><code>hbase regionserver则用于多个/单个维护region。
-region则对应为hbase数据表的表分区数据维护。
-</code></pre><h2 id="4-分布式通知与协调"><a href="#4-分布式通知与协调" class="headerlink" title="4 分布式通知与协调"></a>4 分布式通知与协调</h2><p>分布式环境下,经常存在一个服务需要知道它所管理的子服务的状态.</p>
-<pre><code>1) NameNode所需要知道哥哥DateNode的状态
-2) ResourceManager需要知道各个NodeManager的状态
-</code></pre><p>zookeeper可以实现心跳检测机制,信息推送,它相当于一个发布和订阅系统</p>
-<h2 id="5-分布式队列"><a href="#5-分布式队列" class="headerlink" title="5 分布式队列"></a>5 分布式队列</h2><p>当一个队列的成员都聚齐时,这个队列才可用,否则一直等待所有的成员到达,这种是同步队列</p>
-<pre><code>1) 一个job由多个task组成,只有所有的任务完成后,job才运行完成
-2) 可为jbo创建一个/job目录,然后在该目录下,为每一个完成的task创建一个临时的znode,一旦临时节点数达到task总数,则表示job完成
-</code></pre><p>队列按照FIFO方式进行入队和出队列操作,例如实现生产者和消费者模型。</p>
+            <h2 id="1-FileChannel"><a href="#1-FileChannel" class="headerlink" title="1 FileChannel"></a>1 FileChannel</h2><p>FileChannel的获取方式主要有三种：</p>
+<pre><code>java.io.FileInputStream#getChannel()
+ java.io.FileOutputStream#getChannel()
+java.io.RandomAccessFile#getChannel()
+</code></pre><h3 id="1-1-读取数据"><a href="#1-1-读取数据" class="headerlink" title="1.1 读取数据"></a>1.1 读取数据</h3><p>简单的读取文件中的内容并打印出来,简单的代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">    * 从Channel中读取数据</div><div class="line">    * 1 首先分配一个缓冲区Buffer</div><div class="line">    * 2 调用用read方法读取数据到缓冲区中</div><div class="line">    * 3 read方法返回的int表示有多少字节的数据读取到缓冲区中,如果返回-1,表示读取到最后</div><div class="line">    *</div><div class="line">    * @throws Exception</div><div class="line">    */</div><div class="line">   @Test</div><div class="line">   public void test1() throws Exception&#123;</div><div class="line">       FileInputStream fis = new FileInputStream(new File(&quot;conf/1.txt&quot;));</div><div class="line">       FileChannel fc = fis.getChannel();</div><div class="line"></div><div class="line">       //构造一个缓冲区</div><div class="line">       System.out.println(&quot;构造一个缓冲区1...&quot;);</div><div class="line">       ByteBuffer by = ByteBuffer.allocate(1);</div><div class="line">       int cnt = -1;</div><div class="line">       while((cnt = fc.read(by)) &gt; 0)&#123;</div><div class="line">           byte b = by.get(0);</div><div class="line"></div><div class="line">           char ch = (char)(b &amp; 0xFF);</div><div class="line">           System.out.println(ch);</div><div class="line">           by.clear();</div><div class="line">       &#125;</div><div class="line"></div><div class="line">       //构造一个缓冲区</div><div class="line">       System.out.println(&quot;构造一个缓冲区2...&quot;);</div><div class="line">       ByteBuffer by1 = ByteBuffer.allocate(1);</div><div class="line">       int rs = fc.read(by1);</div><div class="line"></div><div class="line">       if(rs &gt; 0)&#123;</div><div class="line">           System.out.println(new String(by1.array()));</div><div class="line">       &#125;</div><div class="line">       </div><div class="line">       fc.close();</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<p>代码执行的结果如下:</p>
+<p><img src="/images/io/nio-channel-01.png" alt=""></p>
+<p>说明1：我构造了一个缓冲区,大小为1,当我从管道中读取数据写入到缓冲区中时,如果缓冲区不清空,第二次会写不进去。具体的测试代码:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">@Test</div><div class="line">    public void test1() throws Exception&#123;</div><div class="line">        FileInputStream fis = new FileInputStream(new File(&quot;conf/1.txt&quot;));</div><div class="line">        FileChannel fc = fis.getChannel();</div><div class="line"></div><div class="line">        //构造一个缓冲区</div><div class="line">        System.out.println(&quot;构造一个缓冲区1...&quot;);</div><div class="line">        ByteBuffer by = ByteBuffer.allocate(1);</div><div class="line">        int cnt = -1;</div><div class="line">        while((cnt = fc.read(by)) &gt; 0)&#123;</div><div class="line">            byte b = by.get(0);</div><div class="line"></div><div class="line">            char ch = (char)(b &amp; 0xFF);</div><div class="line">            System.out.println(ch);</div><div class="line">//            by.clear();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        //构造一个缓冲区</div><div class="line">        System.out.println(&quot;构造一个缓冲区2...&quot;);</div><div class="line">        ByteBuffer by1 = ByteBuffer.allocate(1);</div><div class="line">        int rs = fc.read(by1);</div><div class="line"></div><div class="line">        if(rs &gt; 0)&#123;</div><div class="line">            System.out.println(new String(by1.array()));</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        fc.close();</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>我将清空缓冲区的方法注释掉以后,在执行代码,结果如下：</p>
+<p><img src="/images/io/nio-filechannel-1.png" alt=""></p>
+<p>可以看出在固定大小的缓冲区在往里写入数据,写满以后如果不清空,数据是读取不进来的,不会主动覆盖.同样的,从管道中读取数据是一次性的,也就是管道通过移动指针的形式来读取数据,无法重复读取.下面开始从源码的层看看是否如上面想的一样。</p>
+<p><img src="/images/io/nio-filechannel-02.png" alt=""></p>
+<p>由圈红的代码可以看到其实是使用了一个工具类来实现数据写入的,下面是工具类的read的代码：</p>
+<p><img src="/images/io/nio-filechannel-03.png" alt=""></p>
+<p>可以看出来,先构造一个缓冲区,这个缓冲区的大小为：要写入缓冲区剩余的大小。具体的实现代码可见：</p>
+<p><img src="/images/io/nio-filechannel-04.png" alt=""></p>
+<p>在代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ByteBuffer var5 = Util.getTemporaryDirectBuffer(var1.remaining());</div></pre></td></tr></table></figure>
+<p>看到var5的大小为var1.remaining(),也就是0,因为我们的缓冲区的大小为1,已经读取一个数据进去后,剩下的大小为0.</p>
+<p>同样的是不是每从渠道中读取数据,位置都都会被修改?也就是复发重复读取,下面从源码中找找看,通过上面的代码可以看到,最终读取数据的一个方法为:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">int var6 = readIntoNativeBuffer(var0, var5, var2, var4);</div></pre></td></tr></table></figure>
+<p>从方法名称可以看出,应该最终调用的是jvm中的代码,代码就不看了,通过上面的测试可以看出,管道中的数据是不可重复读写的,从源码中也可以看到是没有接口对外提供的。</p>
+<h3 id="1-2-写入数据"><a href="#1-2-写入数据" class="headerlink" title="1.2 写入数据"></a>1.2 写入数据</h3><p>写入数据很简单,先向缓冲区中写入数据,在讲数据写入到管道中,注意FileChannel.write()是在while循环中调用的。因为无法保证write()方法一次能向FileChannel写入多少字节，因此需要重复调用write()方法，直到Buffer中已经没有尚未写入通道的字节。同样的在将缓冲区的数据写入到管道中后,缓冲区的数据还在的,只是指针移动到最后的位置了,具体的代码如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">    * 从Channel中读取数据</div><div class="line">    * 1 首先申请一个缓冲区</div><div class="line">    * 2 向缓冲区中写入数据</div><div class="line">    * 3 将缓冲区写入到管道中</div><div class="line">    * @throws Exception</div><div class="line">    */</div><div class="line">   @Test</div><div class="line">   public void test2() throws Exception&#123;</div><div class="line">       FileOutputStream fis = new FileOutputStream(new File(&quot;conf/1.txt&quot;));</div><div class="line">       FileChannel fc = fis.getChannel();</div><div class="line"></div><div class="line">       String test = &quot;-sunx-&quot;;</div><div class="line">       ByteBuffer bf = ByteBuffer.allocate(test.length());</div><div class="line">       bf.clear();</div><div class="line">       bf.put(test.getBytes());</div><div class="line">       bf.flip();</div><div class="line"></div><div class="line">       while(bf.hasRemaining())&#123;</div><div class="line">           fc.write(bf);</div><div class="line">       &#125;</div><div class="line">       System.out.println(bf.position() + &quot;\t&quot; + bf.limit() + &quot;\t&quot; + bf.remaining());</div><div class="line">       fc.close();</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<p>具体的执行结果如下:</p>
+<p><img src="/images/io/nio-channel-05.png" alt=""></p>
 
           
         
@@ -803,8 +870,8 @@ region则对应为hbase数据表的表分区数据维护。
             
               
                 
-                <a class="post-title-link" href="/2016/06/14/zookeeper-study001/" itemprop="url">
-                  Zookeeper学习笔记(一) zookeeper的基本原理
+                <a class="post-title-link" href="/2016/07/18/java-thread-study001/" itemprop="url">
+                  Java 多线程学习笔记(一) 概念介绍
                 </a>
               
             
@@ -817,8 +884,8 @@ region则对应为hbase数据表的表分区数据维护。
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-06-14T11:55:55+08:00" content="2016-06-14">
-              2016-06-14
+            <time itemprop="dateCreated" datetime="2016-07-18T09:57:55+08:00" content="2016-07-18">
+              2016-07-18
             </time>
           </span>
 
@@ -831,8 +898,8 @@ region则对应为hbase数据表的表分区数据维护。
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/zookeeper/" itemprop="url" rel="index">
-                    <span itemprop="name">zookeeper</span>
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
                   </a>
                 </span>
 
@@ -847,8 +914,8 @@ region则对应为hbase数据表的表分区数据维护。
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/06/14/zookeeper-study001/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/14/zookeeper-study001/" itemprop="commentsCount"></span>
+                <a href="/2016/07/18/java-thread-study001/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/18/java-thread-study001/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -873,110 +940,40 @@ region则对应为hbase数据表的表分区数据维护。
       
         
           
-            <p>1 zookeeper 的定义</p>
-<p>zookeeper是一个针对大型分布式系统的可靠协调系统</p>
-<p>1) 它提供的功能有：配置维护,名字服务,分布式同步,组服务<br>2) 目标是封装好复杂易出错的关键服务,将简单易用的接口和性能高效,功能稳定的系统提供给用户</p>
-<p>2 zookeeper 的特点</p>
-<pre><code>1) 最终一致性:为客户端展示同一个试图,不同的客户端访问不同的服务端
-2) 可靠性:如果一条消息被一台服务器接受,那么将被所有的服务器接受
-3）    实时性：zookeeper不能保证两个客户端同时得到刚刚更新的数据,如果需要最新数据,应该在读取数据之前调用sync()接口
-4) 等待无关性: 慢的或者无效的client链接不干预快速的client的请求
-5) 原子性: 更新操作要么成功要么失败,无中间状态
-6) 顺序性: 对于所有的server,统一消息发布顺序一致,全局有序是指如果在一台服务器上消息a在消息b前发布，则在所有Server上消息a都将在消息b前被发布；偏序是指如果一个消息b在消息a后被同一个发送者发布，a必将排在b前面
-</code></pre><p>3 zookeeper 的角色</p>
-<p>zookeeper的角色主要分为以下几种:</p>
-<p><img src="/images/zookeeper/zookeeper-juse.jpg" alt=""></p>
-<p>4 zookeeper 的基本架构流程图</p>
-<p><img src="/images/zookeeper/zookeeper-jiagou.png" alt=""></p>
-<p>zookeeper的核心是原子广播,这个机制保证了各个server之间的同步,实现这个机制的协议叫做zab协议。zab协议有两种模式: </p>
-<pre><code>1) 恢复模式(选举)
-2) 广播模式(同步)
-</code></pre><p>当服务启动或者是领导者崩溃后,zab就进入恢复模式,当领导者被选举出来后,并且和大多数的server完成数据的同步后,恢复模式结束。状态同步是为了使leader和其他的server也就是follower具有相同的状态。</p>
-<p>为了保证事务的顺序一致性,采用了递增的zxid来表示事务,所有的提起(proposal)都在被提出的时候加上zxid,在代码中zxid是一个64位的数子,它搞32为是用来表示属于哪一个leader,也就是leader的表示,每一个leader被选举出来都会有一个新的epoch,zxid的高32位就是这个值,低32位时用来做递增计数的。</p>
-<p>server的状态:</p>
-<pre><code>1) LOOKING         当前server不着调leader是谁,正在搜索
-2) LEADING         当前server就是被选举出来的leader
-3) FOLLOWING        leader已经选举出来了,当前server与之同步
-</code></pre><p>5 zookeeper 的选举流程</p>
-<p>系统启动或者是当前leader崩溃或者是当前leader丢失大多数的follower,zk进入恢复模式,恢复模式需要重新选举出一个新的leader,让所有的server都恢复到正常的状态</p>
-<p>zookeeper的选举采用了Paxos协议,Paxos的核心实现是当多数的server写成功,则任务数据写成功。</p>
-<pre><code>1）如果有3个server,则需要两个写成功即表示任务数据写成功
-2）如果server为4或者是5个,则需要三个写成功即表示任务数据写成功
-</code></pre><p>server数目一般为奇数个,例如:3,5,7个等</p>
-<pre><code>1) 如果3个server,则最多允许1个server挂掉
-2) 如果4个server,则同样最多允许一个server挂掉
-3) 通过上面的可以看出来,奇数个和偶数个server的可靠性是一样的,最多允许一个server挂掉,因此最好选用奇数个server
-</code></pre><p>server的流程如下:    </p>
-<pre><code>1) 选举有当前server发起选举线程担任,主要是对投票结果进行统计,并选出推荐的server
-2）选举线程首先向所有的server发起一次询问(包括自己)
-3) 选举线程收到回复后,验证是否是自己发起的询问(验证zxid是否一致),然后获取对方的id(id),并存储到当前询问的对象列表中.
-4) 最后获取对方提议的leader相关信息(id,zxid),并将这些信息存储到当次选举的投票记录中
-5) 收到所有的server的回复以后,计算出zxid最大的那个server,并将这个Server相关信息设置成下一次要投票的Server
-6) 线程将当前zxid最大的server设置为当前server要推荐的leader,如果此时获胜的server获取n/2 + 1的server票数,设置当前推荐的leader为获胜的server。将根据获胜的leader设置为自己的状态,否则,继续这个过程,知道leader被选举出来
-</code></pre><p>通过流程分析可以看出:leader要获取大多数的server的支持,则server的总数必须是奇数2n+1,存活下来的server的数目不少于n + 1</p>
-<p>每个server启动后都会重复以上流程,在恢复模式下,如果刚从崩溃状态恢复或者是刚启动的server还会从磁盘中读取数据的快照和会话信息,zk会记录事务的日志进行快照,方便在恢复时进行恢复.</p>
-<p>选举具体的流程图如下:</p>
-<p><img src="/images/zookeeper/zookeeper-leader.jpg" alt=""></p>
-<p>fast paxos流程是在选举过程中,某server首先向所有的server提议自己要成为leader,当其他的server收到提议以后,解决epoch和zxid的冲突,并接受对方的提议,向对方发送接受提议并完成的消息,重复这个流程,直到最终选举出leader。流程图如下:</p>
-<p><img src="/images/zookeeper/zookeeper-fast-paxos.jpg" alt=""></p>
-<p>举一个简单的例子:</p>
-<p>假设有五台服务器组成的zookeeper集群,它们的id从1-5,同时它们都是最新启动的,也就是没有历史数据,在存放数据量这一点上,都是一样的.假设这些服务器依序启动,来看看会发生什么.</p>
-<pre><code>1) 服务器1启动,此时只有它一台服务器启动了,它发出去的报没有任何响应,所以它的选举状态一直是LOOKING状态
-2) 服务器2启动,它与最开始启动的服务器1进行通信,互相交换自己的选举结果,由于两者都没有历史数据,所以id值较大的服务器2胜出,但是由于没有达到超过半数以上的服务器都同意选举它(这个例子中的半数以上是3),所以服务器1,2还是继续保持LOOKING状态.
-3) 服务器3启动,根据前面的理论分析,服务器3成为服务器1,2,3中的老大,而与上面不同的是,此时有三台服务器选举了它,所以它成为了这次选举的leader.
-4) 服务器4启动,根据前面的分析,理论上服务器4应该是服务器1,2,3,4中最大的,但是由于前面已经有半数以上的服务器选举了服务器3,所以它只能接收当小弟的命了.
-5) 服务器5启动,同4一样,当小弟.
-</code></pre><p>以上就是fastleader算法的简要分析,还有一些异常情况的处理,比如某台服务器宕机之后的处理,当leader宕机之后的处理等等</p>
-<p>6 zookeeper 的同步流程</p>
-<p>选举完leader后,zk进入同步的状态过程</p>
-<pre><code>1) leader等待server的链接
-2) follower链接leader,并将最大的zxid发送给leader
-3) leader根据follower的zxid确定同步点
-4) 完成同步以后通知follower,已经成为uptodate状态
-5) follower收到uptodate消息后,又可以重新接收客户端的链接进行服务了
-</code></pre><p>具体的流程图如下:</p>
-<p><img src="/images/zookeeper/zookeeper-tongbu.jpg" alt=""></p>
-<p>7 zookeeper 的工作流程图</p>
-<p>Leader的工作流程:</p>
-<pre><code>1) 恢复数据
-2) 维持leader与learner的心跳,接收learner的请求并判定lerner的请求消息类型
-3) learner的消息类型主要有ping消息,Request消息,ack消息,revalidate消息,根据不同的消息类型进行不同的处理。
-
-PING消息是指Learner的心跳信息；
-REQUEST消息是Follower发送的提议信息，包括写请求及同步请求；
-ACK消息是Follower的对提议的回复，超过半数的Follower通过，则commit该提议；
-REVALIDATE消息是用来延长SESSION有效时间
-</code></pre><p>learner的大致工作流程图如下:</p>
-<p><img src="/images/zookeeper/zookeeper-leader-worker.jpg" alt=""></p>
-<p>Follower的工作流程:</p>
-<pre><code>1) 向Leader发送请求信息(ping消息,request消息,ack消息,revalidate消息)
-2) 接收leader消息进行处理
-3) 接收client请求信息,如果为写请求,发送给Leader进行投票
-4) 返回client的结果
-</code></pre><p>Follower的消息循环处理如下几种来自leader的消息:</p>
-<pre><code>1 .PING消息： 心跳消息；
-2 .PROPOSAL消息：Leader发起的提案，要求Follower投票；
-3 .COMMIT消息：服务器端最新一次提案的信息；
-4 .UPTODATE消息：表明同步完成；
-5 .REVALIDATE消息：根据Leader的REVALIDATE结果，关闭待revalidate的session还是允许其接受消息；
-6 .SYNC消息：返回SYNC结果到客户端，这个消息最初由客户端发起，用来强制得到最新的更新。
-</code></pre><p>Follower的工作流程大致如下:</p>
-<p><img src="/images/zookeeper/zookeeper-follower-liucheng.jpg" alt=""></p>
-<p>8 zookeeper的写操作</p>
-<p><img src="/images/zookeeper/zookeeper-writer.png" alt=""></p>
-<p>9 zookeeper的数据模型</p>
-<p>1) zookeeper提供了一个层次化的目录结构,命名符合常规文件系统规范,每个节点在zookeeper中叫做znode,并且它有一个唯一的路径标识</p>
-<p>2)znode有两种类型:短暂的(ephemeral) 和 持久化的(persistent),节点znode可以包含数据和子节点</p>
-<p>3) znode中的数据可以有多个版本</p>
-<p>4) 客户端引用，可以在节点上设置监视器(Vwatcher)</p>
-<p>5) 节点的znode不支持部分读写,而是一次性完整的读写吧</p>
-<p>6)znode的类型在创建时确定,并且之后不能再进行修改</p>
-<p>7) znode有四种形式的目录节点.Persistent,Persistent_sequential,Ephemeral,Ephemeral_sequential</p>
-<p>数据结构目录如下:</p>
-<p><img src="/images/zookeeper/zookeeper-file-list.png" alt=""></p>
-<p>zookeeper目录中的每一个节点对应着一个znode，每个znode维护着一个属性结构，它包含数据的版本号、时间戳、等信息。Zookeeper就是通过这些属性来实现它特定的功能。每当znode的数据改变时，相应的版本号会增加，每当客户端查询、更新和删除数据时，也必须提供要被操作的znode版本号，如果所提供的数据版本号与实际的不匹配，那么将会操作失败</p>
-<p>节点属性如下:</p>
-<p><img src="/images/zookeeper/zookeeper-znode-list.jpg" alt=""></p>
+            <h2 id="1-线程和进程"><a href="#1-线程和进程" class="headerlink" title="1 线程和进程"></a>1 线程和进程</h2><p>进程是指一个内存中运行的应用程序，每个进程都有自己独立的一块内存空间，一个进程中可以启动多个线程。比如在Windows系统中，一个运行的exe就是一个进程。</p>
+<p>线程是指进程中的一个执行流程，一个进程中可以运行多个线程。比如java.exe进程中可以运行很多线程。线程总是属于某个进程，进程中的多个线程共享进程的内存。</p>
+<h2 id="2-java中的线程"><a href="#2-java中的线程" class="headerlink" title="2 java中的线程"></a>2 java中的线程</h2><p>使用java.lang.Thread类或者java.lang.Runnable接口编写代码来定义、实例化和启动新线程。</p>
+<p>一个Thread类实例只是一个对象，像Java中的任何其他对象一样，具有变量和方法，生死于堆上。</p>
+<p>Java中，每个线程都有一个调用栈，即使不在程序中创建任何新的线程，线程也在后台运行着。</p>
+<p>一个Java应用总是从main()方法开始运行，mian()方法运行在一个线程内，它被称为主线程。</p>
+<p>一旦创建一个新的线程，就产生一个新的调用栈。</p>
+<p>线程总体分两类：用户线程和守候线程。</p>
+<p>当所有用户线程执行完毕的时候，JVM自动关闭。但是守候线程却不独立于JVM，守候线程一般是由操作系统或者用户自己创建的。</p>
+<h2 id="3-java线程创建和启动"><a href="#3-java线程创建和启动" class="headerlink" title="3 java线程创建和启动"></a>3 java线程创建和启动</h2><p>java线程的实现,具体实现方式有两种,继承Thread类或者是实现Runnable接口。具体的复杂性：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">    *</div><div class="line">    * @throws Exception</div><div class="line">    */</div><div class="line">   @Test</div><div class="line">   public void test() throws Exception&#123;</div><div class="line">       Thread thread = new TestThread();</div><div class="line">       thread.start();</div><div class="line"></div><div class="line">       Thread t1 = new Thread(new TestRunnable());</div><div class="line">       t1.start();</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   /**</div><div class="line">    * 继承实现Thread</div><div class="line">    */</div><div class="line">   class TestThread extends Thread&#123;</div><div class="line">       @Override</div><div class="line">       public void run() &#123;</div><div class="line">           System.out.println(&quot;start thread....&quot;);</div><div class="line">       &#125;</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   /**</div><div class="line">    * 实现接口Runnable</div><div class="line">    */</div><div class="line">   class TestRunnable implements Runnable&#123;</div><div class="line">       @Override</div><div class="line">       public void run() &#123;</div><div class="line">           System.out.println(&quot;start runnbale....&quot;);</div><div class="line">       &#125;</div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<p><img src="/images/thread/thread-start-01.png" alt=""></p>
+<h2 id="4-竞态条件和临界区"><a href="#4-竞态条件和临界区" class="headerlink" title="4 竞态条件和临界区"></a>4 竞态条件和临界区</h2><p>在同一个程序中运行多线程本身不会导致什么问题,主要的问题在于多线程访问了共享资源,如，统一内存区域(变量,数组,对象),系统或者文件等。同样的如果是多线程读取同一个不变的数据是没有问题的,也就是如果在同时写,或者是读写并存的情况下,会出现异常问题。</p>
+<p>如果多个线程访问统一资源时,如果资源的访问顺序敏感,就称存在竞态条件.竞态条件发生的代码区称作临界区。</p>
+<p>因此那些资源是会发生竞态条件的？</p>
+<h3 id="4-1-局部变量"><a href="#4-1-局部变量" class="headerlink" title="4.1 局部变量"></a>4.1 局部变量</h3><p>局部变量存储在线程自己的线程栈中,是不和其他线程共享的数据,所以这个数据是独立的,也就是线程安全的数据,不会发生并发问题。</p>
+<h3 id="4-2-局部对象的引用"><a href="#4-2-局部对象的引用" class="headerlink" title="4.2 局部对象的引用"></a>4.2 局部对象的引用</h3><p>局部变量的引用主要是在方法中定义相应的对象的实现,对象的实际存储位置是在共享堆中,也就是如果其他的方法或者实例获取到该对象的地址引用,那么就可以对它进行更改,所以如果在方法内部定义的实例对象,如果不会逃逸(也就是上面说的不会被其他的方法获得,也不会被其他的局部变量引用到),那么它就是线程安全的。</p>
+<h3 id="4-3-对象成员"><a href="#4-3-对象成员" class="headerlink" title="4.3 对象成员"></a>4.3 对象成员</h3><p>类的成员变量是存储在堆中的,也就是说如果两个线程同时更新类实例对象的同一个成员变量,那么这个代码是不安全的。</p>
+<h3 id="4-4-引用可能不是线程安全的"><a href="#4-4-引用可能不是线程安全的" class="headerlink" title="4.4 引用可能不是线程安全的"></a>4.4 引用可能不是线程安全的</h3><p>一个对象是线程安全的不可变对象,指向这个对象的引用也可能不是线程安全的。</p>
+<h2 id="5-线程的控制和逃逸规则"><a href="#5-线程的控制和逃逸规则" class="headerlink" title="5 线程的控制和逃逸规则"></a>5 线程的控制和逃逸规则</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">如果一个资源的创建，使用，销毁都在同一个线程内完成，</div><div class="line">且永远不会脱离该线程的控制，则该资源的使用就是线程安全的。</div></pre></td></tr></table></figure>
+<p>如果对象本身是线程安全的,但是如果该对象包含有其他资源(文件,数据库连接等),该对象就不再是线程安全的了。线程安全并不是只是指对象本身,包含对象的属性等。</p>
+<h2 id="6-不可变性"><a href="#6-不可变性" class="headerlink" title="6 不可变性"></a>6 不可变性</h2><p>由于多个线程写同一个资源会产生竞态条件,如果多个线程读取同一个资源不会产生竞态条件。因此可以通过创建不可变的对象来保证线程间的共享,也就是保证现在在共享的时候是不会被修改的,从而实现线程的安全。具体例子如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">public class Test &#123;</div><div class="line">    private int a = 0;</div><div class="line"></div><div class="line">    public Test(int a)&#123;</div><div class="line">        this.a = a;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public int value()&#123;</div><div class="line">        return a;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>由此可以看到,对象在创建后是无法进行修改的,也就是这个对象在被多线程访问的时候是线程安全的。</p>
+<h2 id="7-Java内存模型简介"><a href="#7-Java内存模型简介" class="headerlink" title="7 Java内存模型简介"></a>7 Java内存模型简介</h2><p>Java内存模型把Java虚拟机内部划分为线程栈和堆。这张图演示了Java内存模型的逻辑视图。</p>
+<p><img src="/images/thread/java-memory-model-1.png" alt=""></p>
+<p>一个运行在Java虚拟机里的线程都拥有自己的线程栈。这个线程栈包含了这个线程调用的方法,当前执行点相关的信息。一个线程仅能访问自己的线程栈,一个线程创建的本地变量对其他线程是不可见的,因此,每个线程拥有的每个本地变量的独有版本。</p>
+<p>所有原始类型的本地变量都存放在线程栈上,因此其他的线程是不可见的,一个线程可以向另一个线程传递一个原始类型变量的拷贝,但是它不能共享这个原始类型变量自身。</p>
+<p>堆上包含在java程序中创建的所有的对象,无论是哪一个对象创建的,这包括原始类型的对象版本,如果一个对象呗创建然后复制给一个局部变量,或者是作为另一个对象的成员变量,这个对象仍然放在堆上。</p>
+<p><img src="/images/thread/java-memory-model-2.png" alt=""></p>
+<p>一个本地变量如果是原始类型,在这种情况下,它存储在线程栈上,本地变量也可能是一个对象的引用,在这种情况下,引用(这个本地变量)存放在线程栈上,但是对应的对象本身存储在堆上。</p>
+<p>本地变量是指在方法中定义的变量。</p>
+<p>一个对象可能包含方法,这些方法可能包含有本地变量,这些本地变量依然存储在线程栈上,及时一些方法所属的对象存放在堆上.同样的,一个对象的成员变量可能存放在堆上,不管这个成员变量是原始类型还是引用类型。静态成员变量跟随类定义一起也存放在堆上。</p>
+<p>存在堆上的对象可以被所有持有这个对象引用的线程访问,当一个线程可以访问一个对象是,它也可以访问这个对象的成员变量,如果两个线程同时调用一个对象上的同一个方法,他们将访问这个对象的成员变量,但是每个线程都拥有这个本地变量的私有拷贝。</p>
 
           
         
@@ -1009,7 +1006,7 @@ REVALIDATE消息是用来延长SESSION有效时间
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/6/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/8/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/6/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><a class="extend next" rel="next" href="/page/8/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1082,7 +1079,7 @@ var duoshuoQuery = {short_name:"sunxing"};
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">65</span>
+              <span class="site-state-item-count">78</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -1090,7 +1087,7 @@ var duoshuoQuery = {short_name:"sunxing"};
           
             <div class="site-state-item site-state-categories">
               
-                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-count">13</span>
                 <span class="site-state-item-name">分类</span>
               
             </div>
@@ -1099,7 +1096,7 @@ var duoshuoQuery = {short_name:"sunxing"};
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
