@@ -437,6 +437,207 @@ spring.cache.cache-names=person
             
               
                 
+                <a class="post-title-link" href="/2017/10/27/spring-boot-study012/" itemprop="url">
+                  Spring Boot基础学习(十二) 声明式事务
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2017-10-27T17:22:46+08:00" content="2017-10-27">
+              2017-10-27
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/spring-boot/" itemprop="url" rel="index">
+                    <span itemprop="name">spring boot</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2017/10/27/spring-boot-study012/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/10/27/spring-boot-study012/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Spring的事务机制"><a href="#Spring的事务机制" class="headerlink" title="Spring的事务机制"></a>Spring的事务机制</h1><p>Spring 的事务机制是统一的机制来处理的,针对不同的数据库访问方式,事务机制提供了一个PlatformTransactionmager接口,不同的数据库访问方式实现不同的接口实现.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">数据库访问技术</th>
+<th style="text-align:center">实现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">JDBC</td>
+<td style="text-align:center">DataSourceTransactionManager</td>
+</tr>
+<tr>
+<td style="text-align:center">JPA</td>
+<td style="text-align:center">JpaTransactionManager</td>
+</tr>
+<tr>
+<td style="text-align:center">Hibernate</td>
+<td style="text-align:center">HibernateTransactionManager</td>
+</tr>
+<tr>
+<td style="text-align:center">JDO</td>
+<td style="text-align:center">JdoTransactionManager</td>
+</tr>
+<tr>
+<td style="text-align:center">分布式事务</td>
+<td style="text-align:center">JtaTransactionManager</td>
+</tr>
+</tbody>
+</table>
+<p>在程序中定义事务管理器的代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">@Bean</div><div class="line">	public PlatformTransactionManager platformTransactionManager()&#123;</div><div class="line">		JpaTransactionManager manager = new JpaTransactionManager();</div><div class="line">		manager.setDataSource(null);</div><div class="line">		return manager;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
+<p>Spring支持生命是事务,也就是使用注解的形式来处理事务。主要是使用注解@Transactional.使用这个注解来表明这个方法是支持事务的,内部的操作是一个基于aop切面的方式来处理的,具体的可见如下的例子:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">@Transactional(rollbackFor = Test2Exception.class)</div><div class="line">    public User save(User user) throws Exception&#123;</div><div class="line">        User u = repository.save(user);</div><div class="line"></div><div class="line">        if(user.getId() &gt; 100)&#123;</div><div class="line">            throw new Test2Exception(&quot;测试-数据异常,数据回滚&quot;);</div><div class="line">        &#125;</div><div class="line">        return u;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>传递进来的用户名称为null,这个地方直接抛出异常,但是save方法已经执行过了,这里添加了注解@Transactional来处理事务,这个时候事务回滚是有条件的,根据rollbackFor的条件,也就是如果是空指针异常则回滚数据,否则掺入数据,具体的执行结果为:<br><img src="images/spring-boot/transaction-1.png" alt=""></p>
+<p><img src="images/spring-boot/transaction-2.png" alt=""></p>
+<p>这个时候修改对应的rollbackFor条件,在重新进行测试,具体的为:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">@Transactional(rollbackFor = Test2Exception.class)</div><div class="line">    public User save(User user) throws Exception&#123;</div><div class="line">        User u = repository.save(user);</div><div class="line"></div><div class="line">        if(user.getId() &gt; 100)&#123;</div><div class="line">            throw new TestException(&quot;测试-数据异常,数据回滚&quot;);</div><div class="line">        &#125;</div><div class="line">        return u;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>这个时候清空表,在执行请求插入数据:<br><img src="images/spring-boot/transaction-3.png" alt=""><br><img src="images/spring-boot/transaction-4.png" alt=""></p>
+<p>其实在代码中如果出现运行时异常,同样的会进行数据的回滚,如果不是运行时异常,回去比对rollbackFor如果一次相同,则数据进行回滚。</p>
+<p>声明式注解的属性值对应的意义：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">属性</th>
+<th style="text-align:left">含义</th>
+<th style="text-align:left">默认值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">propagationtion</td>
+<td style="text-align:left">定义了事务的声明周期,<br> REQUIRED: 方法A调用时没有事务,新建一个事务,如果方法A中调用了B方法,B方法沿用该事务,同时,如果B方法中发生异常需要数据回滚时,整个事务数据回滚。<br><br>REQUIRED_NEW:方法A,B不管有没有事务,都新建一个事务,这样B方法中发生异常需要回滚m不会影响到A方法<br><br> NESTED:和REQUIRED_NEW相同,但是支持JDBC,不支持jpa和hibernate<br><br> SUPPORTS:方法调用时,有事务就用,没有就不用。<br><br> NOT_SUPPORTED:强制方法不在事务中执行,若有事务,在方法调用到结束阶段,事务都将挂起。<br><br>NEVER:强制方法不在事务中执行,如果有则抛出一次。<br><br> MANDATORY: 强制方法在事务中执行,没有事务,则抛出一次</td>
+<td style="text-align:left">REQUIRED</td>
+</tr>
+<tr>
+<td style="text-align:left">isolation</td>
+<td style="text-align:left">Isolation(隔离)决定了事务的完整性,处理多事务对相同数据下的处理机制。<br><br> READ_UNCOMMITTED: 对于A事务里修改了一条记录,但是没有提交,B事务可以读取到修改以后的值。可导致脏读,不可重复读,以及幻读.<br><br> READ_COMMITTED: 在A事务中修改一条记录提交以后,B事务才可以读取到修改后的记录。阻止了脏读,但可能导致不可重复读和幻读。<br><br> REPEATABLE_READ: 不仅能实现READ_COMMITTED的功能,还能阻止A事务读取了一条记录,B事务将不允许修改这条记录,阻止了脏读和不可重复读,但是可能出现幻读.<br><br>DEFAULT: 当前数据库默认的数据隔离界. <br><br> SRIALZABLE: 此级别下,事务是顺序执行的,可以阻止上面的缺陷,但是开销非常大</td>
+<td style="text-align:left">DEFAULT</td>
+</tr>
+<tr>
+<td style="text-align:left">timeout</td>
+<td style="text-align:left">事务过期时间,默认为当前数据库的事务过期时间</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">readOnly</td>
+<td style="text-align:left">当前事务是否是只读事务</td>
+<td style="text-align:left">false</td>
+</tr>
+<tr>
+<td style="text-align:left">rollbackFor</td>
+<td style="text-align:left">指定哪些异常是可以引起事务回滚的</td>
+<td style="text-align:left">Throwable</td>
+</tr>
+<tr>
+<td style="text-align:left">noRollbackFor</td>
+<td style="text-align:left">指定哪些异常是不会引起事务回滚的</td>
+</tr>
+</tbody>
+</table>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2017/10/27/spring-boot-study011/" itemprop="url">
                   Spring Boot基础学习(十一) 相关配置
                 </a>
@@ -679,207 +880,6 @@ server.ssl.key-store-password = sunxing
 server.ssl.key-store-type = JKS
 </code></pre><p>启动服务,调用接口地址,查看结果：<br><img src="images/spring-boot/config-ssl-2.png" alt=""><br><img src="images/spring-boot/config-ssl-3.png" alt=""></p>
 <p>这个结果使用了上面介绍的自定义的servlet,所以返回的结果内容为test content。</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2017/10/27/spring-boot-study012/" itemprop="url">
-                  Spring Boot基础学习(十二) 声明式事务
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2017-10-27T17:22:46+08:00" content="2017-10-27">
-              2017-10-27
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/spring-boot/" itemprop="url" rel="index">
-                    <span itemprop="name">spring boot</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2017/10/27/spring-boot-study012/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/10/27/spring-boot-study012/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="Spring的事务机制"><a href="#Spring的事务机制" class="headerlink" title="Spring的事务机制"></a>Spring的事务机制</h1><p>Spring 的事务机制是统一的机制来处理的,针对不同的数据库访问方式,事务机制提供了一个PlatformTransactionmager接口,不同的数据库访问方式实现不同的接口实现.</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">数据库访问技术</th>
-<th style="text-align:center">实现</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">JDBC</td>
-<td style="text-align:center">DataSourceTransactionManager</td>
-</tr>
-<tr>
-<td style="text-align:center">JPA</td>
-<td style="text-align:center">JpaTransactionManager</td>
-</tr>
-<tr>
-<td style="text-align:center">Hibernate</td>
-<td style="text-align:center">HibernateTransactionManager</td>
-</tr>
-<tr>
-<td style="text-align:center">JDO</td>
-<td style="text-align:center">JdoTransactionManager</td>
-</tr>
-<tr>
-<td style="text-align:center">分布式事务</td>
-<td style="text-align:center">JtaTransactionManager</td>
-</tr>
-</tbody>
-</table>
-<p>在程序中定义事务管理器的代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">@Bean</div><div class="line">	public PlatformTransactionManager platformTransactionManager()&#123;</div><div class="line">		JpaTransactionManager manager = new JpaTransactionManager();</div><div class="line">		manager.setDataSource(null);</div><div class="line">		return manager;</div><div class="line">	&#125;</div></pre></td></tr></table></figure>
-<p>Spring支持生命是事务,也就是使用注解的形式来处理事务。主要是使用注解@Transactional.使用这个注解来表明这个方法是支持事务的,内部的操作是一个基于aop切面的方式来处理的,具体的可见如下的例子:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">@Transactional(rollbackFor = Test2Exception.class)</div><div class="line">    public User save(User user) throws Exception&#123;</div><div class="line">        User u = repository.save(user);</div><div class="line"></div><div class="line">        if(user.getId() &gt; 100)&#123;</div><div class="line">            throw new Test2Exception(&quot;测试-数据异常,数据回滚&quot;);</div><div class="line">        &#125;</div><div class="line">        return u;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>传递进来的用户名称为null,这个地方直接抛出异常,但是save方法已经执行过了,这里添加了注解@Transactional来处理事务,这个时候事务回滚是有条件的,根据rollbackFor的条件,也就是如果是空指针异常则回滚数据,否则掺入数据,具体的执行结果为:<br><img src="images/spring-boot/transaction-1.png" alt=""></p>
-<p><img src="images/spring-boot/transaction-2.png" alt=""></p>
-<p>这个时候修改对应的rollbackFor条件,在重新进行测试,具体的为:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">@Transactional(rollbackFor = Test2Exception.class)</div><div class="line">    public User save(User user) throws Exception&#123;</div><div class="line">        User u = repository.save(user);</div><div class="line"></div><div class="line">        if(user.getId() &gt; 100)&#123;</div><div class="line">            throw new TestException(&quot;测试-数据异常,数据回滚&quot;);</div><div class="line">        &#125;</div><div class="line">        return u;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>这个时候清空表,在执行请求插入数据:<br><img src="images/spring-boot/transaction-3.png" alt=""><br><img src="images/spring-boot/transaction-4.png" alt=""></p>
-<p>其实在代码中如果出现运行时异常,同样的会进行数据的回滚,如果不是运行时异常,回去比对rollbackFor如果一次相同,则数据进行回滚。</p>
-<p>声明式注解的属性值对应的意义：</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">属性</th>
-<th style="text-align:left">含义</th>
-<th style="text-align:left">默认值</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left">propagationtion</td>
-<td style="text-align:left">定义了事务的声明周期,<br> REQUIRED: 方法A调用时没有事务,新建一个事务,如果方法A中调用了B方法,B方法沿用该事务,同时,如果B方法中发生异常需要数据回滚时,整个事务数据回滚。<br><br>REQUIRED_NEW:方法A,B不管有没有事务,都新建一个事务,这样B方法中发生异常需要回滚m不会影响到A方法<br><br> NESTED:和REQUIRED_NEW相同,但是支持JDBC,不支持jpa和hibernate<br><br> SUPPORTS:方法调用时,有事务就用,没有就不用。<br><br> NOT_SUPPORTED:强制方法不在事务中执行,若有事务,在方法调用到结束阶段,事务都将挂起。<br><br>NEVER:强制方法不在事务中执行,如果有则抛出一次。<br><br> MANDATORY: 强制方法在事务中执行,没有事务,则抛出一次</td>
-<td style="text-align:left">REQUIRED</td>
-</tr>
-<tr>
-<td style="text-align:left">isolation</td>
-<td style="text-align:left">Isolation(隔离)决定了事务的完整性,处理多事务对相同数据下的处理机制。<br><br> READ_UNCOMMITTED: 对于A事务里修改了一条记录,但是没有提交,B事务可以读取到修改以后的值。可导致脏读,不可重复读,以及幻读.<br><br> READ_COMMITTED: 在A事务中修改一条记录提交以后,B事务才可以读取到修改后的记录。阻止了脏读,但可能导致不可重复读和幻读。<br><br> REPEATABLE_READ: 不仅能实现READ_COMMITTED的功能,还能阻止A事务读取了一条记录,B事务将不允许修改这条记录,阻止了脏读和不可重复读,但是可能出现幻读.<br><br>DEFAULT: 当前数据库默认的数据隔离界. <br><br> SRIALZABLE: 此级别下,事务是顺序执行的,可以阻止上面的缺陷,但是开销非常大</td>
-<td style="text-align:left">DEFAULT</td>
-</tr>
-<tr>
-<td style="text-align:left">timeout</td>
-<td style="text-align:left">事务过期时间,默认为当前数据库的事务过期时间</td>
-<td style="text-align:left"></td>
-</tr>
-<tr>
-<td style="text-align:left">readOnly</td>
-<td style="text-align:left">当前事务是否是只读事务</td>
-<td style="text-align:left">false</td>
-</tr>
-<tr>
-<td style="text-align:left">rollbackFor</td>
-<td style="text-align:left">指定哪些异常是可以引起事务回滚的</td>
-<td style="text-align:left">Throwable</td>
-</tr>
-<tr>
-<td style="text-align:left">noRollbackFor</td>
-<td style="text-align:left">指定哪些异常是不会引起事务回滚的</td>
-</tr>
-</tbody>
-</table>
 
           
         
@@ -1395,7 +1395,7 @@ var duoshuoQuery = {short_name:"sunxing"};
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2017</span>
+  <span itemprop="copyrightYear">2018</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

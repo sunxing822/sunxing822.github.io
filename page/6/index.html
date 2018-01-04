@@ -231,175 +231,6 @@
             
               
                 
-                <a class="post-title-link" href="/2016/07/22/java-thread-study005/" itemprop="url">
-                  Java 多线程学习笔记(五) 线程安全集合
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-07-22T09:57:55+08:00" content="2016-07-22">
-              2016-07-22
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/07/22/java-thread-study005/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/22/java-thread-study005/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="1-线程安全的集合"><a href="#1-线程安全的集合" class="headerlink" title="1 线程安全的集合"></a>1 线程安全的集合</h2><h3 id="1-1-ConcurrentHashMap"><a href="#1-1-ConcurrentHashMap" class="headerlink" title="1.1 ConcurrentHashMap"></a>1.1 ConcurrentHashMap</h3><p>HashMap不是线程安全的,在大并发下,写入操作会造成死循环,基本上在高并发的情况下,一般也不用HashMap来。 </p>
-<p>ConcurrentHashMap的构建是如何实现的？在源码层面上可以看出：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">@SuppressWarnings(&quot;unchecked&quot;)</div><div class="line">   public ConcurrentHashMap(int initialCapacity,</div><div class="line">                             float loadFactor, int concurrencyLevel) &#123;</div><div class="line">        if (!(loadFactor &gt; 0) || initialCapacity &lt; 0 || concurrencyLevel &lt;= 0)</div><div class="line">            throw new IllegalArgumentException();</div><div class="line">        if (concurrencyLevel &gt; MAX_SEGMENTS)</div><div class="line">            concurrencyLevel = MAX_SEGMENTS;</div><div class="line">        // Find power-of-two sizes best matching arguments</div><div class="line">        int sshift = 0;</div><div class="line">        int ssize = 1;</div><div class="line">        while (ssize &lt; concurrencyLevel) &#123;</div><div class="line">            ++sshift;</div><div class="line">            ssize &lt;&lt;= 1;</div><div class="line">        &#125;</div><div class="line">        this.segmentShift = 32 - sshift;</div><div class="line">        this.segmentMask = ssize - 1;</div><div class="line">        if (initialCapacity &gt; MAXIMUM_CAPACITY)</div><div class="line">            initialCapacity = MAXIMUM_CAPACITY;</div><div class="line">        int c = initialCapacity / ssize;</div><div class="line">        if (c * ssize &lt; initialCapacity)</div><div class="line">            ++c;</div><div class="line">        int cap = MIN_SEGMENT_TABLE_CAPACITY;</div><div class="line">        while (cap &lt; c)</div><div class="line">            cap &lt;&lt;= 1;</div><div class="line">        // create segments and segments[0]</div><div class="line">        Segment&lt;K,V&gt; s0 =</div><div class="line">            new Segment&lt;K,V&gt;(loadFactor, (int)(cap * loadFactor),</div><div class="line">                             (HashEntry&lt;K,V&gt;[])new HashEntry[cap]);</div><div class="line">        Segment&lt;K,V&gt;[] ss = (Segment&lt;K,V&gt;[])new Segment[ssize];</div><div class="line">        UNSAFE.putOrderedObject(ss, SBASE, s0); // ordered write of segments[0]</div><div class="line">        this.segments = ss;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>由上面的代码可以看出其中最重要的是：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Segment&lt;K,V&gt; s0 =</div><div class="line">           new Segment&lt;K,V&gt;(loadFactor, (int)(cap * loadFactor),</div><div class="line">                            (HashEntry&lt;K,V&gt;[])new HashEntry[cap]);</div><div class="line">                            Segment&lt;K,V&gt;[] ss = (Segment&lt;K,V&gt;[])new Segment[ssize];</div><div class="line">       UNSAFE.putOrderedObject(ss, SBASE, s0); // ordered write of segments[0]</div><div class="line">       this.segments = ss;</div></pre></td></tr></table></figure>
-<p>创建一个segment,并将其拷贝到ss数组中,在修改对应的引用指向。由此可以看出其实ConcurrentHashMap就是内部包装了这个Segment数组,那么数组中每个元素是Segment<k,v>对象,那么这个这个元素的内部实现四什么呢？</k,v></p>
-<p>Segment继承了ReentrantLock类,而ReentrantLock是用来提供锁操作的对象,同时实现了实现了接口Serializable。由此可以看出是可以进行序列化的。</p>
-<p>Segment的构造函数如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Segment(float lf, int threshold, HashEntry&lt;K,V&gt;[] tab) &#123;</div><div class="line">     this.loadFactor = lf;</div><div class="line">     this.threshold = threshold;</div><div class="line">     this.table = tab;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>由构造函数可以看出也就是内部包装了一个HashEntry<k,v>。同样的根据第一个源码中的代码可以看出,这个绑定的HashEntry<k,v>其实是在初四构建出来的指定长度的数组,长度的大小为：2</k,v></k,v></p>
-<p>debug调试下截图如下：</p>
-<p><img src="/images/thread/thread-entry.png" alt=""></p>
-<p>下面开始查看完集合中添加一个元素的动作ConcurrentHashMap做了哪些动作？</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">@SuppressWarnings(&quot;unchecked&quot;)</div><div class="line">    public V put(K key, V value) &#123;</div><div class="line">        Segment&lt;K,V&gt; s;</div><div class="line">        if (value == null)</div><div class="line">            throw new NullPointerException();</div><div class="line">        int hash = hash(key);</div><div class="line">        int j = (hash &gt;&gt;&gt; segmentShift) &amp; segmentMask;</div><div class="line">        if ((s = (Segment&lt;K,V&gt;)UNSAFE.getObject          // nonvolatile; recheck</div><div class="line">             (segments, (j &lt;&lt; SSHIFT) + SBASE)) == null) //  in ensureSegment</div><div class="line">            s = ensureSegment(j);</div><div class="line">        return s.put(key, hash, value, false);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>通过给定需要插入到map中的k和v,通过k进行hash加密下,通过这个hash值来获取到相应的在Segment<k,v>[]数组中的对应的下标,如果不存在就在数组Segment<k,v>[]对应下标位置上的创建一个新的Segment<k,v>。</k,v></k,v></k,v></p>
-<p>之后再向这个Segment中写入数据,具体的写入操作很简单就是获取到Segment后,可以找到Segment包装的HashEntry<k,v>集合,在对这个集合进行加锁,实现并发情况下的数据写入。</k,v></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line">final V put(K key, int hash, V value, boolean onlyIfAbsent) &#123;</div><div class="line">           HashEntry&lt;K,V&gt; node = tryLock() ? null :</div><div class="line">               scanAndLockForPut(key, hash, value);</div><div class="line">           V oldValue;</div><div class="line">           try &#123;</div><div class="line">               HashEntry&lt;K,V&gt;[] tab = table;</div><div class="line">               int index = (tab.length - 1) &amp; hash;</div><div class="line">               HashEntry&lt;K,V&gt; first = entryAt(tab, index);</div><div class="line">               for (HashEntry&lt;K,V&gt; e = first;;) &#123;</div><div class="line">                   if (e != null) &#123;</div><div class="line">                       K k;</div><div class="line">                       if ((k = e.key) == key ||</div><div class="line">                           (e.hash == hash &amp;&amp; key.equals(k))) &#123;</div><div class="line">                           oldValue = e.value;</div><div class="line">                           if (!onlyIfAbsent) &#123;</div><div class="line">                               e.value = value;</div><div class="line">                               ++modCount;</div><div class="line">                           &#125;</div><div class="line">                           break;</div><div class="line">                       &#125;</div><div class="line">                       e = e.next;</div><div class="line">                   &#125;</div><div class="line">                   else &#123;</div><div class="line">                       if (node != null)</div><div class="line">                           node.setNext(first);</div><div class="line">                       else</div><div class="line">                           node = new HashEntry&lt;K,V&gt;(hash, key, value, first);</div><div class="line">                       int c = count + 1;</div><div class="line">                       if (c &gt; threshold &amp;&amp; tab.length &lt; MAXIMUM_CAPACITY)</div><div class="line">                           rehash(node);</div><div class="line">                       else</div><div class="line">                           setEntryAt(tab, index, node);</div><div class="line">                       ++modCount;</div><div class="line">                       count = c;</div><div class="line">                       oldValue = null;</div><div class="line">                       break;</div><div class="line">                   &#125;</div><div class="line">               &#125;</div><div class="line">           &#125; finally &#123;</div><div class="line">               unlock();</div><div class="line">           &#125;</div><div class="line">           return oldValue;</div><div class="line">       &#125;</div></pre></td></tr></table></figure>
-<p>集合如何情况下会进行增加容量,每次增加容量增加多少？在源代码中看到其中有如下代码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">if (c &gt; threshold &amp;&amp; tab.length &lt; MAXIMUM_CAPACITY)</div><div class="line">       rehash(node);</div></pre></td></tr></table></figure>
-<p>其中threshold这个值是在初始化函数中进行赋值的, MAXIMUM_CAPACITY的大小为：1 &lt;&lt; 30;由这个可以看到其实最主要的参数是threshold。这个值的初始化地方在构造函数中,而Segment<k,v>的创建在ConcurrentHashMap的创建中就已经指定了。代码截图</k,v></p>
-<p><img src="/images/thread/thread-entry.png" alt=""></p>
-<p>其中cap的默认大小为2,其中每次当集合的容量超过75%以后,就增加一倍的容量。增加容量的代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div></pre></td><td class="code"><pre><div class="line">@SuppressWarnings(&quot;unchecked&quot;)</div><div class="line">       private void rehash(HashEntry&lt;K,V&gt; node) &#123;</div><div class="line">           /*</div><div class="line">            * Reclassify nodes in each list to new table.  Because we</div><div class="line">            * are using power-of-two expansion, the elements from</div><div class="line">            * each bin must either stay at same index, or move with a</div><div class="line">            * power of two offset. We eliminate unnecessary node</div><div class="line">            * creation by catching cases where old nodes can be</div><div class="line">            * reused because their next fields won&apos;t change.</div><div class="line">            * Statistically, at the default threshold, only about</div><div class="line">            * one-sixth of them need cloning when a table</div><div class="line">            * doubles. The nodes they replace will be garbage</div><div class="line">            * collectable as soon as they are no longer referenced by</div><div class="line">            * any reader thread that may be in the midst of</div><div class="line">            * concurrently traversing table. Entry accesses use plain</div><div class="line">            * array indexing because they are followed by volatile</div><div class="line">            * table write.</div><div class="line">            */</div><div class="line">           HashEntry&lt;K,V&gt;[] oldTable = table;</div><div class="line">           int oldCapacity = oldTable.length;</div><div class="line">           int newCapacity = oldCapacity &lt;&lt; 1;</div><div class="line">           threshold = (int)(newCapacity * loadFactor);</div><div class="line">           HashEntry&lt;K,V&gt;[] newTable =</div><div class="line">               (HashEntry&lt;K,V&gt;[]) new HashEntry[newCapacity];</div><div class="line">           int sizeMask = newCapacity - 1;</div><div class="line">           for (int i = 0; i &lt; oldCapacity ; i++) &#123;</div><div class="line">               HashEntry&lt;K,V&gt; e = oldTable[i];</div><div class="line">               if (e != null) &#123;</div><div class="line">                   HashEntry&lt;K,V&gt; next = e.next;</div><div class="line">                   int idx = e.hash &amp; sizeMask;</div><div class="line">                   if (next == null)   //  Single node on list</div><div class="line">                       newTable[idx] = e;</div><div class="line">                   else &#123; // Reuse consecutive sequence at same slot</div><div class="line">                       HashEntry&lt;K,V&gt; lastRun = e;</div><div class="line">                       int lastIdx = idx;</div><div class="line">                       for (HashEntry&lt;K,V&gt; last = next;</div><div class="line">                            last != null;</div><div class="line">                            last = last.next) &#123;</div><div class="line">                           int k = last.hash &amp; sizeMask;</div><div class="line">                           if (k != lastIdx) &#123;</div><div class="line">                               lastIdx = k;</div><div class="line">                               lastRun = last;</div><div class="line">                           &#125;</div><div class="line">                       &#125;</div><div class="line">                       newTable[lastIdx] = lastRun;</div><div class="line">                       // Clone remaining nodes</div><div class="line">                       for (HashEntry&lt;K,V&gt; p = e; p != lastRun; p = p.next) &#123;</div><div class="line">                           V v = p.value;</div><div class="line">                           int h = p.hash;</div><div class="line">                           int k = h &amp; sizeMask;</div><div class="line">                           HashEntry&lt;K,V&gt; n = newTable[k];</div><div class="line">                           newTable[k] = new HashEntry&lt;K,V&gt;(h, p.key, v, n);</div><div class="line">                       &#125;</div><div class="line">                   &#125;</div><div class="line">               &#125;</div><div class="line">           &#125;</div><div class="line">           int nodeIndex = node.hash &amp; sizeMask; // add the new node</div><div class="line">           node.setNext(newTable[nodeIndex]);</div><div class="line">           newTable[nodeIndex] = node;</div><div class="line">           table = newTable;</div><div class="line">       &#125;</div></pre></td></tr></table></figure>
-<p>可以看出每次当容量达到75%以后,集合的容量就新增加一倍,在增加容量的时候是通过新建一个一定容量的数组来讲原来的数据拷贝进来,在修改原来集合的引用地址。</p>
-<p>那么获取数据的过程就不在多说了,根据给定的key找到相应的Segment后,在找到相应的值.同样的那么删除数据呢？</p>
-<p>其实HashEntry<k,v>的具体的结构如下：</k,v></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">final int hash;</div><div class="line">final K key;</div><div class="line">volatile V value;</div><div class="line">volatile HashEntry&lt;K,V&gt; next;</div></pre></td></tr></table></figure>
-<p>有这个可以看出删除说句是最简单的过程,通过找到上一个节点,将上一个节点的下一个节点引用修改为当前需要删除节点的下一个节点。链表的思想。</p>
-<p>其实通过上面的过程可以看出在ConcurrentHashMap是通过找到相应的Segment,在Segment中包含了HashEntry<k,v>,也就相当于将一个大的集合通过key的不同,分割为多个小的table,同样的在高并发情况下,我们防备的是对同一个数据的修改情况,在集合中对应的就是key,而ConcurrentHashMap又是通过key来讲数据划分的,所以在高并发情况下只需要针对每个key进行数据加锁就可以实现了并发控制。详细请看put方法的源码。</k,v></p>
-<h3 id="1-2-Hashtable"><a href="#1-2-Hashtable" class="headerlink" title="1.2 Hashtable"></a>1.2 Hashtable</h3><p>Hashtable的创建其实和HashMap差不多,构建的源码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">     * Constructs a new, empty hashtable with a default initial capacity (11)</div><div class="line">     * and load factor (0.75).</div><div class="line">     */</div><div class="line">    public Hashtable() &#123;</div><div class="line">        this(11, 0.75f);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>也就是默认初始化的大小为11,当超过了75%的集合容量以后,集合进行增加容量的操作。具体的Hashtable的内部的实现构造如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">     * Constructs a new, empty hashtable with the specified initial</div><div class="line">     * capacity and the specified load factor.</div><div class="line">     *</div><div class="line">     * @param      initialCapacity   the initial capacity of the hashtable.</div><div class="line">     * @param      loadFactor        the load factor of the hashtable.</div><div class="line">     * @exception  IllegalArgumentException  if the initial capacity is less</div><div class="line">     *             than zero, or if the load factor is nonpositive.</div><div class="line">     */</div><div class="line">    public Hashtable(int initialCapacity, float loadFactor) &#123;</div><div class="line">        if (initialCapacity &lt; 0)</div><div class="line">            throw new IllegalArgumentException(&quot;Illegal Capacity: &quot;+</div><div class="line">                                               initialCapacity);</div><div class="line">        if (loadFactor &lt;= 0 || Float.isNaN(loadFactor))</div><div class="line">            throw new IllegalArgumentException(&quot;Illegal Load: &quot;+loadFactor);</div><div class="line"></div><div class="line">        if (initialCapacity==0)</div><div class="line">            initialCapacity = 1;</div><div class="line">        this.loadFactor = loadFactor;</div><div class="line">        table = new Entry[initialCapacity];</div><div class="line">        threshold = (int)Math.min(initialCapacity * loadFactor, MAX_ARRAY_SIZE + 1);</div><div class="line">        initHashSeedAsNeeded(initialCapacity);</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">  /**</div><div class="line">     * Hashtable bucket collision list entry</div><div class="line">     */</div><div class="line">    private static class Entry&lt;K,V&gt; implements Map.Entry&lt;K,V&gt; &#123;</div><div class="line">        int hash;</div><div class="line">        final K key;</div><div class="line">        V value;</div><div class="line">        Entry&lt;K,V&gt; next;</div><div class="line">    	</div><div class="line">    	  ...    </div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>也就是Hashtable初始化大小为11,当容量超过75%以后就增加容量,其内部的实现机理是通过Entry<k,v>数组来实现的.具体的结构图如下：</k,v></p>
-<p><img src="/images/thread/hash-img.jpg" alt=""></p>
-<p>那么在增加容量的时候,每次增加容量的大小为多少呢？是和ConcurrentHashMap相同的方式来实现的吗？</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">protected void rehash() &#123;</div><div class="line">    int oldCapacity = table.length;</div><div class="line">    Entry&lt;K,V&gt;[] oldMap = table;</div><div class="line"></div><div class="line">    // overflow-conscious code</div><div class="line">    int newCapacity = (oldCapacity &lt;&lt; 1) + 1;</div><div class="line">    if (newCapacity - MAX_ARRAY_SIZE &gt; 0) &#123;</div><div class="line">        if (oldCapacity == MAX_ARRAY_SIZE)</div><div class="line">            // Keep running with MAX_ARRAY_SIZE buckets</div><div class="line">            return;</div><div class="line">        newCapacity = MAX_ARRAY_SIZE;</div><div class="line">    &#125;</div><div class="line">    Entry&lt;K,V&gt;[] newMap = new Entry[newCapacity];</div><div class="line"></div><div class="line">    modCount++;</div><div class="line">    threshold = (int)Math.min(newCapacity * loadFactor, MAX_ARRAY_SIZE + 1);</div><div class="line">    boolean rehash = initHashSeedAsNeeded(newCapacity);</div><div class="line"></div><div class="line">    table = newMap;</div><div class="line"></div><div class="line">    for (int i = oldCapacity ; i-- &gt; 0 ;) &#123;</div><div class="line">        for (Entry&lt;K,V&gt; old = oldMap[i] ; old != null ; ) &#123;</div><div class="line">            Entry&lt;K,V&gt; e = old;</div><div class="line">            old = old.next;</div><div class="line"></div><div class="line">            if (rehash) &#123;</div><div class="line">                e.hash = hash(e.key);</div><div class="line">            &#125;</div><div class="line">            int index = (e.hash &amp; 0x7FFFFFFF) % newCapacity;</div><div class="line">            e.next = newMap[index];</div><div class="line">            newMap[index] = e;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>也就是每次需要增加容量的时候,先计算出新增加的容量大小是多少,在构建一个新的Entry<k,v>数组,将历史数据拷贝过来后,在修改原来的引用。</k,v></p>
-<p>上面介绍了如何的构建集合以及以及的构建构建和扩容机制,那么如何进行并发的限制呢？<br>也就是在并发的情况下,hashtable是如何进行并发控制的,下面是put(K k,V v)方法的源码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">public synchronized V put(K key, V value) &#123;</div><div class="line">        // Make sure the value is not null</div><div class="line">        if (value == null) &#123;</div><div class="line">            throw new NullPointerException();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        // Makes sure the key is not already in the hashtable.</div><div class="line">        Entry tab[] = table;</div><div class="line">        int hash = hash(key);</div><div class="line">        int index = (hash &amp; 0x7FFFFFFF) % tab.length;</div><div class="line">        for (Entry&lt;K,V&gt; e = tab[index] ; e != null ; e = e.next) &#123;</div><div class="line">            if ((e.hash == hash) &amp;&amp; e.key.equals(key)) &#123;</div><div class="line">                V old = e.value;</div><div class="line">                e.value = value;</div><div class="line">                return old;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        modCount++;</div><div class="line">        if (count &gt;= threshold) &#123;</div><div class="line">            // Rehash the table if the threshold is exceeded</div><div class="line">            rehash();</div><div class="line"></div><div class="line">            tab = table;</div><div class="line">            hash = hash(key);</div><div class="line">            index = (hash &amp; 0x7FFFFFFF) % tab.length;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        // Creates the new entry.</div><div class="line">        Entry&lt;K,V&gt; e = tab[index];</div><div class="line">        tab[index] = new Entry&lt;&gt;(hash, key, value, e);</div><div class="line">        count++;</div><div class="line">        return null;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>由上面的可以看到其实它的内部是通过关键字synchronized来实现的并发控制,那么在高并发下效率是很低的,同步方法在高并发下性能是很低的。</p>
-<h3 id="1-3-Vector"><a href="#1-3-Vector" class="headerlink" title="1.3 Vector"></a>1.3 Vector</h3><p>Vector是继承List接口的集合类,是最早版本的线程安全的集合,下面是集合的初始化过程</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * Constructs an empty vector with the specified initial capacity and</div><div class="line"> * capacity increment.</div><div class="line"> *</div><div class="line"> * @param   initialCapacity     the initial capacity of the vector</div><div class="line"> * @param   capacityIncrement   the amount by which the capacity is</div><div class="line"> *                              increased when the vector overflows</div><div class="line"> * @throws IllegalArgumentException if the specified initial capacity</div><div class="line"> *         is negative</div><div class="line"> */</div><div class="line">public Vector(int initialCapacity, int capacityIncrement) &#123;</div><div class="line">    super();</div><div class="line">    if (initialCapacity &lt; 0)</div><div class="line">        throw new IllegalArgumentException(&quot;Illegal Capacity: &quot;+</div><div class="line">                                           initialCapacity);</div><div class="line">    this.elementData = new Object[initialCapacity];</div><div class="line">    this.capacityIncrement = capacityIncrement;</div><div class="line">&#125;</div><div class="line"></div><div class="line">/**</div><div class="line"> * Constructs an empty vector with the specified initial capacity and</div><div class="line"> * with its capacity increment equal to zero.</div><div class="line"> *</div><div class="line"> * @param   initialCapacity   the initial capacity of the vector</div><div class="line"> * @throws IllegalArgumentException if the specified initial capacity</div><div class="line"> *         is negative</div><div class="line"> */</div><div class="line">public Vector(int initialCapacity) &#123;</div><div class="line">    this(initialCapacity, 0);</div><div class="line">&#125;</div><div class="line"></div><div class="line">/**</div><div class="line"> * Constructs an empty vector so that its internal data array</div><div class="line"> * has size &#123;@code 10&#125; and its standard capacity increment is</div><div class="line"> * zero.</div><div class="line"> */</div><div class="line">public Vector() &#123;</div><div class="line">    this(10);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>初始化大小为10,同样的扩容的条件是什么呢？</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">private void grow(int minCapacity) &#123;</div><div class="line">        // overflow-conscious code</div><div class="line">        int oldCapacity = elementData.length;</div><div class="line">        int newCapacity = oldCapacity + ((capacityIncrement &gt; 0) ?</div><div class="line">                                         capacityIncrement : oldCapacity);</div><div class="line">        if (newCapacity - minCapacity &lt; 0)</div><div class="line">            newCapacity = minCapacity;</div><div class="line">        if (newCapacity - MAX_ARRAY_SIZE &gt; 0)</div><div class="line">            newCapacity = hugeCapacity(minCapacity);</div><div class="line">        elementData = Arrays.copyOf(elementData, newCapacity);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>如果用户不指定每次增加的容量大小,那么它的增量是2倍原来大小的容量,也就是没有指定就增长一倍。那么同样的,获取到需要新扩增后的容量大小后,将原来的数据拷贝到新的容器中,在修改引用地址指向。</p>
-<p>那么grow(int minCapacity)在什么情况下会被调用,具体的调用情况是这样的,每次往集合中添加数据的时候,首先检查当前数据量 加1 减去当前集合的最大容量是否大于0,如果大于0,表示集合已经满了,需要扩充容量。</p>
-<p>代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">public synchronized boolean add(E e) &#123;</div><div class="line">        modCount++;</div><div class="line">        ensureCapacityHelper(elementCount + 1);</div><div class="line">        elementData[elementCount++] = e;</div><div class="line">        return true;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"> private void ensureCapacityHelper(int minCapacity) &#123;</div><div class="line">        // overflow-conscious code</div><div class="line">        if (minCapacity - elementData.length &gt; 0)</div><div class="line">            grow(minCapacity);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
-<p>同样的通过上面的代码可以看出在Vector中内部通过关键字synchronized来实现线程同步的。</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
                 <a class="post-title-link" href="/2016/07/22/java-nio-study005/" itemprop="url">
                   JavaNIO学习笔记(五) JavaNIO ByteBuffer
                 </a>
@@ -595,6 +426,175 @@
             
               
                 
+                <a class="post-title-link" href="/2016/07/22/java-thread-study005/" itemprop="url">
+                  Java 多线程学习笔记(五) 线程安全集合
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-22T09:57:55+08:00" content="2016-07-22">
+              2016-07-22
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/22/java-thread-study005/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/22/java-thread-study005/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="1-线程安全的集合"><a href="#1-线程安全的集合" class="headerlink" title="1 线程安全的集合"></a>1 线程安全的集合</h2><h3 id="1-1-ConcurrentHashMap"><a href="#1-1-ConcurrentHashMap" class="headerlink" title="1.1 ConcurrentHashMap"></a>1.1 ConcurrentHashMap</h3><p>HashMap不是线程安全的,在大并发下,写入操作会造成死循环,基本上在高并发的情况下,一般也不用HashMap来。 </p>
+<p>ConcurrentHashMap的构建是如何实现的？在源码层面上可以看出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">@SuppressWarnings(&quot;unchecked&quot;)</div><div class="line">   public ConcurrentHashMap(int initialCapacity,</div><div class="line">                             float loadFactor, int concurrencyLevel) &#123;</div><div class="line">        if (!(loadFactor &gt; 0) || initialCapacity &lt; 0 || concurrencyLevel &lt;= 0)</div><div class="line">            throw new IllegalArgumentException();</div><div class="line">        if (concurrencyLevel &gt; MAX_SEGMENTS)</div><div class="line">            concurrencyLevel = MAX_SEGMENTS;</div><div class="line">        // Find power-of-two sizes best matching arguments</div><div class="line">        int sshift = 0;</div><div class="line">        int ssize = 1;</div><div class="line">        while (ssize &lt; concurrencyLevel) &#123;</div><div class="line">            ++sshift;</div><div class="line">            ssize &lt;&lt;= 1;</div><div class="line">        &#125;</div><div class="line">        this.segmentShift = 32 - sshift;</div><div class="line">        this.segmentMask = ssize - 1;</div><div class="line">        if (initialCapacity &gt; MAXIMUM_CAPACITY)</div><div class="line">            initialCapacity = MAXIMUM_CAPACITY;</div><div class="line">        int c = initialCapacity / ssize;</div><div class="line">        if (c * ssize &lt; initialCapacity)</div><div class="line">            ++c;</div><div class="line">        int cap = MIN_SEGMENT_TABLE_CAPACITY;</div><div class="line">        while (cap &lt; c)</div><div class="line">            cap &lt;&lt;= 1;</div><div class="line">        // create segments and segments[0]</div><div class="line">        Segment&lt;K,V&gt; s0 =</div><div class="line">            new Segment&lt;K,V&gt;(loadFactor, (int)(cap * loadFactor),</div><div class="line">                             (HashEntry&lt;K,V&gt;[])new HashEntry[cap]);</div><div class="line">        Segment&lt;K,V&gt;[] ss = (Segment&lt;K,V&gt;[])new Segment[ssize];</div><div class="line">        UNSAFE.putOrderedObject(ss, SBASE, s0); // ordered write of segments[0]</div><div class="line">        this.segments = ss;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>由上面的代码可以看出其中最重要的是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Segment&lt;K,V&gt; s0 =</div><div class="line">           new Segment&lt;K,V&gt;(loadFactor, (int)(cap * loadFactor),</div><div class="line">                            (HashEntry&lt;K,V&gt;[])new HashEntry[cap]);</div><div class="line">                            Segment&lt;K,V&gt;[] ss = (Segment&lt;K,V&gt;[])new Segment[ssize];</div><div class="line">       UNSAFE.putOrderedObject(ss, SBASE, s0); // ordered write of segments[0]</div><div class="line">       this.segments = ss;</div></pre></td></tr></table></figure>
+<p>创建一个segment,并将其拷贝到ss数组中,在修改对应的引用指向。由此可以看出其实ConcurrentHashMap就是内部包装了这个Segment数组,那么数组中每个元素是Segment<k,v>对象,那么这个这个元素的内部实现四什么呢？</k,v></p>
+<p>Segment继承了ReentrantLock类,而ReentrantLock是用来提供锁操作的对象,同时实现了实现了接口Serializable。由此可以看出是可以进行序列化的。</p>
+<p>Segment的构造函数如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Segment(float lf, int threshold, HashEntry&lt;K,V&gt;[] tab) &#123;</div><div class="line">     this.loadFactor = lf;</div><div class="line">     this.threshold = threshold;</div><div class="line">     this.table = tab;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>由构造函数可以看出也就是内部包装了一个HashEntry<k,v>。同样的根据第一个源码中的代码可以看出,这个绑定的HashEntry<k,v>其实是在初四构建出来的指定长度的数组,长度的大小为：2</k,v></k,v></p>
+<p>debug调试下截图如下：</p>
+<p><img src="/images/thread/thread-entry.png" alt=""></p>
+<p>下面开始查看完集合中添加一个元素的动作ConcurrentHashMap做了哪些动作？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">@SuppressWarnings(&quot;unchecked&quot;)</div><div class="line">    public V put(K key, V value) &#123;</div><div class="line">        Segment&lt;K,V&gt; s;</div><div class="line">        if (value == null)</div><div class="line">            throw new NullPointerException();</div><div class="line">        int hash = hash(key);</div><div class="line">        int j = (hash &gt;&gt;&gt; segmentShift) &amp; segmentMask;</div><div class="line">        if ((s = (Segment&lt;K,V&gt;)UNSAFE.getObject          // nonvolatile; recheck</div><div class="line">             (segments, (j &lt;&lt; SSHIFT) + SBASE)) == null) //  in ensureSegment</div><div class="line">            s = ensureSegment(j);</div><div class="line">        return s.put(key, hash, value, false);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>通过给定需要插入到map中的k和v,通过k进行hash加密下,通过这个hash值来获取到相应的在Segment<k,v>[]数组中的对应的下标,如果不存在就在数组Segment<k,v>[]对应下标位置上的创建一个新的Segment<k,v>。</k,v></k,v></k,v></p>
+<p>之后再向这个Segment中写入数据,具体的写入操作很简单就是获取到Segment后,可以找到Segment包装的HashEntry<k,v>集合,在对这个集合进行加锁,实现并发情况下的数据写入。</k,v></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line">final V put(K key, int hash, V value, boolean onlyIfAbsent) &#123;</div><div class="line">           HashEntry&lt;K,V&gt; node = tryLock() ? null :</div><div class="line">               scanAndLockForPut(key, hash, value);</div><div class="line">           V oldValue;</div><div class="line">           try &#123;</div><div class="line">               HashEntry&lt;K,V&gt;[] tab = table;</div><div class="line">               int index = (tab.length - 1) &amp; hash;</div><div class="line">               HashEntry&lt;K,V&gt; first = entryAt(tab, index);</div><div class="line">               for (HashEntry&lt;K,V&gt; e = first;;) &#123;</div><div class="line">                   if (e != null) &#123;</div><div class="line">                       K k;</div><div class="line">                       if ((k = e.key) == key ||</div><div class="line">                           (e.hash == hash &amp;&amp; key.equals(k))) &#123;</div><div class="line">                           oldValue = e.value;</div><div class="line">                           if (!onlyIfAbsent) &#123;</div><div class="line">                               e.value = value;</div><div class="line">                               ++modCount;</div><div class="line">                           &#125;</div><div class="line">                           break;</div><div class="line">                       &#125;</div><div class="line">                       e = e.next;</div><div class="line">                   &#125;</div><div class="line">                   else &#123;</div><div class="line">                       if (node != null)</div><div class="line">                           node.setNext(first);</div><div class="line">                       else</div><div class="line">                           node = new HashEntry&lt;K,V&gt;(hash, key, value, first);</div><div class="line">                       int c = count + 1;</div><div class="line">                       if (c &gt; threshold &amp;&amp; tab.length &lt; MAXIMUM_CAPACITY)</div><div class="line">                           rehash(node);</div><div class="line">                       else</div><div class="line">                           setEntryAt(tab, index, node);</div><div class="line">                       ++modCount;</div><div class="line">                       count = c;</div><div class="line">                       oldValue = null;</div><div class="line">                       break;</div><div class="line">                   &#125;</div><div class="line">               &#125;</div><div class="line">           &#125; finally &#123;</div><div class="line">               unlock();</div><div class="line">           &#125;</div><div class="line">           return oldValue;</div><div class="line">       &#125;</div></pre></td></tr></table></figure>
+<p>集合如何情况下会进行增加容量,每次增加容量增加多少？在源代码中看到其中有如下代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">if (c &gt; threshold &amp;&amp; tab.length &lt; MAXIMUM_CAPACITY)</div><div class="line">       rehash(node);</div></pre></td></tr></table></figure>
+<p>其中threshold这个值是在初始化函数中进行赋值的, MAXIMUM_CAPACITY的大小为：1 &lt;&lt; 30;由这个可以看到其实最主要的参数是threshold。这个值的初始化地方在构造函数中,而Segment<k,v>的创建在ConcurrentHashMap的创建中就已经指定了。代码截图</k,v></p>
+<p><img src="/images/thread/thread-entry.png" alt=""></p>
+<p>其中cap的默认大小为2,其中每次当集合的容量超过75%以后,就增加一倍的容量。增加容量的代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div></pre></td><td class="code"><pre><div class="line">@SuppressWarnings(&quot;unchecked&quot;)</div><div class="line">       private void rehash(HashEntry&lt;K,V&gt; node) &#123;</div><div class="line">           /*</div><div class="line">            * Reclassify nodes in each list to new table.  Because we</div><div class="line">            * are using power-of-two expansion, the elements from</div><div class="line">            * each bin must either stay at same index, or move with a</div><div class="line">            * power of two offset. We eliminate unnecessary node</div><div class="line">            * creation by catching cases where old nodes can be</div><div class="line">            * reused because their next fields won&apos;t change.</div><div class="line">            * Statistically, at the default threshold, only about</div><div class="line">            * one-sixth of them need cloning when a table</div><div class="line">            * doubles. The nodes they replace will be garbage</div><div class="line">            * collectable as soon as they are no longer referenced by</div><div class="line">            * any reader thread that may be in the midst of</div><div class="line">            * concurrently traversing table. Entry accesses use plain</div><div class="line">            * array indexing because they are followed by volatile</div><div class="line">            * table write.</div><div class="line">            */</div><div class="line">           HashEntry&lt;K,V&gt;[] oldTable = table;</div><div class="line">           int oldCapacity = oldTable.length;</div><div class="line">           int newCapacity = oldCapacity &lt;&lt; 1;</div><div class="line">           threshold = (int)(newCapacity * loadFactor);</div><div class="line">           HashEntry&lt;K,V&gt;[] newTable =</div><div class="line">               (HashEntry&lt;K,V&gt;[]) new HashEntry[newCapacity];</div><div class="line">           int sizeMask = newCapacity - 1;</div><div class="line">           for (int i = 0; i &lt; oldCapacity ; i++) &#123;</div><div class="line">               HashEntry&lt;K,V&gt; e = oldTable[i];</div><div class="line">               if (e != null) &#123;</div><div class="line">                   HashEntry&lt;K,V&gt; next = e.next;</div><div class="line">                   int idx = e.hash &amp; sizeMask;</div><div class="line">                   if (next == null)   //  Single node on list</div><div class="line">                       newTable[idx] = e;</div><div class="line">                   else &#123; // Reuse consecutive sequence at same slot</div><div class="line">                       HashEntry&lt;K,V&gt; lastRun = e;</div><div class="line">                       int lastIdx = idx;</div><div class="line">                       for (HashEntry&lt;K,V&gt; last = next;</div><div class="line">                            last != null;</div><div class="line">                            last = last.next) &#123;</div><div class="line">                           int k = last.hash &amp; sizeMask;</div><div class="line">                           if (k != lastIdx) &#123;</div><div class="line">                               lastIdx = k;</div><div class="line">                               lastRun = last;</div><div class="line">                           &#125;</div><div class="line">                       &#125;</div><div class="line">                       newTable[lastIdx] = lastRun;</div><div class="line">                       // Clone remaining nodes</div><div class="line">                       for (HashEntry&lt;K,V&gt; p = e; p != lastRun; p = p.next) &#123;</div><div class="line">                           V v = p.value;</div><div class="line">                           int h = p.hash;</div><div class="line">                           int k = h &amp; sizeMask;</div><div class="line">                           HashEntry&lt;K,V&gt; n = newTable[k];</div><div class="line">                           newTable[k] = new HashEntry&lt;K,V&gt;(h, p.key, v, n);</div><div class="line">                       &#125;</div><div class="line">                   &#125;</div><div class="line">               &#125;</div><div class="line">           &#125;</div><div class="line">           int nodeIndex = node.hash &amp; sizeMask; // add the new node</div><div class="line">           node.setNext(newTable[nodeIndex]);</div><div class="line">           newTable[nodeIndex] = node;</div><div class="line">           table = newTable;</div><div class="line">       &#125;</div></pre></td></tr></table></figure>
+<p>可以看出每次当容量达到75%以后,集合的容量就新增加一倍,在增加容量的时候是通过新建一个一定容量的数组来讲原来的数据拷贝进来,在修改原来集合的引用地址。</p>
+<p>那么获取数据的过程就不在多说了,根据给定的key找到相应的Segment后,在找到相应的值.同样的那么删除数据呢？</p>
+<p>其实HashEntry<k,v>的具体的结构如下：</k,v></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">final int hash;</div><div class="line">final K key;</div><div class="line">volatile V value;</div><div class="line">volatile HashEntry&lt;K,V&gt; next;</div></pre></td></tr></table></figure>
+<p>有这个可以看出删除说句是最简单的过程,通过找到上一个节点,将上一个节点的下一个节点引用修改为当前需要删除节点的下一个节点。链表的思想。</p>
+<p>其实通过上面的过程可以看出在ConcurrentHashMap是通过找到相应的Segment,在Segment中包含了HashEntry<k,v>,也就相当于将一个大的集合通过key的不同,分割为多个小的table,同样的在高并发情况下,我们防备的是对同一个数据的修改情况,在集合中对应的就是key,而ConcurrentHashMap又是通过key来讲数据划分的,所以在高并发情况下只需要针对每个key进行数据加锁就可以实现了并发控制。详细请看put方法的源码。</k,v></p>
+<h3 id="1-2-Hashtable"><a href="#1-2-Hashtable" class="headerlink" title="1.2 Hashtable"></a>1.2 Hashtable</h3><p>Hashtable的创建其实和HashMap差不多,构建的源码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">     * Constructs a new, empty hashtable with a default initial capacity (11)</div><div class="line">     * and load factor (0.75).</div><div class="line">     */</div><div class="line">    public Hashtable() &#123;</div><div class="line">        this(11, 0.75f);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>也就是默认初始化的大小为11,当超过了75%的集合容量以后,集合进行增加容量的操作。具体的Hashtable的内部的实现构造如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line">     * Constructs a new, empty hashtable with the specified initial</div><div class="line">     * capacity and the specified load factor.</div><div class="line">     *</div><div class="line">     * @param      initialCapacity   the initial capacity of the hashtable.</div><div class="line">     * @param      loadFactor        the load factor of the hashtable.</div><div class="line">     * @exception  IllegalArgumentException  if the initial capacity is less</div><div class="line">     *             than zero, or if the load factor is nonpositive.</div><div class="line">     */</div><div class="line">    public Hashtable(int initialCapacity, float loadFactor) &#123;</div><div class="line">        if (initialCapacity &lt; 0)</div><div class="line">            throw new IllegalArgumentException(&quot;Illegal Capacity: &quot;+</div><div class="line">                                               initialCapacity);</div><div class="line">        if (loadFactor &lt;= 0 || Float.isNaN(loadFactor))</div><div class="line">            throw new IllegalArgumentException(&quot;Illegal Load: &quot;+loadFactor);</div><div class="line"></div><div class="line">        if (initialCapacity==0)</div><div class="line">            initialCapacity = 1;</div><div class="line">        this.loadFactor = loadFactor;</div><div class="line">        table = new Entry[initialCapacity];</div><div class="line">        threshold = (int)Math.min(initialCapacity * loadFactor, MAX_ARRAY_SIZE + 1);</div><div class="line">        initHashSeedAsNeeded(initialCapacity);</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">  /**</div><div class="line">     * Hashtable bucket collision list entry</div><div class="line">     */</div><div class="line">    private static class Entry&lt;K,V&gt; implements Map.Entry&lt;K,V&gt; &#123;</div><div class="line">        int hash;</div><div class="line">        final K key;</div><div class="line">        V value;</div><div class="line">        Entry&lt;K,V&gt; next;</div><div class="line">    	</div><div class="line">    	  ...    </div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>也就是Hashtable初始化大小为11,当容量超过75%以后就增加容量,其内部的实现机理是通过Entry<k,v>数组来实现的.具体的结构图如下：</k,v></p>
+<p><img src="/images/thread/hash-img.jpg" alt=""></p>
+<p>那么在增加容量的时候,每次增加容量的大小为多少呢？是和ConcurrentHashMap相同的方式来实现的吗？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">protected void rehash() &#123;</div><div class="line">    int oldCapacity = table.length;</div><div class="line">    Entry&lt;K,V&gt;[] oldMap = table;</div><div class="line"></div><div class="line">    // overflow-conscious code</div><div class="line">    int newCapacity = (oldCapacity &lt;&lt; 1) + 1;</div><div class="line">    if (newCapacity - MAX_ARRAY_SIZE &gt; 0) &#123;</div><div class="line">        if (oldCapacity == MAX_ARRAY_SIZE)</div><div class="line">            // Keep running with MAX_ARRAY_SIZE buckets</div><div class="line">            return;</div><div class="line">        newCapacity = MAX_ARRAY_SIZE;</div><div class="line">    &#125;</div><div class="line">    Entry&lt;K,V&gt;[] newMap = new Entry[newCapacity];</div><div class="line"></div><div class="line">    modCount++;</div><div class="line">    threshold = (int)Math.min(newCapacity * loadFactor, MAX_ARRAY_SIZE + 1);</div><div class="line">    boolean rehash = initHashSeedAsNeeded(newCapacity);</div><div class="line"></div><div class="line">    table = newMap;</div><div class="line"></div><div class="line">    for (int i = oldCapacity ; i-- &gt; 0 ;) &#123;</div><div class="line">        for (Entry&lt;K,V&gt; old = oldMap[i] ; old != null ; ) &#123;</div><div class="line">            Entry&lt;K,V&gt; e = old;</div><div class="line">            old = old.next;</div><div class="line"></div><div class="line">            if (rehash) &#123;</div><div class="line">                e.hash = hash(e.key);</div><div class="line">            &#125;</div><div class="line">            int index = (e.hash &amp; 0x7FFFFFFF) % newCapacity;</div><div class="line">            e.next = newMap[index];</div><div class="line">            newMap[index] = e;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>也就是每次需要增加容量的时候,先计算出新增加的容量大小是多少,在构建一个新的Entry<k,v>数组,将历史数据拷贝过来后,在修改原来的引用。</k,v></p>
+<p>上面介绍了如何的构建集合以及以及的构建构建和扩容机制,那么如何进行并发的限制呢？<br>也就是在并发的情况下,hashtable是如何进行并发控制的,下面是put(K k,V v)方法的源码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">public synchronized V put(K key, V value) &#123;</div><div class="line">        // Make sure the value is not null</div><div class="line">        if (value == null) &#123;</div><div class="line">            throw new NullPointerException();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        // Makes sure the key is not already in the hashtable.</div><div class="line">        Entry tab[] = table;</div><div class="line">        int hash = hash(key);</div><div class="line">        int index = (hash &amp; 0x7FFFFFFF) % tab.length;</div><div class="line">        for (Entry&lt;K,V&gt; e = tab[index] ; e != null ; e = e.next) &#123;</div><div class="line">            if ((e.hash == hash) &amp;&amp; e.key.equals(key)) &#123;</div><div class="line">                V old = e.value;</div><div class="line">                e.value = value;</div><div class="line">                return old;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        modCount++;</div><div class="line">        if (count &gt;= threshold) &#123;</div><div class="line">            // Rehash the table if the threshold is exceeded</div><div class="line">            rehash();</div><div class="line"></div><div class="line">            tab = table;</div><div class="line">            hash = hash(key);</div><div class="line">            index = (hash &amp; 0x7FFFFFFF) % tab.length;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        // Creates the new entry.</div><div class="line">        Entry&lt;K,V&gt; e = tab[index];</div><div class="line">        tab[index] = new Entry&lt;&gt;(hash, key, value, e);</div><div class="line">        count++;</div><div class="line">        return null;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>由上面的可以看到其实它的内部是通过关键字synchronized来实现的并发控制,那么在高并发下效率是很低的,同步方法在高并发下性能是很低的。</p>
+<h3 id="1-3-Vector"><a href="#1-3-Vector" class="headerlink" title="1.3 Vector"></a>1.3 Vector</h3><p>Vector是继承List接口的集合类,是最早版本的线程安全的集合,下面是集合的初始化过程</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * Constructs an empty vector with the specified initial capacity and</div><div class="line"> * capacity increment.</div><div class="line"> *</div><div class="line"> * @param   initialCapacity     the initial capacity of the vector</div><div class="line"> * @param   capacityIncrement   the amount by which the capacity is</div><div class="line"> *                              increased when the vector overflows</div><div class="line"> * @throws IllegalArgumentException if the specified initial capacity</div><div class="line"> *         is negative</div><div class="line"> */</div><div class="line">public Vector(int initialCapacity, int capacityIncrement) &#123;</div><div class="line">    super();</div><div class="line">    if (initialCapacity &lt; 0)</div><div class="line">        throw new IllegalArgumentException(&quot;Illegal Capacity: &quot;+</div><div class="line">                                           initialCapacity);</div><div class="line">    this.elementData = new Object[initialCapacity];</div><div class="line">    this.capacityIncrement = capacityIncrement;</div><div class="line">&#125;</div><div class="line"></div><div class="line">/**</div><div class="line"> * Constructs an empty vector with the specified initial capacity and</div><div class="line"> * with its capacity increment equal to zero.</div><div class="line"> *</div><div class="line"> * @param   initialCapacity   the initial capacity of the vector</div><div class="line"> * @throws IllegalArgumentException if the specified initial capacity</div><div class="line"> *         is negative</div><div class="line"> */</div><div class="line">public Vector(int initialCapacity) &#123;</div><div class="line">    this(initialCapacity, 0);</div><div class="line">&#125;</div><div class="line"></div><div class="line">/**</div><div class="line"> * Constructs an empty vector so that its internal data array</div><div class="line"> * has size &#123;@code 10&#125; and its standard capacity increment is</div><div class="line"> * zero.</div><div class="line"> */</div><div class="line">public Vector() &#123;</div><div class="line">    this(10);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>初始化大小为10,同样的扩容的条件是什么呢？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">private void grow(int minCapacity) &#123;</div><div class="line">        // overflow-conscious code</div><div class="line">        int oldCapacity = elementData.length;</div><div class="line">        int newCapacity = oldCapacity + ((capacityIncrement &gt; 0) ?</div><div class="line">                                         capacityIncrement : oldCapacity);</div><div class="line">        if (newCapacity - minCapacity &lt; 0)</div><div class="line">            newCapacity = minCapacity;</div><div class="line">        if (newCapacity - MAX_ARRAY_SIZE &gt; 0)</div><div class="line">            newCapacity = hugeCapacity(minCapacity);</div><div class="line">        elementData = Arrays.copyOf(elementData, newCapacity);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>如果用户不指定每次增加的容量大小,那么它的增量是2倍原来大小的容量,也就是没有指定就增长一倍。那么同样的,获取到需要新扩增后的容量大小后,将原来的数据拷贝到新的容器中,在修改引用地址指向。</p>
+<p>那么grow(int minCapacity)在什么情况下会被调用,具体的调用情况是这样的,每次往集合中添加数据的时候,首先检查当前数据量 加1 减去当前集合的最大容量是否大于0,如果大于0,表示集合已经满了,需要扩充容量。</p>
+<p>代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">public synchronized boolean add(E e) &#123;</div><div class="line">        modCount++;</div><div class="line">        ensureCapacityHelper(elementCount + 1);</div><div class="line">        elementData[elementCount++] = e;</div><div class="line">        return true;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"> private void ensureCapacityHelper(int minCapacity) &#123;</div><div class="line">        // overflow-conscious code</div><div class="line">        if (minCapacity - elementData.length &gt; 0)</div><div class="line">            grow(minCapacity);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>同样的通过上面的代码可以看出在Vector中内部通过关键字synchronized来实现线程同步的。</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/07/21/java-thread-study004/" itemprop="url">
                   Java 多线程学习笔记(四) ThreadLocal
                 </a>
@@ -685,6 +685,138 @@
 <p><img src="/images/thread/thread-createmap.png" alt=""></p>
 <p>由这个可以看出就是构建一个新的ThreadLocalMap,并且赋值给当前线程的成员变量。<br>其内部基本的抽象为了一个Map<thread,t>的方式来存储每一个成员变量。</thread,t></p>
 <h2 id="3-ThreadLocal的api"><a href="#3-ThreadLocal的api" class="headerlink" title="3 ThreadLocal的api"></a>3 ThreadLocal的api</h2><p><img src="/images/thread/thread-local-api.png" alt=""><br>由图上可以知道ThreadLoacl的api主要有3个：<br>get():获取当前线程的参数<br>remove():删除当前线程的key<br>set(value):设置values</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/07/20/java-nio-study004/" itemprop="url">
+                  JavaNIO学习笔记(四) JavaNIO SocketChannel和ServerSocketChannel
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-20T09:57:55+08:00" content="2016-07-20">
+              2016-07-20
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/20/java-nio-study004/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/20/java-nio-study004/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="1-SocketChannel-和-ServerSocketChannel"><a href="#1-SocketChannel-和-ServerSocketChannel" class="headerlink" title="1 SocketChannel 和 ServerSocketChannel"></a>1 SocketChannel 和 ServerSocketChannel</h2><p>Java NIO中的 ServerSocketChannel 是一个可以监听新进来的TCP连接的通道, 就像标准IO中的ServerSocket一样。ServerSocketChannel类在 java.nio.channels包中。</p>
+<p>打开ServerSocketChannel,通过调用 ServerSocketChannel.open() 方法来打开ServerSocketChannel.如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();</div></pre></td></tr></table></figure>
+<p>关闭ServerSocketChannel,通过调用close(),来实现关闭操作,具体的如下:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">serverSocketChannel();</div></pre></td></tr></table></figure></p>
+<p>通过 ServerSocketChannel.accept() 方法监听新进来的连接。当 accept()方法返回的时候,它返回一个包含新进来的连接的 SocketChannel。因此, accept()方法会一直阻塞到有新连接到达</p>
+<p>SocketChannel的设置基本类似的。</p>
+<h2 id="2-简单分布式"><a href="#2-简单分布式" class="headerlink" title="2 简单分布式"></a>2 简单分布式</h2><p>服务端代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div></pre></td><td class="code"><pre><div class="line">public class ServerSocket &#123;</div><div class="line">    //选择器</div><div class="line">    private Selector selector = null;</div><div class="line">    //管道</div><div class="line">    private ServerSocketChannel channel = null;</div><div class="line">    //服务端的端口</div><div class="line">    private int port;</div><div class="line">    //超时时间</div><div class="line">    private long TIME_OUT = 3000;</div><div class="line">    //缓存的最大大小</div><div class="line">    private int MAX_BUFFER_SIZE = 4096;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 构造函数初始化</div><div class="line">     * @param port</div><div class="line">     */</div><div class="line">    public ServerSocket(int port)&#123;</div><div class="line">        this.port = port;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 初始化数据</div><div class="line">     */</div><div class="line">    public ServerSocket init()&#123;</div><div class="line">        try&#123;</div><div class="line">            selector = Selector.open();</div><div class="line">            channel = ServerSocketChannel.open();</div><div class="line">            channel.socket().bind(new InetSocketAddress(port));</div><div class="line">            channel.configureBlocking(false);</div><div class="line">            channel.register(selector, SelectionKey.OP_ACCEPT);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        return this;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 开始准备客户端的链接</div><div class="line">     */</div><div class="line">    public void start()&#123;</div><div class="line">        while(true)&#123;</div><div class="line">            try&#123;</div><div class="line">                //监听是否有链接请求过来</div><div class="line">                if(selector.select(TIME_OUT) == 0)&#123;</div><div class="line">                    System.out.print(&quot;.&quot;);</div><div class="line">                    continue;</div><div class="line">                &#125;</div><div class="line">                //遍历数据</div><div class="line">                Iterator&lt;SelectionKey&gt; it = selector.selectedKeys().iterator();</div><div class="line">                while(it.hasNext())&#123;</div><div class="line">                    SelectionKey key = it.next();</div><div class="line"></div><div class="line">                    if(key.isAcceptable())&#123;</div><div class="line">                        handlerAccept(key);</div><div class="line">                    &#125;else if(key.isReadable())&#123;</div><div class="line">                        handlerReader(key);</div><div class="line">                    &#125;else if(key.isValid() &amp;&amp; key.isWritable())&#123;</div><div class="line">                        handlerWriter(key);</div><div class="line">                    &#125;</div><div class="line">                    it.remove();</div><div class="line">                &#125;</div><div class="line">            &#125;catch (Exception e)&#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 处理链接请求</div><div class="line">     * @param key</div><div class="line">     */</div><div class="line">    public void handlerAccept(SelectionKey key)&#123;</div><div class="line">        try&#123;</div><div class="line">            ServerSocketChannel serverSocketChannel = (ServerSocketChannel)key.channel();</div><div class="line">            SocketChannel socketChannel = serverSocketChannel.accept();</div><div class="line">            socketChannel.configureBlocking(false);</div><div class="line">            socketChannel.register(key.selector(), SelectionKey.OP_READ,SelectionKey.OP_WRITE);</div><div class="line"></div><div class="line">            System.out.println(socketChannel.getRemoteAddress().toString());</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 处理读取数据情况</div><div class="line">     * @param key</div><div class="line">     */</div><div class="line">    public void handlerReader(SelectionKey key)&#123;</div><div class="line">        try&#123;</div><div class="line">            ByteBuffer buffer = ByteBuffer.allocate(1024);</div><div class="line">            SocketChannel channel = (SocketChannel) key.channel();</div><div class="line">            int cnt = channel.read(buffer);</div><div class="line">            //如果从客户端中接收到相应的数据,那么久进行数据打印</div><div class="line">            if(cnt &gt; 0)&#123;</div><div class="line">                //打印缓冲区的数据</div><div class="line">                System.out.println(toString(buffer));</div><div class="line">                //将该管道注册到选择器上,并更改为可写状态</div><div class="line">                key.interestOps(SelectionKey.OP_WRITE);</div><div class="line">            &#125;</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 处理写操作</div><div class="line">     * @param key</div><div class="line">     */</div><div class="line">    public void handlerWriter(SelectionKey key)&#123;</div><div class="line">        try&#123;</div><div class="line">            String data = &quot;server send data to client&quot; + UUID.randomUUID();</div><div class="line">            SocketChannel channel = (SocketChannel) key.channel();</div><div class="line">            //重置缓冲区,等待写入</div><div class="line">            ByteBuffer buffer = ByteBuffer.allocate(1024);</div><div class="line">            buffer.put(data.getBytes());</div><div class="line">            buffer.flip();</div><div class="line">            //服务端想客户端写入数据</div><div class="line">            int cnt = channel.write(buffer);</div><div class="line">            //如果从客户端中接收到相应的数据,那么久进行数据打印</div><div class="line">            if(cnt &gt; 0)&#123;</div><div class="line">                System.out.println(&quot;服务端想客户端发送的数据位：&quot; + data);</div><div class="line">                // 将该管道注册到选择器上,并更改为读写状态</div><div class="line">                key.interestOps(SelectionKey.OP_READ);</div><div class="line">            &#125;</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public String toString(ByteBuffer buffer)&#123;</div><div class="line">        return new String(buffer.array());</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">        new ServerSocket(9999).init().start();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>客户端代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div></pre></td><td class="code"><pre><div class="line">public class ClientSocket &#123;</div><div class="line">    //服务端默认配置</div><div class="line">    private String ip = &quot;127.0.0.1&quot;;</div><div class="line">    private int port = 9999;</div><div class="line"></div><div class="line">    //管道</div><div class="line">    private SocketChannel channel = null;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 构造函数</div><div class="line">     * @param ip</div><div class="line">     * @param port</div><div class="line">     */</div><div class="line">    public ClientSocket(String ip,int port)&#123;</div><div class="line">        this.ip = ip;</div><div class="line">        this.port = port;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 初始化参数</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public ClientSocket init()&#123;</div><div class="line">        try&#123;</div><div class="line">            channel = SocketChannel.open(new InetSocketAddress(ip, port));</div><div class="line">            channel.configureBlocking(false);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        return this;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void start()&#123;</div><div class="line">           handlerReader();</div><div class="line">           handlerWriter();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void handlerReader()&#123;</div><div class="line">        new Thread(new Runnable() &#123;</div><div class="line">            @Override</div><div class="line">            public void run() &#123;</div><div class="line">               while(true)&#123;</div><div class="line">                   try&#123;</div><div class="line">                       ByteBuffer buffer = ByteBuffer.allocate(1024);</div><div class="line">                       int cnt = channel.read(buffer);</div><div class="line">                       if(cnt &gt; 0)&#123;</div><div class="line">                           buffer.flip();</div><div class="line">                           System.out.println(new String(buffer.array()));</div><div class="line">                           buffer.clear();</div><div class="line">                       &#125;</div><div class="line">                       Thread.sleep(1000);</div><div class="line">                   &#125;catch (Exception e)&#123;</div><div class="line">                       e.printStackTrace();</div><div class="line">                   &#125;</div><div class="line">               &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;).start();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void handlerWriter()&#123;</div><div class="line">        new Thread(new Runnable() &#123;</div><div class="line">            @Override</div><div class="line">            public void run() &#123;</div><div class="line">                while(true)&#123;</div><div class="line">                    try&#123;</div><div class="line">                        String data = &quot;client send data to server &quot; + UUID.randomUUID();</div><div class="line">                        ByteBuffer buffer = ByteBuffer.allocate(1024);</div><div class="line">                        buffer.put(data.getBytes());</div><div class="line">                        buffer.flip();</div><div class="line">                        channel.write(buffer);</div><div class="line">                        buffer.clear();</div><div class="line"></div><div class="line">                        Thread.sleep(1000);</div><div class="line">                    &#125;catch (Exception e)&#123;</div><div class="line">                        e.printStackTrace();</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;).start();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">        new ClientSocket(&quot;127.0.0.1&quot;,9999).init().start();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>执行结果截图如下:</p>
+<p><img src="/images/io/nio-socket-client.png" alt=""></p>
+<p><img src="/images/io/nio-socket-server.png" alt=""></p>
 
           
         
@@ -863,138 +995,6 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/07/20/java-nio-study004/" itemprop="url">
-                  JavaNIO学习笔记(四) JavaNIO SocketChannel和ServerSocketChannel
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-07-20T09:57:55+08:00" content="2016-07-20">
-              2016-07-20
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/07/20/java-nio-study004/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/20/java-nio-study004/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="1-SocketChannel-和-ServerSocketChannel"><a href="#1-SocketChannel-和-ServerSocketChannel" class="headerlink" title="1 SocketChannel 和 ServerSocketChannel"></a>1 SocketChannel 和 ServerSocketChannel</h2><p>Java NIO中的 ServerSocketChannel 是一个可以监听新进来的TCP连接的通道, 就像标准IO中的ServerSocket一样。ServerSocketChannel类在 java.nio.channels包中。</p>
-<p>打开ServerSocketChannel,通过调用 ServerSocketChannel.open() 方法来打开ServerSocketChannel.如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();</div></pre></td></tr></table></figure>
-<p>关闭ServerSocketChannel,通过调用close(),来实现关闭操作,具体的如下:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">serverSocketChannel();</div></pre></td></tr></table></figure></p>
-<p>通过 ServerSocketChannel.accept() 方法监听新进来的连接。当 accept()方法返回的时候,它返回一个包含新进来的连接的 SocketChannel。因此, accept()方法会一直阻塞到有新连接到达</p>
-<p>SocketChannel的设置基本类似的。</p>
-<h2 id="2-简单分布式"><a href="#2-简单分布式" class="headerlink" title="2 简单分布式"></a>2 简单分布式</h2><p>服务端代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div></pre></td><td class="code"><pre><div class="line">public class ServerSocket &#123;</div><div class="line">    //选择器</div><div class="line">    private Selector selector = null;</div><div class="line">    //管道</div><div class="line">    private ServerSocketChannel channel = null;</div><div class="line">    //服务端的端口</div><div class="line">    private int port;</div><div class="line">    //超时时间</div><div class="line">    private long TIME_OUT = 3000;</div><div class="line">    //缓存的最大大小</div><div class="line">    private int MAX_BUFFER_SIZE = 4096;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 构造函数初始化</div><div class="line">     * @param port</div><div class="line">     */</div><div class="line">    public ServerSocket(int port)&#123;</div><div class="line">        this.port = port;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 初始化数据</div><div class="line">     */</div><div class="line">    public ServerSocket init()&#123;</div><div class="line">        try&#123;</div><div class="line">            selector = Selector.open();</div><div class="line">            channel = ServerSocketChannel.open();</div><div class="line">            channel.socket().bind(new InetSocketAddress(port));</div><div class="line">            channel.configureBlocking(false);</div><div class="line">            channel.register(selector, SelectionKey.OP_ACCEPT);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        return this;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 开始准备客户端的链接</div><div class="line">     */</div><div class="line">    public void start()&#123;</div><div class="line">        while(true)&#123;</div><div class="line">            try&#123;</div><div class="line">                //监听是否有链接请求过来</div><div class="line">                if(selector.select(TIME_OUT) == 0)&#123;</div><div class="line">                    System.out.print(&quot;.&quot;);</div><div class="line">                    continue;</div><div class="line">                &#125;</div><div class="line">                //遍历数据</div><div class="line">                Iterator&lt;SelectionKey&gt; it = selector.selectedKeys().iterator();</div><div class="line">                while(it.hasNext())&#123;</div><div class="line">                    SelectionKey key = it.next();</div><div class="line"></div><div class="line">                    if(key.isAcceptable())&#123;</div><div class="line">                        handlerAccept(key);</div><div class="line">                    &#125;else if(key.isReadable())&#123;</div><div class="line">                        handlerReader(key);</div><div class="line">                    &#125;else if(key.isValid() &amp;&amp; key.isWritable())&#123;</div><div class="line">                        handlerWriter(key);</div><div class="line">                    &#125;</div><div class="line">                    it.remove();</div><div class="line">                &#125;</div><div class="line">            &#125;catch (Exception e)&#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 处理链接请求</div><div class="line">     * @param key</div><div class="line">     */</div><div class="line">    public void handlerAccept(SelectionKey key)&#123;</div><div class="line">        try&#123;</div><div class="line">            ServerSocketChannel serverSocketChannel = (ServerSocketChannel)key.channel();</div><div class="line">            SocketChannel socketChannel = serverSocketChannel.accept();</div><div class="line">            socketChannel.configureBlocking(false);</div><div class="line">            socketChannel.register(key.selector(), SelectionKey.OP_READ,SelectionKey.OP_WRITE);</div><div class="line"></div><div class="line">            System.out.println(socketChannel.getRemoteAddress().toString());</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 处理读取数据情况</div><div class="line">     * @param key</div><div class="line">     */</div><div class="line">    public void handlerReader(SelectionKey key)&#123;</div><div class="line">        try&#123;</div><div class="line">            ByteBuffer buffer = ByteBuffer.allocate(1024);</div><div class="line">            SocketChannel channel = (SocketChannel) key.channel();</div><div class="line">            int cnt = channel.read(buffer);</div><div class="line">            //如果从客户端中接收到相应的数据,那么久进行数据打印</div><div class="line">            if(cnt &gt; 0)&#123;</div><div class="line">                //打印缓冲区的数据</div><div class="line">                System.out.println(toString(buffer));</div><div class="line">                //将该管道注册到选择器上,并更改为可写状态</div><div class="line">                key.interestOps(SelectionKey.OP_WRITE);</div><div class="line">            &#125;</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 处理写操作</div><div class="line">     * @param key</div><div class="line">     */</div><div class="line">    public void handlerWriter(SelectionKey key)&#123;</div><div class="line">        try&#123;</div><div class="line">            String data = &quot;server send data to client&quot; + UUID.randomUUID();</div><div class="line">            SocketChannel channel = (SocketChannel) key.channel();</div><div class="line">            //重置缓冲区,等待写入</div><div class="line">            ByteBuffer buffer = ByteBuffer.allocate(1024);</div><div class="line">            buffer.put(data.getBytes());</div><div class="line">            buffer.flip();</div><div class="line">            //服务端想客户端写入数据</div><div class="line">            int cnt = channel.write(buffer);</div><div class="line">            //如果从客户端中接收到相应的数据,那么久进行数据打印</div><div class="line">            if(cnt &gt; 0)&#123;</div><div class="line">                System.out.println(&quot;服务端想客户端发送的数据位：&quot; + data);</div><div class="line">                // 将该管道注册到选择器上,并更改为读写状态</div><div class="line">                key.interestOps(SelectionKey.OP_READ);</div><div class="line">            &#125;</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public String toString(ByteBuffer buffer)&#123;</div><div class="line">        return new String(buffer.array());</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">        new ServerSocket(9999).init().start();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>客户端代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div></pre></td><td class="code"><pre><div class="line">public class ClientSocket &#123;</div><div class="line">    //服务端默认配置</div><div class="line">    private String ip = &quot;127.0.0.1&quot;;</div><div class="line">    private int port = 9999;</div><div class="line"></div><div class="line">    //管道</div><div class="line">    private SocketChannel channel = null;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 构造函数</div><div class="line">     * @param ip</div><div class="line">     * @param port</div><div class="line">     */</div><div class="line">    public ClientSocket(String ip,int port)&#123;</div><div class="line">        this.ip = ip;</div><div class="line">        this.port = port;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 初始化参数</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public ClientSocket init()&#123;</div><div class="line">        try&#123;</div><div class="line">            channel = SocketChannel.open(new InetSocketAddress(ip, port));</div><div class="line">            channel.configureBlocking(false);</div><div class="line">        &#125;catch (Exception e)&#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        return this;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void start()&#123;</div><div class="line">           handlerReader();</div><div class="line">           handlerWriter();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void handlerReader()&#123;</div><div class="line">        new Thread(new Runnable() &#123;</div><div class="line">            @Override</div><div class="line">            public void run() &#123;</div><div class="line">               while(true)&#123;</div><div class="line">                   try&#123;</div><div class="line">                       ByteBuffer buffer = ByteBuffer.allocate(1024);</div><div class="line">                       int cnt = channel.read(buffer);</div><div class="line">                       if(cnt &gt; 0)&#123;</div><div class="line">                           buffer.flip();</div><div class="line">                           System.out.println(new String(buffer.array()));</div><div class="line">                           buffer.clear();</div><div class="line">                       &#125;</div><div class="line">                       Thread.sleep(1000);</div><div class="line">                   &#125;catch (Exception e)&#123;</div><div class="line">                       e.printStackTrace();</div><div class="line">                   &#125;</div><div class="line">               &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;).start();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public void handlerWriter()&#123;</div><div class="line">        new Thread(new Runnable() &#123;</div><div class="line">            @Override</div><div class="line">            public void run() &#123;</div><div class="line">                while(true)&#123;</div><div class="line">                    try&#123;</div><div class="line">                        String data = &quot;client send data to server &quot; + UUID.randomUUID();</div><div class="line">                        ByteBuffer buffer = ByteBuffer.allocate(1024);</div><div class="line">                        buffer.put(data.getBytes());</div><div class="line">                        buffer.flip();</div><div class="line">                        channel.write(buffer);</div><div class="line">                        buffer.clear();</div><div class="line"></div><div class="line">                        Thread.sleep(1000);</div><div class="line">                    &#125;catch (Exception e)&#123;</div><div class="line">                        e.printStackTrace();</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;).start();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static void main(String[] args)&#123;</div><div class="line">        new ClientSocket(&quot;127.0.0.1&quot;,9999).init().start();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>执行结果截图如下:</p>
-<p><img src="/images/io/nio-socket-client.png" alt=""></p>
-<p><img src="/images/io/nio-socket-server.png" alt=""></p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1126,7 +1126,7 @@ var duoshuoQuery = {short_name:"sunxing"};
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2017</span>
+  <span itemprop="copyrightYear">2018</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

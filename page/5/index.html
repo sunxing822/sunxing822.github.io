@@ -365,140 +365,6 @@
             
               
                 
-                <a class="post-title-link" href="/2016/11/21/maven-study003/" itemprop="url">
-                  maven学习笔记(二) maven常用命令
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-11-21T15:22:46+08:00" content="2016-11-21">
-              2016-11-21
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/maven/" itemprop="url" rel="index">
-                    <span itemprop="name">maven</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2016/11/21/maven-study003/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/11/21/maven-study003/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="1-maven依赖管理"><a href="#1-maven依赖管理" class="headerlink" title="1 maven依赖管理"></a>1 maven依赖管理</h1><h2 id="1-1-添加依赖"><a href="#1-1-添加依赖" class="headerlink" title="1.1 添加依赖"></a>1.1 添加依赖</h2><p>通过上一节中自定义构建好项目以后,在项目中添加自己编写的工具包：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">  &lt;groupId&gt;com.sunx.downloader&lt;/groupId&gt;</div><div class="line">  &lt;artifactId&gt;Downloader&lt;/artifactId&gt;</div><div class="line">  &lt;version&gt;1.0&lt;/version&gt;</div><div class="line">&lt;/dependency&gt;</div></pre></td></tr></table></figure>
-<p>在pom.xml中的dependencies中添加上面的依赖，也就将编写好的并且打包到本地或者是私服，远程仓库中的包导入到当前项目中了。</p>
-<h2 id="1-2-过滤依赖"><a href="#1-2-过滤依赖" class="headerlink" title="1.2 过滤依赖"></a>1.2 过滤依赖</h2><p>上面是添加一个依赖，同样的删除依赖直接注释掉或则是删除掉，即可。</p>
-<p>如果对应上面的依赖项目Downloader中对应的pom.xml文件为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&lt;dependencies&gt;</div><div class="line">        &lt;!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient --&gt;</div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;org.apache.httpcomponents&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;httpclient&lt;/artifactId&gt;</div><div class="line">            &lt;version&gt;4.5.2&lt;/version&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line">        &lt;!-- https://mvnrepository.com/artifact/junit/junit --&gt;</div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;junit&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;junit&lt;/artifactId&gt;</div><div class="line">            &lt;version&gt;4.12&lt;/version&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line">    &lt;/dependencies&gt;</div></pre></td></tr></table></figure>
-<p>这个是Downloader项目中的依赖包,可以看到都有junit，那么是否可以将Downloader中的junit依赖取消掉,也就是不在加入到当前项目中，可以采用如下操作：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">      &lt;groupId&gt;com.sunx.downloader&lt;/groupId&gt;</div><div class="line">      &lt;artifactId&gt;Downloader&lt;/artifactId&gt;</div><div class="line">      &lt;version&gt;1.0&lt;/version&gt;</div><div class="line">      &lt;exclusions&gt;</div><div class="line">        &lt;exclusion&gt;</div><div class="line">          &lt;groupId&gt;junit&lt;/groupId&gt;</div><div class="line">          &lt;artifactId&gt;junit&lt;/artifactId&gt;</div><div class="line">        &lt;/exclusion&gt;</div><div class="line">      &lt;/exclusions&gt;</div><div class="line">    &lt;/dependency&gt;</div></pre></td></tr></table></figure>
-<p>如果Downloader中有很多依赖需要过滤掉,那么需要如下操作：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">      &lt;groupId&gt;com.sunx.downloader&lt;/groupId&gt;</div><div class="line">      &lt;artifactId&gt;Downloader&lt;/artifactId&gt;</div><div class="line">      &lt;version&gt;1.0&lt;/version&gt;</div><div class="line">      &lt;exclusions&gt;</div><div class="line">        &lt;exclusion&gt;</div><div class="line">          &lt;groupId&gt;*&lt;/groupId&gt;</div><div class="line">          &lt;artifactId&gt;*&lt;/artifactId&gt;</div><div class="line">        &lt;/exclusion&gt;</div><div class="line">      &lt;/exclusions&gt;</div><div class="line">    &lt;/dependency&gt;</div></pre></td></tr></table></figure>
-<p>这样就将所有的依赖全部过滤掉了。</p>
-<h2 id="1-3-过滤文件"><a href="#1-3-过滤文件" class="headerlink" title="1.3 过滤文件"></a>1.3 过滤文件</h2><p>打包的时候有的时候会出现java.lang.SecurityException: Invalid signature file digest for Manifest main attributes这个问题,解决这个问题的方法可以通过打包后冲jar文件中删除相应的文件，或者是在打包的时候过滤掉，删除命令如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">zip -d *.jar &apos;META-INF/*SF&apos; &apos;META-INF/*RSA&apos; &apos;META-INF/*SF&apos;</div></pre></td></tr></table></figure></p>
-<p>打包过滤的文件的配置如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">&lt;build&gt;        </div><div class="line">        &lt;resources&gt;</div><div class="line">            &lt;resource&gt;</div><div class="line">                &lt;directory&gt;src/main/Java&lt;/directory&gt;</div><div class="line">                &lt;!-- 包含 --&gt;</div><div class="line">                &lt;includes&gt;</div><div class="line">                    &lt;include&gt;**/*.vm&lt;/include&gt;</div><div class="line">                    &lt;include&gt;**/*.properties&lt;/include&gt;</div><div class="line">                &lt;/includes&gt;</div><div class="line">                &lt;!-- 排除  --&gt;</div><div class="line">                &lt;excludes&gt;</div><div class="line">                &lt;exclude&gt;**/*.log&lt;/exclude&gt;</div><div class="line">                &lt;/excludes&gt;</div><div class="line">            &lt;/resource&gt;</div><div class="line">            &lt;resource&gt;</div><div class="line">                &lt;directory&gt;src/main/resources&lt;/directory&gt;</div><div class="line">                &lt;filtering&gt;true&lt;/filtering&gt;</div><div class="line">                &lt;includes&gt;</div><div class="line">                    &lt;include&gt;**/*.*&lt;/include&gt;</div><div class="line">                &lt;/includes&gt;</div><div class="line">                &lt;excludes&gt;</div><div class="line">                &lt;exclude&gt;**/*.log&lt;/exclude&gt;</div><div class="line">                &lt;/excludes&gt;</div><div class="line">            &lt;/resource&gt;</div><div class="line">        &lt;/resources&gt;</div><div class="line">&lt;/build&gt;</div></pre></td></tr></table></figure></p>
-<h2 id="2-maven常用命令"><a href="#2-maven常用命令" class="headerlink" title="2 maven常用命令"></a>2 maven常用命令</h2><p>构建项目：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mvn archetype:create -DgroupId=packageName -DartifactId=projectName</div></pre></td></tr></table></figure></p>
-<p><a href="http://www.cnblogs.com/phoebus0501/archive/2011/05/10/2042511.html" target="_blank" rel="external">网络教程</a></p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
                 <a class="post-title-link" href="/2016/11/21/maven-study001/" itemprop="url">
                   maven学习笔记(一) windows下安装maven
                 </a>
@@ -612,6 +478,140 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div></pre></td><td class="code"><pre><div class="line">&lt;!-- profiles</div><div class="line"> | This is a list of profiles which can be activated in a variety of ways, and which can modify</div><div class="line"> | the build process. Profiles provided in the settings.xml are intended to provide local machine-</div><div class="line"> | specific paths and repository locations which allow the build to work in the local environment.</div><div class="line"> |</div><div class="line"> | For example, if you have an integration testing plugin - like cactus - that needs to know where</div><div class="line"> | your Tomcat instance is installed, you can provide a variable here such that the variable is</div><div class="line"> | dereferenced during the build process to configure the cactus plugin.</div><div class="line"> |</div><div class="line"> | As noted above, profiles can be activated in a variety of ways. One way - the activeProfiles</div><div class="line"> | section of this document (settings.xml) - will be discussed later. Another way essentially</div><div class="line"> | relies on the detection of a system property, either matching a particular value for the property,</div><div class="line"> | or merely testing its existence. Profiles can also be activated by JDK version prefix, where a</div><div class="line"> | value of &apos;1.4&apos; might activate a profile when the build is executed on a JDK version of &apos;1.4.2_07&apos;.</div><div class="line"> | Finally, the list of active profiles can be specified directly from the command line.</div><div class="line"> |</div><div class="line"> | NOTE: For profiles defined in the settings.xml, you are restricted to specifying only artifact</div><div class="line"> |       repositories, plugin repositories, and free-form properties to be used as configuration</div><div class="line"> |       variables for plugins in the POM.</div><div class="line"> |</div><div class="line"> |--&gt;</div><div class="line">&lt;profiles&gt;</div><div class="line">  &lt;!-- profile</div><div class="line">   | Specifies a set of introductions to the build process, to be activated using one or more of the</div><div class="line">   | mechanisms described above. For inheritance purposes, and to activate profiles via &lt;activatedProfiles/&gt;</div><div class="line">   | or the command line, profiles have to have an ID that is unique.</div><div class="line">   |</div><div class="line">   | An encouraged best practice for profile identification is to use a consistent naming convention</div><div class="line">   | for profiles, such as &apos;env-dev&apos;, &apos;env-test&apos;, &apos;env-production&apos;, &apos;user-jdcasey&apos;, &apos;user-brett&apos;, etc.</div><div class="line">   | This will make it more intuitive to understand what the set of introduced profiles is attempting</div><div class="line">   | to accomplish, particularly when you only have a list of profile id&apos;s for debug.</div><div class="line">   |</div><div class="line">   | This profile example uses the JDK version to trigger activation, and provides a JDK-specific repo.</div><div class="line">  &lt;profile&gt;</div><div class="line">    &lt;id&gt;jdk-1.4&lt;/id&gt;</div><div class="line"></div><div class="line">    &lt;activation&gt;</div><div class="line">      &lt;jdk&gt;1.4&lt;/jdk&gt;</div><div class="line">    &lt;/activation&gt;</div><div class="line"></div><div class="line">    &lt;repositories&gt;</div><div class="line">      &lt;repository&gt;</div><div class="line">        &lt;id&gt;jdk14&lt;/id&gt;</div><div class="line">        &lt;name&gt;Repository for JDK 1.4 builds&lt;/name&gt;</div><div class="line">        &lt;url&gt;http://www.myhost.com/maven/jdk14&lt;/url&gt;</div><div class="line">        &lt;layout&gt;default&lt;/layout&gt;</div><div class="line">        &lt;snapshotPolicy&gt;always&lt;/snapshotPolicy&gt;</div><div class="line">      &lt;/repository&gt;</div><div class="line">    &lt;/repositories&gt;</div><div class="line">  &lt;/profile&gt;</div><div class="line">  --&gt;</div><div class="line"></div><div class="line">  &lt;!--</div><div class="line">   | Here is another profile, activated by the system property &apos;target-env&apos; with a value of &apos;dev&apos;,</div><div class="line">   | which provides a specific path to the Tomcat instance. To use this, your plugin configuration</div><div class="line">   | might hypothetically look like:</div><div class="line">   |</div><div class="line">   | ...</div><div class="line">   | &lt;plugin&gt;</div><div class="line">   |   &lt;groupId&gt;org.myco.myplugins&lt;/groupId&gt;</div><div class="line">   |   &lt;artifactId&gt;myplugin&lt;/artifactId&gt;</div><div class="line">   |</div><div class="line">   |   &lt;configuration&gt;</div><div class="line">   |     &lt;tomcatLocation&gt;$&#123;tomcatPath&#125;&lt;/tomcatLocation&gt;</div><div class="line">   |   &lt;/configuration&gt;</div><div class="line">   | &lt;/plugin&gt;</div><div class="line">   | ...</div><div class="line">   |</div><div class="line">   | NOTE: If you just wanted to inject this configuration whenever someone set &apos;target-env&apos; to</div><div class="line">   |       anything, you could just leave off the &lt;value/&gt; inside the activation-property.</div><div class="line">   |</div><div class="line">  &lt;profile&gt;</div><div class="line">    &lt;id&gt;env-dev&lt;/id&gt;</div><div class="line"></div><div class="line">    &lt;activation&gt;</div><div class="line">      &lt;property&gt;</div><div class="line">        &lt;name&gt;target-env&lt;/name&gt;</div><div class="line">        &lt;value&gt;dev&lt;/value&gt;</div><div class="line">      &lt;/property&gt;</div><div class="line">    &lt;/activation&gt;</div><div class="line"></div><div class="line">    &lt;properties&gt;</div><div class="line">      &lt;tomcatPath&gt;/path/to/tomcat/instance&lt;/tomcatPath&gt;</div><div class="line">    &lt;/properties&gt;</div><div class="line">  &lt;/profile&gt;</div><div class="line">  --&gt;</div><div class="line">&lt;/profiles&gt;</div></pre></td></tr></table></figure>
 <p>配置好相应的配置以后,需要激活相应的配置：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;!--激活配置  --&gt;</div><div class="line">&lt;activeProfiles&gt;</div><div class="line">  &lt;activeProfile&gt;test&lt;/activeProfile&gt;</div><div class="line">&lt;/activeProfiles&gt;</div></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/11/21/maven-study003/" itemprop="url">
+                  maven学习笔记(二) maven常用命令
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-11-21T15:22:46+08:00" content="2016-11-21">
+              2016-11-21
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/maven/" itemprop="url" rel="index">
+                    <span itemprop="name">maven</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/11/21/maven-study003/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/11/21/maven-study003/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="1-maven依赖管理"><a href="#1-maven依赖管理" class="headerlink" title="1 maven依赖管理"></a>1 maven依赖管理</h1><h2 id="1-1-添加依赖"><a href="#1-1-添加依赖" class="headerlink" title="1.1 添加依赖"></a>1.1 添加依赖</h2><p>通过上一节中自定义构建好项目以后,在项目中添加自己编写的工具包：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">  &lt;groupId&gt;com.sunx.downloader&lt;/groupId&gt;</div><div class="line">  &lt;artifactId&gt;Downloader&lt;/artifactId&gt;</div><div class="line">  &lt;version&gt;1.0&lt;/version&gt;</div><div class="line">&lt;/dependency&gt;</div></pre></td></tr></table></figure>
+<p>在pom.xml中的dependencies中添加上面的依赖，也就将编写好的并且打包到本地或者是私服，远程仓库中的包导入到当前项目中了。</p>
+<h2 id="1-2-过滤依赖"><a href="#1-2-过滤依赖" class="headerlink" title="1.2 过滤依赖"></a>1.2 过滤依赖</h2><p>上面是添加一个依赖，同样的删除依赖直接注释掉或则是删除掉，即可。</p>
+<p>如果对应上面的依赖项目Downloader中对应的pom.xml文件为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">&lt;dependencies&gt;</div><div class="line">        &lt;!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient --&gt;</div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;org.apache.httpcomponents&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;httpclient&lt;/artifactId&gt;</div><div class="line">            &lt;version&gt;4.5.2&lt;/version&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line">        &lt;!-- https://mvnrepository.com/artifact/junit/junit --&gt;</div><div class="line">        &lt;dependency&gt;</div><div class="line">            &lt;groupId&gt;junit&lt;/groupId&gt;</div><div class="line">            &lt;artifactId&gt;junit&lt;/artifactId&gt;</div><div class="line">            &lt;version&gt;4.12&lt;/version&gt;</div><div class="line">        &lt;/dependency&gt;</div><div class="line">    &lt;/dependencies&gt;</div></pre></td></tr></table></figure>
+<p>这个是Downloader项目中的依赖包,可以看到都有junit，那么是否可以将Downloader中的junit依赖取消掉,也就是不在加入到当前项目中，可以采用如下操作：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">      &lt;groupId&gt;com.sunx.downloader&lt;/groupId&gt;</div><div class="line">      &lt;artifactId&gt;Downloader&lt;/artifactId&gt;</div><div class="line">      &lt;version&gt;1.0&lt;/version&gt;</div><div class="line">      &lt;exclusions&gt;</div><div class="line">        &lt;exclusion&gt;</div><div class="line">          &lt;groupId&gt;junit&lt;/groupId&gt;</div><div class="line">          &lt;artifactId&gt;junit&lt;/artifactId&gt;</div><div class="line">        &lt;/exclusion&gt;</div><div class="line">      &lt;/exclusions&gt;</div><div class="line">    &lt;/dependency&gt;</div></pre></td></tr></table></figure>
+<p>如果Downloader中有很多依赖需要过滤掉,那么需要如下操作：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">      &lt;groupId&gt;com.sunx.downloader&lt;/groupId&gt;</div><div class="line">      &lt;artifactId&gt;Downloader&lt;/artifactId&gt;</div><div class="line">      &lt;version&gt;1.0&lt;/version&gt;</div><div class="line">      &lt;exclusions&gt;</div><div class="line">        &lt;exclusion&gt;</div><div class="line">          &lt;groupId&gt;*&lt;/groupId&gt;</div><div class="line">          &lt;artifactId&gt;*&lt;/artifactId&gt;</div><div class="line">        &lt;/exclusion&gt;</div><div class="line">      &lt;/exclusions&gt;</div><div class="line">    &lt;/dependency&gt;</div></pre></td></tr></table></figure>
+<p>这样就将所有的依赖全部过滤掉了。</p>
+<h2 id="1-3-过滤文件"><a href="#1-3-过滤文件" class="headerlink" title="1.3 过滤文件"></a>1.3 过滤文件</h2><p>打包的时候有的时候会出现java.lang.SecurityException: Invalid signature file digest for Manifest main attributes这个问题,解决这个问题的方法可以通过打包后冲jar文件中删除相应的文件，或者是在打包的时候过滤掉，删除命令如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">zip -d *.jar &apos;META-INF/*SF&apos; &apos;META-INF/*RSA&apos; &apos;META-INF/*SF&apos;</div></pre></td></tr></table></figure></p>
+<p>打包过滤的文件的配置如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">&lt;build&gt;        </div><div class="line">        &lt;resources&gt;</div><div class="line">            &lt;resource&gt;</div><div class="line">                &lt;directory&gt;src/main/Java&lt;/directory&gt;</div><div class="line">                &lt;!-- 包含 --&gt;</div><div class="line">                &lt;includes&gt;</div><div class="line">                    &lt;include&gt;**/*.vm&lt;/include&gt;</div><div class="line">                    &lt;include&gt;**/*.properties&lt;/include&gt;</div><div class="line">                &lt;/includes&gt;</div><div class="line">                &lt;!-- 排除  --&gt;</div><div class="line">                &lt;excludes&gt;</div><div class="line">                &lt;exclude&gt;**/*.log&lt;/exclude&gt;</div><div class="line">                &lt;/excludes&gt;</div><div class="line">            &lt;/resource&gt;</div><div class="line">            &lt;resource&gt;</div><div class="line">                &lt;directory&gt;src/main/resources&lt;/directory&gt;</div><div class="line">                &lt;filtering&gt;true&lt;/filtering&gt;</div><div class="line">                &lt;includes&gt;</div><div class="line">                    &lt;include&gt;**/*.*&lt;/include&gt;</div><div class="line">                &lt;/includes&gt;</div><div class="line">                &lt;excludes&gt;</div><div class="line">                &lt;exclude&gt;**/*.log&lt;/exclude&gt;</div><div class="line">                &lt;/excludes&gt;</div><div class="line">            &lt;/resource&gt;</div><div class="line">        &lt;/resources&gt;</div><div class="line">&lt;/build&gt;</div></pre></td></tr></table></figure></p>
+<h2 id="2-maven常用命令"><a href="#2-maven常用命令" class="headerlink" title="2 maven常用命令"></a>2 maven常用命令</h2><p>构建项目：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mvn archetype:create -DgroupId=packageName -DartifactId=projectName</div></pre></td></tr></table></figure></p>
+<p><a href="http://www.cnblogs.com/phoebus0501/archive/2011/05/10/2042511.html" target="_blank" rel="external">网络教程</a></p>
+
           
         
       
@@ -1130,7 +1130,7 @@ var duoshuoQuery = {short_name:"sunxing"};
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2017</span>
+  <span itemprop="copyrightYear">2018</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
